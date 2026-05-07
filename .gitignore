@@ -1,3 +1,5 @@
+input_data/*
+
 # History files
 .Rhistory
 .Rapp.history
@@ -50,3 +52,4 @@ rsconnect/
 
 ._*
 .DS_Store
+.positai
