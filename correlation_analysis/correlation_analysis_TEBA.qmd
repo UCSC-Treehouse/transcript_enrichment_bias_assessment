@@ -1,0 +1,644 @@
+---
+title: "correlation_analysis_TEBA"
+author: Maryke Grobler
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+# correlation_analysis
+
+Maryke Grobler
+
+## Correlation analysis
+
+The goal of this analysis is to determine which samples are the most highly correlated within each disease type, then subset the gene expression to only include those samples. The subsetted expression file will be used for downstream differential expression analysis.
+
+This is using gene expression from the Treehouse Tumor v25 RiboD and PolyA compendia. Diseases include synovial sarcoma (SS), alveolar rhabdomyosarcoma (aRMS), Wilms tumor (WT), neuroblastoma (NB), acute myeloid leukemia (AML), and acute lymphoblastic leukemia (ALL).
+
+```{r install packages}
+library(tidyverse)
+library(corrr)
+```
+
+```{r metadata files}
+polyA_clinical <- read_tsv("https://xena.treehouse.gi.ucsc.edu:443/download/clinical_Treehouse-Tumor-Compendium-25.01-PolyA_20250131v1.tsv")
+
+riboD_clinical <- read_tsv("https://xena.treehouse.gi.ucsc.edu:443/download/clinical_Treehouse-Tumor-Compendium-25.01-RiboD_20250306v1.tsv")
+```
+
+```{r reformat}
+# create column in each file that specifies with compendia the file is from
+riboD_clinical_lib <- riboD_clinical %>%
+  mutate(lib_prep="riboD")
+
+polyA_clinical_lib <- polyA_clinical %>%
+  mutate(lib_prep="polyA")
+
+# merge clinical files
+clin_merged <- bind_rows(polyA_clinical_lib, riboD_clinical_lib)
+```
+
+## SS and aRMS
+
+```{r load in expression SS aRMS}
+expression_SS_aRMS <- read_tsv("../input_data/expression_SS_aRMS.tsv.gz", show_col_types = FALSE)
+```
+
+```{r SS_aRMS}
+SS_aRMS <- c("synovial sarcoma", "alveolar rhabdomyosarcoma")
+
+clin_merged_SS_aRMS <- clin_merged %>%
+  filter(disease %in% c(SS_aRMS)) %>%
+  group_by(disease) %>%
+  mutate(disease = case_when(
+    disease == "synovial sarcoma" ~ "SS",
+    disease == "alveolar rhabdomyosarcoma" ~ "aRMS"
+    )) %>%
+  unite(col = "disease_and_prep", disease, lib_prep, sep = "_") %>%
+  select(th_dataset_id, disease_and_prep)
+
+#write_tsv(clin_merged_SS_aRMS, "../data/clin_merged_SS_aRMS.tsv")
+```
+
+The datasets include some samples from the same patient, which may be skew the correlation scores since those samples would be more highly correlated to each other than any of the other samples.
+
+```{r filter out duplicates SS aRMS}
+# filtering out samples that contain S02 or S03
+# in the clinical file
+clin_SS_aRMS_dups_removed <- clin_merged_SS_aRMS %>%
+  filter(!grepl("S02$", th_dataset_id),
+         !grepl("S03$", th_dataset_id))
+
+# in the expression file
+expr_SS_aRMS_dups_removed <- expression_SS_aRMS %>%
+  pivot_longer(cols = -Gene,
+               names_to = "THID",
+               values_to = "est_count") %>%
+  filter(!grepl("S02$", THID),
+         !grepl("S03$", THID)) %>%
+  pivot_wider(names_from = "THID",
+              values_from = "est_count")
+```
+
+```{r genes to row names SS aRMS}
+# the first column in expr_SS_aRMS_dups_removed is "Gene", but the gene names should be the names of each row, not as a separate column.
+
+cleaned_expr_SS_aRMS_dups_rem <- expr_SS_aRMS_dups_removed %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+```
+
+```{r filter out low genes SS aRMS}
+# filtering out genes with a count less than 10 across all samples
+filt_expr_SS_aRMS_dups_rem <- cleaned_expr_SS_aRMS_dups_rem %>%
+  filter(if_all(everything(), ~.x > 10))
+```
+
+```{r separate files SS aRMS}
+# filtering clinical file 
+# DR means Duplicate samples Removed
+clin_SS_polyA_DR <- clin_SS_aRMS_dups_removed %>%
+  filter(disease_and_prep == "SS_polyA")
+
+clin_SS_riboD_DR <- clin_SS_aRMS_dups_removed %>%
+  filter(disease_and_prep == "SS_riboD")
+
+clin_aRMS_polyA_DR <- clin_SS_aRMS_dups_removed %>%
+  filter(disease_and_prep == "aRMS_polyA")
+
+clin_aRMS_riboD_DR <- clin_SS_aRMS_dups_removed %>%
+  filter(disease_and_prep == "aRMS_riboD")
+
+# filtering expression file
+expression_SS_polyA_DR <- filt_expr_SS_aRMS_dups_rem %>%
+  select(all_of(c(clin_SS_polyA_DR$th_dataset_id)))
+
+expression_SS_riboD_DR <- filt_expr_SS_aRMS_dups_rem %>%
+  select(all_of(c(clin_SS_riboD_DR$th_dataset_id)))
+
+expression_aRMS_polyA_DR <- filt_expr_SS_aRMS_dups_rem %>%
+  select(all_of(c(clin_aRMS_polyA_DR$th_dataset_id)))
+
+expression_aRMS_riboD_DR <- filt_expr_SS_aRMS_dups_rem %>%
+  select(all_of(c(clin_aRMS_riboD_DR$th_dataset_id)))
+```
+
+```{r calculate correlation SS aRMS}
+cor_SS_polyA_DR <- correlate(expression_SS_polyA_DR, method = "spearman", quiet = TRUE)
+cor_SS_riboD_DR <- correlate(expression_SS_riboD_DR, method = "spearman", quiet = TRUE)
+cor_aRMS_polyA_DR <- correlate(expression_aRMS_polyA_DR, method = "spearman", quiet = TRUE)
+cor_aRMS_riboD_DR <- correlate(expression_aRMS_riboD_DR, method = "spearman", quiet = TRUE)
+```
+
+```{r stats for correlation SS polyA}
+# SS_polyA
+sum_cor_SS_polyA_DR <- cor_SS_polyA_DR %>%
+  pivot_longer(cols = -term, # convert to long format, reshapes the data from wide (50 columns) to long format (one row per sample pair)
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise(
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_SS_polyA_DR, n = 5)
+```
+
+```{r stats for correlation SS riboD}
+# SS_riboD
+sum_cor_SS_riboD_DR <- cor_SS_riboD_DR %>%
+  pivot_longer(cols = -term, # convert to long format, reshapes the data from wide (50 columns) to long format (one row per sample pair)
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise( #calculate the stats
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_SS_riboD_DR, n = 5)
+```
+
+```{r stats for correlation aRMS polyA}
+# aRMS_polyA
+# convert to long format, reshapes the data from wide (74 columns) to long format (one row per sample pair)
+sum_cor_aRMS_polyA_DR <- cor_aRMS_polyA_DR %>%
+  pivot_longer(cols = -term,
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise(
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_aRMS_polyA_DR, n = 5)
+```
+
+```{r stats for correlation aRMS riboD}
+# aRMS_riboD
+# convert to long format, reshapes the data from wide (74 columns) to long format (one row per sample pair)
+sum_cor_aRMS_riboD_DR <- cor_aRMS_riboD_DR %>%
+  pivot_longer(cols = -term,
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise(
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_aRMS_riboD_DR, n = 5)
+```
+
+```{r selecting highly correlated samples SS aRMS}
+# this was a sample that was only 18th out of 20 most correlated samples, but it clustered together with the other SS riboD samples, so I'm including it
+THR49_SS_riboD <- sum_cor_SS_riboD_DR %>%
+  filter(term == "THR49_4787_S01") 
+
+filtered_SS_riboD_list <- sum_cor_SS_riboD_DR %>%
+  filter(term != "TH38_1433_S01") %>% # this was 10 out of 20 in the most correlated, but it clustered in the SS polyA samples, so I'm removing it
+  slice_head(n = 14) %>% #taking the top most correlated samples
+  rbind(THR49_SS_riboD) %>% #adding this THID 
+  select(term) %>%
+  mutate(disease_and_prep = "SS_riboD") # need to add back in the category
+
+filtered_SS_polyA_list <- sum_cor_SS_polyA_DR %>%
+  slice_head(n = 15) %>%
+  select(term) %>%
+  mutate(disease_and_prep = "SS_polyA")
+
+filtered_aRMS_polyA_list <- sum_cor_aRMS_polyA_DR %>%
+  slice_head(n = 15) %>%
+  select(term) %>%
+  mutate(disease_and_prep = "aRMS_polyA")
+
+filtered_aRMS_riboD_list <- sum_cor_aRMS_riboD_DR %>%
+  slice_head(n = 15) %>%
+  select(term) %>%
+  mutate(disease_and_prep = "aRMS_riboD")
+```
+
+```{r final SS aRMS list}
+filtered_SS_aRMS_list <- bind_rows(filtered_SS_riboD_list, filtered_SS_polyA_list, filtered_aRMS_riboD_list, filtered_aRMS_polyA_list)
+
+write_tsv(filtered_SS_aRMS_list, "../input_data/filtered_SS_aRMS_list.tsv")
+```
+
+### WT and NB
+
+```{r load in expression WT NB}
+expression_WT_NB <- read_tsv("../input_data/expression_WT_NB.tsv.gz", show_col_types = FALSE)
+```
+
+```{r WT_NB}
+WT_NB <- c("wilms tumor", "neuroblastoma")
+
+clin_merged_WT_NB <- clin_merged %>%
+  filter(disease %in% c(WT_NB)) %>%
+  group_by(disease) %>%
+  mutate(disease = case_when(
+    disease == "wilms tumor" ~ "WT",
+    disease == "neuroblastoma" ~ "NB"
+    )) %>%
+  unite(col = "disease_and_prep", disease, lib_prep, sep = "_") %>%
+  select(th_dataset_id, disease_and_prep) 
+
+#write_tsv(clin_merged_WT_NB, "../data/clin_merged_WT_NB.tsv")
+```
+
+```{r filtering out duplicates WT NB}
+# filtering out samples that contain S02, S03, S04
+# in the clinical file
+clin_WT_NB_dups_removed <- clin_merged_WT_NB %>%
+  filter(!grepl("S02$", th_dataset_id), # the $ in a regular expression indicates the end of a line
+         !grepl("S03$", th_dataset_id),
+         !grepl("S04$", th_dataset_id))
+
+# in the expression file
+expr_WT_NB_dups_removed <- expression_WT_NB %>%
+  pivot_longer(cols = -Gene,
+               names_to = "THID",
+               values_to = "est_count") %>%
+  filter(!grepl("S02$", THID),
+         !grepl("S03$", THID),
+         !grepl("S04$", THID)) %>%
+  pivot_wider(names_from = "THID",
+              values_from = "est_count")
+```
+
+```{r genes to row names WT NB}
+# the first column in expr_SS_aRMS_dups_removed is "Gene", but the gene names should be the names of each row, not as a separate column.
+
+cleaned_expr_WT_NB_dups_removed <- expr_WT_NB_dups_removed %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+```
+
+```{r filter out low genes WT NB}
+filt_expr_WT_NB_dups_rem <- cleaned_expr_WT_NB_dups_removed %>%
+  filter(if_all(everything(), ~.x > 10))
+```
+
+```{r separate files WT NB}
+# filtering clinical file 
+# DR means Duplicate samples Removed
+clin_WT_polyA_DR <- clin_WT_NB_dups_removed %>%
+  filter(disease_and_prep == "WT_polyA")
+
+clin_WT_riboD_DR <- clin_WT_NB_dups_removed %>%
+  filter(disease_and_prep == "WT_riboD")
+
+clin_NB_polyA_DR <- clin_WT_NB_dups_removed %>%
+  filter(disease_and_prep == "NB_polyA")
+
+clin_NB_riboD_DR <- clin_WT_NB_dups_removed %>%
+  filter(disease_and_prep == "NB_riboD")
+
+# filtering expression file
+expression_WT_polyA_DR <- filt_expr_WT_NB_dups_rem %>%
+  select(all_of(c(clin_WT_polyA_DR$th_dataset_id)))
+
+expression_WT_riboD_DR <- filt_expr_WT_NB_dups_rem %>%
+  select(all_of(c(clin_WT_riboD_DR$th_dataset_id)))
+
+expression_NB_polyA_DR <- filt_expr_WT_NB_dups_rem %>%
+  select(all_of(c(clin_NB_polyA_DR$th_dataset_id)))
+
+expression_NB_riboD_DR <- filt_expr_WT_NB_dups_rem %>%
+  select(all_of(c(clin_NB_riboD_DR$th_dataset_id)))
+```
+
+```{r calculate correlation WT NB}
+# Run correlate()
+cor_WT_polyA_DR <- correlate(expression_WT_polyA_DR, method = "spearman", quiet = TRUE)
+cor_WT_riboD_DR <- correlate(expression_WT_riboD_DR, method = "spearman", quiet = TRUE)
+cor_NB_polyA_DR <- correlate(expression_NB_polyA_DR, method = "spearman", quiet = TRUE)
+cor_NB_riboD_DR <- correlate(expression_NB_riboD_DR, method = "spearman", quiet = TRUE)
+```
+
+```{r statistics WT polyA}
+# WT_polyA
+sum_cor_WT_polyA_DR <- cor_WT_polyA_DR %>%
+  pivot_longer(cols = -term, # convert to long format, reshapes the data from wide (50 columns) to long format (one row per sample pair)
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise(
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_WT_polyA_DR, n = 5)
+```
+
+```{r stats WT riboD}
+# WT_riboD
+sum_cor_WT_riboD_DR <- cor_WT_riboD_DR %>%
+  pivot_longer(cols = -term, # convert to long format, reshapes the data from wide (50 columns) to long format (one row per sample pair)
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise( #calculate the stats
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_WT_riboD_DR, n = 5)
+```
+
+```{r stats NB polyA}
+# NB_polyA
+sum_cor_NB_polyA_DR <- cor_NB_polyA_DR %>%
+  pivot_longer(cols = -term, # convert to long format, reshapes the data from wide (50 columns) to long format (one row per sample pair)
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise(
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_NB_polyA_DR, n = 5)
+```
+
+```{r stats NB riboD}
+# NB_riboD
+sum_cor_NB_riboD_DR <- cor_NB_riboD_DR %>%
+  pivot_longer(cols = -term, # convert to long format, reshapes the data from wide (50 columns) to long format (one row per sample pair)
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise( #calculate the stats
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_NB_riboD_DR, n = 5)
+```
+
+The top 15 most correlated samples were all in the same cluster in the tumormap, so there was minimal issue in creating the subsetted sample IDs.
+
+```{r selecting highly correlated samples WT NB}
+filtered_WT_polyA_list <- sum_cor_WT_polyA_DR %>%
+  slice_head(n = 15) %>%
+  select(term) %>%
+  mutate(disease_and_prep = "WT_polyA")
+
+filtered_WT_riboD_list <- sum_cor_WT_riboD_DR %>%
+  slice_head(n = 15) %>%
+  select(term) %>%
+  mutate(disease_and_prep = "WT_riboD")
+
+filtered_NB_polyA_list <- sum_cor_NB_polyA_DR %>%
+  slice_head(n = 15) %>%
+  select(term) %>%
+  mutate(disease_and_prep = "NB_polyA")
+
+filtered_NB_riboD_list <- sum_cor_NB_riboD_DR %>%
+  slice_head(n = 15) %>%
+  select(term) %>%
+  mutate(disease_and_prep = "NB_riboD")
+```
+
+```{r combining and saving sample IDs WT NB}
+filtered_WT_NB_list <- bind_rows(filtered_WT_riboD_list, filtered_WT_polyA_list, filtered_NB_riboD_list, filtered_NB_polyA_list)
+
+write_tsv(filtered_WT_NB_list, "../input_data/filtered_WT_NB_list.tsv")
+```
+
+### ALL and AML
+
+```{r load in expression}
+expression_ALL_AML <- read_tsv("../input_data/expression_ALL_AML.tsv.gz", show_col_types = FALSE)
+```
+
+```{r ALL_AML}
+ALL_AML <- c("acute lymphoblastic leukemia", "acute myeloid leukemia")
+
+clin_merged_ALL_AML <- clin_merged %>%
+  filter(disease %in% c(ALL_AML)) %>%
+  group_by(disease) %>%
+  mutate(disease = case_when(
+    disease == "acute myeloid leukemia" ~ "AML",
+    disease == "acute lymphoblastic leukemia" ~ "ALL"
+    )) %>%
+  unite(col = "disease_and_prep", disease, lib_prep, sep = "_") %>%
+  select(th_dataset_id, disease_and_prep)
+
+#write_tsv(clin_merged_ALL_AML, "../data/clin_merged_ALL_AML.tsv")
+```
+
+```{r remove duplicates and TARGET ALL samples}
+# in the clinical file
+clin_ALL_AML_noTARGET_dups_removed <- clin_merged_ALL_AML %>%
+  filter(!grepl("TARGET", th_dataset_id),
+         !grepl("S02$", th_dataset_id),
+         !grepl("S03$", th_dataset_id),
+         !grepl("S04$", th_dataset_id))
+
+# in the expression file
+expr_ALL_AML_noTARGET_dups_removed <- expression_ALL_AML %>%
+  pivot_longer(cols = -Gene,
+               names_to = "THID",
+               values_to = "est_count") %>%
+  filter(!grepl("TARGET", THID),
+         !grepl("S02$", THID),
+         !grepl("S03$", THID),
+         !grepl("S04$", THID)) %>%
+  pivot_wider(names_from = "THID",
+              values_from = "est_count")
+```
+
+```{r genes to row names ALL AML}
+cleaned_expr_ALL_AML_noTARGET_DR <- expr_ALL_AML_noTARGET_dups_removed %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+```
+
+```{r filter out low genes ALL AML}
+filt_expr_ALL_AML_dups_rem <- cleaned_expr_ALL_AML_noTARGET_DR %>%
+  filter(if_all(everything(), ~.x > 10))
+```
+
+```{r separate files ALL AML}
+# filtering clinical file 
+# DR means Duplicate samples Removed
+clin_ALL_polyA_DR <- clin_ALL_AML_noTARGET_dups_removed %>%
+  filter(disease_and_prep == "ALL_polyA")
+
+clin_ALL_riboD_DR <- clin_ALL_AML_noTARGET_dups_removed %>%
+  filter(disease_and_prep == "ALL_riboD")
+
+clin_AML_polyA_DR <- clin_ALL_AML_noTARGET_dups_removed %>%
+  filter(disease_and_prep == "AML_polyA")
+
+clin_AML_riboD_DR <- clin_ALL_AML_noTARGET_dups_removed %>%
+  filter(disease_and_prep == "AML_riboD")
+
+# filtering expression file
+expression_ALL_polyA_DR <- filt_expr_ALL_AML_dups_rem %>%
+  select(all_of(c(clin_ALL_polyA_DR$th_dataset_id)))
+
+expression_ALL_riboD_DR <- filt_expr_ALL_AML_dups_rem %>%
+  select(all_of(c(clin_ALL_riboD_DR$th_dataset_id)))
+
+expression_AML_polyA_DR <- filt_expr_ALL_AML_dups_rem %>%
+  select(all_of(c(clin_AML_polyA_DR$th_dataset_id)))
+
+expression_AML_riboD_DR <- filt_expr_ALL_AML_dups_rem %>%
+  select(all_of(c(clin_AML_riboD_DR$th_dataset_id)))
+```
+
+```{r calculate correlation ALL AML }
+cor_ALL_polyA_DR <- correlate(expression_ALL_polyA_DR, method = "spearman", quiet = TRUE)
+cor_ALL_riboD_DR <- correlate(expression_ALL_riboD_DR, method = "spearman", quiet = TRUE)
+cor_AML_polyA_DR <- correlate(expression_AML_polyA_DR, method = "spearman", quiet = TRUE)
+cor_AML_riboD_DR <- correlate(expression_AML_riboD_DR, method = "spearman", quiet = TRUE)
+```
+
+```{r stats ALL polyA}
+# ALL_polyA
+sum_cor_ALL_polyA_DR <- cor_ALL_polyA_DR %>%
+  pivot_longer(cols = -term, # convert to long format, reshapes the data from wide (50 columns) to long format (one row per sample pair)
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise(
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_ALL_polyA_DR, n = 5)
+```
+
+```{r stats ALL riboD}
+# ALL_riboD
+sum_cor_ALL_riboD_DR <- cor_ALL_riboD_DR %>%
+  pivot_longer(cols = -term, # convert to long format, reshapes the data from wide (50 columns) to long format (one row per sample pair)
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise(
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_ALL_riboD_DR, n = 5)
+```
+
+```{r stats AML polyA}
+# AML_polyA
+sum_cor_AML_polyA_DR <- cor_AML_polyA_DR %>%
+  pivot_longer(cols = -term, # convert to long format, reshapes the data from wide (50 columns) to long format (one row per sample pair)
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise(
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_AML_polyA_DR, n = 5)
+```
+
+```{r stats AML riboD}
+# AML_riboD
+sum_cor_AML_riboD_DR <- cor_AML_riboD_DR %>%
+  pivot_longer(cols = -term, # convert to long format, reshapes the data from wide (50 columns) to long format (one row per sample pair)
+               names_to = "other_sample",
+               values_to = "correlation") %>%
+  filter(term != other_sample) %>%  #removes the self-correlations
+  group_by(term) %>%
+  summarise(
+    min_value = min(correlation, na.rm = TRUE),
+    max_value = max(correlation, na.rm = TRUE),
+    median_value = median(correlation, na.rm = TRUE),
+    mean_value = mean(correlation, na.rm = TRUE),
+    stdev = sd(correlation, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median_value))
+head(sum_cor_AML_riboD_DR, n = 5)
+```
+
+```{r selecting highly correlated samples ALL AML}
+filtered_ALL_polyA_list <- sum_cor_ALL_polyA_DR %>%
+  slice_head(n = 20) %>%
+  select(term) %>%
+  mutate(disease_and_prep = "ALL_polyA")
+
+filtered_ALL_riboD_list <- sum_cor_ALL_riboD_DR %>%
+  slice_head(n = 20) %>% # taking the top most correlated samples
+  select(term) %>%
+  mutate(disease_and_prep = "ALL_riboD") # need to add back in the category
+
+filtered_AML_polyA_list <- sum_cor_AML_polyA_DR %>%
+  slice_head(n = 20) %>%
+  select(term) %>%
+  mutate(disease_and_prep = "AML_polyA")
+
+filtered_AML_riboD_list <- sum_cor_AML_riboD_DR %>%
+  slice_head(n = 20) %>%
+  select(term) %>%
+  mutate(disease_and_prep = "AML_riboD")
+```
+
+```{r combining and saving sample IDs ALL AML}
+filtered_ALL_AML_list <- bind_rows(filtered_ALL_polyA_list, filtered_ALL_riboD_list, filtered_AML_polyA_list, filtered_AML_riboD_list)
+
+write_tsv(filtered_ALL_AML_list, "../input_data/filtered_ALL_AML_list.tsv")
+```
+
+### Session Info
+
+```{r session info}
+sessioninfo::session_info()
+```
