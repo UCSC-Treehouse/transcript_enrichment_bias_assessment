@@ -1,0 +1,82 @@
+---
+title: "Fig_1C"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## Fig 1C
+
+Stacked bar chart showing the proportion of unique genes expressed at different log2(TPM+1) levels.
+
+```{r install package}
+library(tidyverse)
+```
+
+```{r load in files}
+# expression files
+SS_aRMS_log2tpm1 <- read_tsv("../input_data/log2tpm_ensembl_SS_aRMS.tsv.gz")
+WT_NB_log2tpm1 <- read_tsv("../input_data/log2tpm_ensembl_WT_NB.tsv.gz")
+ALL_AML_log2tpm1 <- read_tsv("../input_data/log2tpm_ensembl_ALL_AML.tsv.gz")
+
+# sample ID files, from correlation_analysis
+filtered_SS_aRMS_list <- read_tsv("../input_data/filtered_SS_aRMS_list.tsv")
+filtered_WT_NB_list <- read_tsv("../input_data/filtered_WT_NB_list.tsv")
+filtered_ALL_AML_list <- read_tsv("../input_data/filtered_ALL_AML_list.tsv")
+```
+
+```{r reformat files}
+# Since "Gene" is a column name, it won't match the row names
+# use values from the first column ("Gene") as row names
+fix_SS_aRMS_log2tpm1 <- SS_aRMS_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_WT_NB_log2tpm1 <- WT_NB_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_ALL_AML_log2tpm1 <- ALL_AML_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+# use values from first column ("th_dataset_id") as row names
+fix_filtered_SS_aRMS_list <- filtered_SS_aRMS_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_filtered_WT_NB_list <- filtered_WT_NB_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_filtered_ALL_AML_list <- filtered_ALL_AML_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+```
+
+```{r}
+# check if samples are the same in expression and ID files
+all(rownames(fix_filtered_SS_aRMS_list) %in% colnames(fix_SS_aRMS_log2tpm1))
+
+all(rownames(fix_filtered_WT_NB_list) %in% colnames(fix_WT_NB_log2tpm1))
+
+all(rownames(fix_filtered_ALL_AML_list) %in% colnames(fix_ALL_AML_log2tpm1))
+```
+
+```{r}
+# Returns row names not found in column names
+setdiff(rownames(fix_filtered_WT_NB_list), colnames(fix_WT_NB_log2tpm1))
+
+# Returns column names not found in row names
+setdiff(colnames(fix_WT_NB_log2tpm1), rownames(fix_filtered_WT_NB_list))
+```
+
+```{r}
+# Returns row names not found in column names
+setdiff(rownames(fix_filtered_ALL_AML_list), colnames(fix_ALL_AML_log2tpm1))
+
+# Returns column names not found in row names
+setdiff(colnames(fix_ALL_AML_log2tpm1), rownames(fix_filtered_ALL_AML_list))
+```
