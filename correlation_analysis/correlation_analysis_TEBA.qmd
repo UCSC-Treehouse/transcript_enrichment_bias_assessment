@@ -245,7 +245,7 @@ filtered_SS_aRMS_list <- bind_rows(filtered_SS_riboD_list, filtered_SS_polyA_lis
 write_tsv(filtered_SS_aRMS_list, "../input_data/filtered_SS_aRMS_list.tsv")
 ```
 
-### WT and NB
+## WT and NB
 
 ```{r load in expression WT NB}
 expression_WT_NB <- read_tsv("../input_data/expression_WT_NB.tsv.gz", show_col_types = FALSE)
@@ -443,7 +443,7 @@ filtered_WT_NB_list <- bind_rows(filtered_WT_riboD_list, filtered_WT_polyA_list,
 write_tsv(filtered_WT_NB_list, "../input_data/filtered_WT_NB_list.tsv")
 ```
 
-### ALL and AML
+## ALL and AML
 
 ```{r load in expression}
 expression_ALL_AML <- read_tsv("../input_data/expression_ALL_AML.tsv.gz", show_col_types = FALSE)

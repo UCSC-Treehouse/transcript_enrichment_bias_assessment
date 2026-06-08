@@ -310,7 +310,7 @@ filtered_SS_aRMS_list <- bind_rows(filtered_SS_riboD_list, filtered_SS_polyA_lis
 write_tsv(filtered_SS_aRMS_list, "../input_data/filtered_SS_aRMS_list.tsv")
 ```
 
-### WT and NB
+## WT and NB
 
 ``` r
 expression_WT_NB <- read_tsv("../input_data/expression_WT_NB.tsv.gz", show_col_types = FALSE)
@@ -542,7 +542,7 @@ filtered_WT_NB_list <- bind_rows(filtered_WT_riboD_list, filtered_WT_polyA_list,
 write_tsv(filtered_WT_NB_list, "../input_data/filtered_WT_NB_list.tsv")
 ```
 
-### ALL and AML
+## ALL and AML
 
 ``` r
 expression_ALL_AML <- read_tsv("../input_data/expression_ALL_AML.tsv.gz", show_col_types = FALSE)
@@ -777,14 +777,14 @@ sessioninfo::session_info()
     ─ Session info ───────────────────────────────────────────────────────────────
      setting  value
      version  R version 4.5.2 (2025-10-31)
-     os       macOS Tahoe 26.3
+     os       macOS Tahoe 26.5
      system   aarch64, darwin20
      ui       X11
      language (EN)
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-05-07
+     date     2026-06-08
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
