@@ -1,0 +1,490 @@
+---
+title: "Fig1D"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## Fig 1D
+
+Boxplot showing the number of unique genes expressed at increasing log2(TPM+1) levels.
+
+```{r library}
+library(tidyverse)
+```
+
+```{r load in files}
+# expression files
+SS_aRMS_log2tpm1 <- read_tsv("../../input_data/SS_aRMS_log2TPM1_ensembl_TEBA.tsv.gz")
+WT_NB_log2tpm1 <- read_tsv("../../input_data/WT_NB_log2TPM1_ensembl_TEBA.tsv.gz")
+ALL_AML_log2tpm1 <- read_tsv("../../input_data/ALL_AML_log2TPM1_ensembl_TEBA.tsv.gz")
+
+# sample ID files, from correlation_analysis
+filtered_SS_aRMS_list <- read_tsv("../../input_data/filtered_SS_aRMS_list.tsv")
+filtered_WT_NB_list <- read_tsv("../../input_data/filtered_WT_NB_list.tsv")
+filtered_ALL_AML_list <- read_tsv("../../input_data/filtered_ALL_AML_list.tsv")
+```
+
+```{r separating samples into disease + prep method}
+# SS polyA
+SS_polyA_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("SS_polyA")) %>% 
+  select(term, disease_and_prep)
+
+SS_polyA_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(SS_polyA_list$term))
+
+# SS riboD
+SS_riboD_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("SS_riboD")) %>% 
+  select(term, disease_and_prep)
+
+SS_riboD_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(SS_riboD_list$term))
+
+# aRMS polyA
+aRMS_polyA_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("aRMS_polyA")) %>% 
+  select(term, disease_and_prep)
+
+aRMS_polyA_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(aRMS_polyA_list$term))
+
+# aRMS riboD
+aRMS_riboD_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("aRMS_riboD")) %>% 
+  select(term, disease_and_prep)
+
+aRMS_riboD_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(aRMS_riboD_list$term))
+
+# WT polyA
+WT_polyA_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("WT_polyA")) %>% 
+  select(term, disease_and_prep)
+
+WT_polyA_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(WT_polyA_list$term))
+
+# WT riboD 
+WT_riboD_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("WT_riboD")) %>% 
+  select(term, disease_and_prep)
+
+WT_riboD_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(WT_riboD_list$term))
+
+# NB polyA
+NB_polyA_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("NB_polyA")) %>% 
+  select(term, disease_and_prep)
+
+NB_polyA_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(NB_polyA_list$term))
+
+# NB riboD
+NB_riboD_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("NB_riboD")) %>% 
+  select(term, disease_and_prep)
+
+NB_riboD_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(NB_riboD_list$term))
+
+# ALL polyA
+ALL_polyA_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("ALL_polyA")) %>% 
+  select(term, disease_and_prep)
+
+ALL_polyA_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(ALL_polyA_list$term))
+
+# ALL riboD
+ALL_riboD_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("ALL_riboD")) %>% 
+  select(term, disease_and_prep)
+
+ALL_riboD_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(ALL_riboD_list$term))
+
+
+# AML polyA
+AML_polyA_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("AML_polyA")) %>% 
+  select(term, disease_and_prep)
+
+AML_polyA_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(AML_polyA_list$term))
+
+# AML riboD
+AML_riboD_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("AML_riboD")) %>% 
+  select(term, disease_and_prep)
+
+AML_riboD_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(AML_riboD_list$term))
+```
+
+Counting Genes above log2(TPM+1) Thresholds
+
+```{r counting genes function}
+bins <- c(0, 1e-10, 0.09, 0.99, 2.99, 4.99, Inf)
+
+bin_labels <- c("0","0-0.09", "0.1-0.99", "1-2.99", "3-4.99", ">5")
+
+count_genes_bins <- function(df, disease, compendia, bins, bin_labels) {
+  df_long <- df %>%
+    pivot_longer(cols = starts_with("T"), names_to = "Sample", values_to = "logTPM") %>%
+    mutate(Bin = cut(logTPM, breaks = bins, labels = bin_labels, include.lowest = TRUE)) %>%
+    group_by(Sample, Bin) %>%
+    summarise(Count = n(), .groups = "drop") %>%
+    mutate(Disease = disease, Compendia = compendia)
+  
+  return(df_long)
+}
+```
+
+```{r applying function}
+SS_polyA_counts   <- count_genes_bins(SS_polyA_expr,   "SS",   "polyA", bins, bin_labels)
+SS_riboD_counts   <- count_genes_bins(SS_riboD_expr,   "SS",   "riboD", bins, bin_labels)
+aRMS_polyA_counts <- count_genes_bins(aRMS_polyA_expr, "aRMS", "polyA", bins, bin_labels)
+aRMS_riboD_counts <- count_genes_bins(aRMS_riboD_expr, "aRMS", "riboD", bins, bin_labels)
+WT_polyA_counts <- count_genes_bins(WT_polyA_expr, "WT", "polyA", bins, bin_labels)
+WT_riboD_counts <- count_genes_bins(WT_riboD_expr, "WT", "riboD", bins, bin_labels)
+NB_polyA_counts <- count_genes_bins(NB_polyA_expr, "NB", "polyA", bins, bin_labels)
+NB_riboD_counts <- count_genes_bins(NB_riboD_expr, "NB", "riboD", bins, bin_labels)
+ALL_polyA_counts <- count_genes_bins(ALL_polyA_expr, "ALL", "polyA", bins, bin_labels)
+ALL_riboD_counts <- count_genes_bins(ALL_riboD_expr, "ALL", "riboD", bins, bin_labels)
+AML_polyA_counts <- count_genes_bins(AML_polyA_expr, "AML", "polyA", bins, bin_labels)
+AML_riboD_counts <- count_genes_bins(AML_riboD_expr, "AML", "riboD", bins, bin_labels)
+
+combined_counts <- bind_rows(
+  SS_polyA_counts, 
+  SS_riboD_counts,
+  aRMS_polyA_counts, 
+  aRMS_riboD_counts, 
+  NB_riboD_counts, 
+  NB_polyA_counts, 
+  WT_riboD_counts, 
+  WT_polyA_counts,  
+  ALL_riboD_counts, 
+  ALL_polyA_counts, 
+  AML_riboD_counts, 
+  AML_polyA_counts)
+```
+
+Custom theme
+
+```{r}
+theme_1d <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16),
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17),
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+
+scale_fill_compendia <- function() {
+  scale_fill_manual(values = c(
+    "polyA" = "#E69F00",  # yellow
+    "riboD" = "#0072B2"   # blue
+  ))
+}
+scale_color_compendia <- function() {
+  scale_color_manual(values = c(
+    "polyA" = "#E69F00",
+    "riboD" = "#0072B2" ))
+  }
+```
+
+Function for applying statistical test to each sample
+
+```{r statistics function}
+run_bin_stats <- function(polyA_df, riboD_df, disease_name) {
+  
+  # Get all bins present in either dataset
+  bins <- union(unique(polyA_df$Bin), unique(riboD_df$Bin))
+  
+  results <- lapply(bins, function(b) {
+    
+    poly_counts <- polyA_df %>% filter(Bin == b) %>% pull(Count)
+    ribo_counts <- riboD_df %>% filter(Bin == b) %>% pull(Count)
+    
+    # Skip bins with too few values
+    if (length(poly_counts) < 3 | length(ribo_counts) < 3) {
+      return(
+        tibble(
+          Disease = disease_name,
+          Bin = b,
+          Shapiro_polyA_p = NA,
+          Shapiro_riboD_p = NA,
+          VarTest_p = NA,
+          TTest_p = NA
+        )
+      )
+    }
+    
+    tibble(
+      Disease = disease_name,
+      Bin = b,
+      Shapiro_polyA_p = shapiro.test(poly_counts)$p.value,
+      Shapiro_riboD_p = shapiro.test(ribo_counts)$p.value,
+      VarTest_p = var.test(poly_counts, ribo_counts)$p.value,
+      TTest_p = t.test(poly_counts, ribo_counts, var.equal = TRUE)$p.value
+    )
+  })
+  
+  bind_rows(results)
+}
+```
+
+```{r apply stats function}
+stats_SS   <- run_bin_stats(SS_polyA_counts,   SS_riboD_counts,   "SS")
+stats_aRMS <- run_bin_stats(aRMS_polyA_counts, aRMS_riboD_counts, "aRMS")
+stats_WT   <- run_bin_stats(WT_polyA_counts,   WT_riboD_counts,   "WT")
+stats_NB   <- run_bin_stats(NB_polyA_counts,   NB_riboD_counts,   "NB")
+stats_ALL  <- run_bin_stats(ALL_polyA_counts,   ALL_riboD_counts,   "ALL")
+stats_AML  <- run_bin_stats(AML_polyA_counts,   AML_riboD_counts,   "AML")
+```
+
+Summarized stats for each disease, bin, and test
+
+```{r}
+all_stats <- bind_rows(stats_SS, stats_aRMS, stats_WT, stats_NB, stats_ALL, stats_AML)
+print(all_stats)
+```
+
+selecting correct test
+
+```{r choose stat test function}
+choose_test <- function(poly, ribo) {
+  
+  # Need at least 3 values for Shapiro
+  if (length(poly) < 3 | length(ribo) < 3) {
+    return(list(p_value = NA_real_, test_used = "insufficient_data"))
+  }
+  
+  # Shapiro tests for Normality
+  # Less than 0.05 (Not normal)
+#If both groups are normally distributed = proceed to variance testing
+#If either group is non‑normal = skip parametric tests and use Mann–Whitney U
+
+  p_norm_poly  <- shapiro.test(poly)$p.value
+  p_norm_ribo  <- shapiro.test(ribo)$p.value
+  
+  poly_normal <- p_norm_poly  > 0.05
+  ribo_normal <- p_norm_ribo  > 0.05
+  
+  # Both normal → variance test
+  #If variances are equal → use Student’s t‑test
+  #If variances differ → use Welch’s t‑test
+  
+  if (poly_normal & ribo_normal) {
+    
+    p_var <- var.test(poly, ribo)$p.value
+    equal_var <- p_var > 0.05
+    
+    # Normal + equal variance → Student t-test
+    if (equal_var) {
+      return(list(
+        p_value = t.test(poly, ribo, var.equal = TRUE)$p.value,
+        test_used = "student_t"
+      ))
+    }
+    
+    # Normal + unequal variance → Welch t-test
+    else {
+      return(list(
+        p_value = t.test(poly, ribo, var.equal = FALSE)$p.value,
+        test_used = "welch_t"
+      ))
+    }
+  }
+  
+  # Non-normal → Mann–Whitney U test
+  return(list(
+    p_value = wilcox.test(poly, ribo, exact = FALSE)$p.value,
+    test_used = "mann_whitney"
+  ))
+}
+```
+
+P-value to significance star
+
+```{r function for stars in sig level}
+p_to_stars <- function(p) {
+  sapply(p, function(x) {
+    if (is.na(x)) return("NA")
+    if (x < 0.0001) return("****")
+    if (x < 0.001)  return("***")
+    if (x < 0.01)   return("**")
+    if (x < 0.05)   return("*")
+    "ns"
+  })
+}
+```
+
+```{r}
+compute_bin_significance <- function(df) {
+  
+  # Clean and dedupe
+  df_clean <- df %>%
+    select(Disease, Bin, Compendia, Count) %>%
+    distinct()
+  
+  # Collapse to one row per Disease × Bin × Compendia
+  df_collapsed <- df_clean %>%
+    group_by(Disease, Bin, Compendia) %>%
+    summarise(Count = list(Count), .groups = "drop")
+  
+  # Pivot to wide: polyA and riboD columns
+  df_wide <- df_collapsed %>%
+    tidyr::pivot_wider(
+      names_from = Compendia,
+      values_from = Count
+    )
+  
+  # Apply statistical test
+  df_results <- df_wide %>%
+    rowwise() %>%
+    mutate(
+      test = list(choose_test(unlist(polyA), unlist(riboD))),
+      p_value = test$p_value,
+      test_used = test$test_used
+    ) %>%
+    ungroup() %>%
+    select(-test)
+  
+  # ---- Benjamini–Hochberg FDR correction ----
+  df_results_FDR <- df_results %>%
+    group_by(Disease) %>%
+    mutate(padj = p.adjust(p_value, method = "BH")) %>%
+    ungroup() %>%
+    mutate(stars_adj = p_to_stars(padj))
+  
+  df_results_FDR
+}
+```
+
+```{r}
+sig_bins_SS <- compute_bin_significance(SS_polyA_counts %>% 
+                                          mutate(Compendia="polyA") %>% 
+                                          bind_rows(SS_riboD_counts %>% 
+                                                      mutate(Compendia="riboD")))
+
+sig_bins_aRMS <- compute_bin_significance(aRMS_polyA_counts %>% 
+                                            mutate(Compendia="polyA") %>% 
+                                            bind_rows(aRMS_riboD_counts %>% 
+                                                        mutate(Compendia="riboD")))
+
+sig_bins_WT <- compute_bin_significance(WT_polyA_counts %>% 
+                                          mutate(Compendia="polyA") %>% 
+                                          bind_rows(WT_riboD_counts %>% 
+                                                      mutate(Compendia="riboD")))
+
+sig_bins_NB <- compute_bin_significance(NB_polyA_counts %>% 
+                                          mutate(Compendia="polyA") %>% 
+                                          bind_rows(NB_riboD_counts %>% 
+                                                      mutate(Compendia="riboD")))
+
+sig_bins_ALL <- compute_bin_significance(ALL_polyA_counts %>%
+                                           mutate(Compendia="polyA") %>%
+                                           bind_rows(ALL_riboD_counts %>%
+                                                       mutate(Compendia="riboD")))
+
+sig_bins_AML <- compute_bin_significance(AML_polyA_counts %>%
+                                           mutate(Compendia="polyA") %>%
+                                           bind_rows(AML_riboD_counts %>%
+                                                       mutate(Compendia="riboD")))
+sig_bins_all <- bind_rows(
+  sig_bins_SS,
+  sig_bins_aRMS,
+  sig_bins_WT,
+  sig_bins_NB,
+  sig_bins_ALL,
+  sig_bins_AML
+)
+sig_bins_all
+```
+
+```{r}
+facet_labels <- c(
+  "0" = "x = 0",
+  "0-0.09" = "0 > x > 0.1",
+  "0.1-0.99" = "0.1 > x > 1",
+  "1-2.99" = "1 > x > 3",
+  "3-4.99" = "3 > x > 5",
+  ">5" = "x > 5"
+)
+
+# Custom colors
+compendia_colors <- c(polyA = "blue", riboD = "orange")
+
+# List of diseases
+diseases <- unique(combined_counts$Disease)
+
+max_y <- max(combined_counts$Count, na.rm = TRUE)
+```
+
+Plot with sig stars
+
+```{r}
+plots_by_disease_1D <- map(diseases, function(d) {
+
+  df <- combined_counts %>% filter(Disease == d)
+
+  # SIGNIFICANCE STARS FOR EACH DISEASE 
+  sig_df <- sig_bins_all %>%
+    filter(Disease == d) %>%
+    select(Bin, stars_adj)
+
+  # y-position for stars
+  y_star <- max(df$Count, na.rm = TRUE) * 1.05
+
+  ggplot(df, aes(x = Compendia, y = Count, fill = Compendia)) +
+    geom_boxplot(outlier.shape = NA, alpha = 0.6,
+                 position = position_dodge(width = 0.8)) +
+    geom_jitter(aes(color = Compendia),
+                position = position_jitter(width = 0.15),
+                size = 1.5, alpha = 0.7) +
+
+    # ---- ADD STARS ABOVE EACH FACET ----
+    geom_text(
+      data = sig_df,
+      aes(x = 1.5, y = y_star, label = stars_adj),   # x = 1.5 centers between polyA/riboD
+      inherit.aes = FALSE,
+      size = 6
+    ) +
+
+    facet_grid(. ~ Bin, labeller = labeller(Bin = facet_labels)) +
+    scale_fill_manual(values = compendia_colors) +
+    scale_color_manual(values = compendia_colors) +
+    coord_cartesian(ylim = c(0, y_star * 1.1)) +
+    labs(
+      title = paste("Expressed Gene Counts Across log2(TPM+1) Bins for", d),
+      x = "log2(TPM+1) = x",
+      y = "Number of Genes Expressed"
+    ) +
+    theme_minimal() +
+    theme_1d() +
+    theme(
+      strip.background = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      panel.spacing.x = unit(1, "lines")
+    )
+})
+
+plots_by_disease_1D
+```
