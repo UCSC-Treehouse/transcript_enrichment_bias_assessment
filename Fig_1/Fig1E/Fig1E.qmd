@@ -1,0 +1,814 @@
+---
+title: "Fig1E"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## Fig 1E
+
+Boxplot showing expression level of HIST1H1B, a nonpolyadenylated histone subunit gene.
+
+Boxplot showing expression of average median ratio gene, calculated as the median expression level in PolyA samples divided by the median expression level in RiboD samples
+
+```{r load libraries}
+library(tidyverse)
+```
+
+```{r load in files}
+# expression files
+SS_aRMS_log2tpm1 <- read_tsv("../../input_data/SS_aRMS_log2TPM1_ensembl_TEBA.tsv.gz")
+WT_NB_log2tpm1 <- read_tsv("../../input_data/WT_NB_log2TPM1_ensembl_TEBA.tsv.gz")
+ALL_AML_log2tpm1 <- read_tsv("../../input_data/ALL_AML_log2TPM1_ensembl_TEBA.tsv.gz")
+
+# sample ID files, from correlation_analysis
+filtered_SS_aRMS_list <- read_tsv("../../input_data/filtered_SS_aRMS_list.tsv")
+filtered_WT_NB_list <- read_tsv("../../input_data/filtered_WT_NB_list.tsv")
+filtered_ALL_AML_list <- read_tsv("../../input_data/filtered_ALL_AML_list.tsv")
+
+# to convert EnsemblIDs to HugoIDs
+gene_names <- read.table("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt",
+header = TRUE, sep = "\t", stringsAsFactors = FALSE )
+```
+
+```{r separating samples into disease + prep method}
+# SS polyA
+SS_polyA_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("SS_polyA")) %>% 
+  select(term, disease_and_prep)
+
+SS_polyA_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(SS_polyA_list$term))
+
+# SS riboD
+SS_riboD_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("SS_riboD")) %>% 
+  select(term, disease_and_prep)
+
+SS_riboD_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(SS_riboD_list$term))
+
+# aRMS polyA
+aRMS_polyA_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("aRMS_polyA")) %>% 
+  select(term, disease_and_prep)
+
+aRMS_polyA_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(aRMS_polyA_list$term))
+
+# aRMS riboD
+aRMS_riboD_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("aRMS_riboD")) %>% 
+  select(term, disease_and_prep)
+
+aRMS_riboD_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(aRMS_riboD_list$term))
+
+# WT polyA
+WT_polyA_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("WT_polyA")) %>% 
+  select(term, disease_and_prep)
+
+WT_polyA_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(WT_polyA_list$term))
+
+# WT riboD 
+WT_riboD_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("WT_riboD")) %>% 
+  select(term, disease_and_prep)
+
+WT_riboD_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(WT_riboD_list$term))
+
+# NB polyA
+NB_polyA_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("NB_polyA")) %>% 
+  select(term, disease_and_prep)
+
+NB_polyA_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(NB_polyA_list$term))
+
+# NB riboD
+NB_riboD_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("NB_riboD")) %>% 
+  select(term, disease_and_prep)
+
+NB_riboD_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(NB_riboD_list$term))
+
+# ALL polyA
+ALL_polyA_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("ALL_polyA")) %>% 
+  select(term, disease_and_prep)
+
+ALL_polyA_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(ALL_polyA_list$term))
+
+# ALL riboD
+ALL_riboD_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("ALL_riboD")) %>% 
+  select(term, disease_and_prep)
+
+ALL_riboD_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(ALL_riboD_list$term))
+
+
+# AML polyA
+AML_polyA_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("AML_polyA")) %>% 
+  select(term, disease_and_prep)
+
+AML_polyA_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(AML_polyA_list$term))
+
+# AML riboD
+AML_riboD_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("AML_riboD")) %>% 
+  select(term, disease_and_prep)
+
+AML_riboD_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(AML_riboD_list$term))
+```
+
+Convert EnsemblIDs to HugoIDs
+
+```{r}
+convert_to_hugo <- function(df) {
+  df %>%
+    left_join(gene_names, by = c("Gene" = "EnsGeneID")) %>%
+    mutate(Gene = ifelse(!is.na(HugoID), HugoID, Gene)) %>%
+    select(-HugoID)
+}
+```
+
+Finding median expression genes
+
+```{r median expression gene - SS}
+# Find gene medians in polyA SS
+SS_polyA_medians <- SS_polyA_expr %>%
+  rowwise() %>%
+  mutate(SS_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, SS_polyA_median)
+
+# Find gene medians in riboD SS
+SS_riboD_medians <- SS_riboD_expr %>%
+  rowwise() %>%
+  mutate(SS_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, SS_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+SS_gene_medians <- SS_polyA_medians %>%
+  inner_join(SS_riboD_medians, by = "Gene") %>%
+  mutate(SS_median_ratio = SS_polyA_median / SS_riboD_median)
+
+# Filter out genes with no expression
+SS_gene_medians_filtered <- SS_gene_medians %>%
+  filter(SS_polyA_median > 0 & SS_riboD_median > 0)
+
+# Recompute median ratio value
+SS_median_ratio_val <- median(SS_gene_medians_filtered$SS_median_ratio, na.rm = TRUE)
+
+# Find gene closest to that median ratio
+SS_most_average_gene <- SS_gene_medians_filtered %>%
+  mutate(dist = abs(SS_median_ratio - SS_median_ratio_val)) %>%
+  arrange(dist) %>%
+  slice(1)  
+
+SS_most_average_gene_hugo <- SS_most_average_gene %>%
+  convert_to_hugo()
+SS_most_average_gene_hugo
+```
+
+```{r median expression gene - aRMS}
+# Find gene medians in polyA aRMS
+aRMS_polyA_medians <- aRMS_polyA_expr %>%
+  rowwise() %>%
+  mutate(aRMS_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, aRMS_polyA_median)
+
+# Find gene medians in riboD aRMS
+aRMS_riboD_medians <- aRMS_riboD_expr %>%
+  rowwise() %>%
+  mutate(aRMS_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, aRMS_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+aRMS_gene_medians <- aRMS_polyA_medians %>%
+  inner_join(aRMS_riboD_medians, by = "Gene") %>%
+  mutate(aRMS_median_ratio = aRMS_polyA_median / aRMS_riboD_median)
+
+# Filter out genes with no or near-zero expression
+aRMS_gene_medians_filtered <- aRMS_gene_medians %>%
+  filter(aRMS_polyA_median > 0 & aRMS_riboD_median > 0)
+
+# Recompute median ratio value
+aRMS_median_ratio_val <- median(aRMS_gene_medians_filtered$aRMS_median_ratio, na.rm = TRUE)
+
+# Find gene closest to that median ratio
+aRMS_most_average_gene <- aRMS_gene_medians_filtered %>%
+  mutate(dist = abs(aRMS_median_ratio - aRMS_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
+  arrange(dist) %>%
+  slice(1)   # Isolates gene closest to ave median ration
+
+aRMS_most_average_gene_hugo <- aRMS_most_average_gene %>%
+  convert_to_hugo()
+aRMS_most_average_gene_hugo
+```
+
+```{r median expression gene - WT}
+# Find gene medians in polyA WT
+WT_polyA_medians <- WT_polyA_expr %>%
+  rowwise() %>%
+  mutate(WT_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, WT_polyA_median)
+
+# Find gene medians in riboD WT
+WT_riboD_medians <- WT_riboD_expr %>%
+  rowwise() %>%
+  mutate(WT_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, WT_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+WT_gene_medians <- WT_polyA_medians %>%
+  inner_join(WT_riboD_medians, by = "Gene") %>%
+  mutate(WT_median_ratio = WT_polyA_median / WT_riboD_median)
+
+# Filter out genes with no or near-zero expression
+WT_gene_medians_filtered <- WT_gene_medians %>%
+  filter(WT_polyA_median > 0 & WT_riboD_median > 0)
+
+# Recompute median ratio value
+WT_median_ratio_val <- median(WT_gene_medians_filtered$WT_median_ratio, na.rm = TRUE)
+
+# Find gene closest to that median ratio
+WT_most_average_gene <- WT_gene_medians_filtered %>%
+  mutate(dist = abs(WT_median_ratio - WT_median_ratio_val)) %>%
+  arrange(dist) %>%
+  slice(1)         # Isolates gene closest to ave median ration
+
+WT_most_average_gene_hugo <- WT_most_average_gene %>%
+  convert_to_hugo()
+WT_most_average_gene_hugo
+```
+
+```{r median expression gene - NB}
+# Find gene medians in polyA NB
+NB_polyA_medians <- NB_polyA_expr %>%
+  rowwise() %>%
+  mutate(NB_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, NB_polyA_median)
+
+# Find gene medians in riboD NB
+NB_riboD_medians <- NB_riboD_expr %>%
+  rowwise() %>%
+  mutate(NB_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, NB_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+NB_gene_medians <- NB_polyA_medians %>%
+  inner_join(NB_riboD_medians, by = "Gene") %>%
+  mutate(NB_median_ratio = NB_polyA_median / NB_riboD_median)
+
+# Filter out genes with no or near-zero expression
+NB_gene_medians_filtered <- NB_gene_medians %>%
+  filter(NB_polyA_median > 0 & NB_riboD_median > 0)
+
+# Recompute median ratio value
+NB_median_ratio_val <- median(NB_gene_medians_filtered$NB_median_ratio, na.rm = TRUE)
+
+# Find gene closest to that median ratio
+NB_most_average_gene <- NB_gene_medians_filtered %>%
+  mutate(dist = abs(NB_median_ratio - NB_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
+  arrange(dist) %>%
+  slice(1)         # Isolates gene closest to ave median ration
+
+NB_most_average_gene_hugo <- NB_most_average_gene %>%
+  convert_to_hugo()
+NB_most_average_gene_hugo
+```
+
+```{r median expression gene - ALL}
+# Find gene medians in polyA ALL
+ALL_polyA_medians <- ALL_polyA_expr %>%
+  rowwise() %>%
+  mutate(ALL_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, ALL_polyA_median)
+
+# Find gene medians in riboD ALL
+ALL_riboD_medians <- ALL_riboD_expr %>%
+  rowwise() %>%
+  mutate(ALL_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, ALL_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+ALL_gene_medians <- ALL_polyA_medians %>%
+  inner_join(ALL_riboD_medians, by = "Gene") %>%
+  mutate(ALL_median_ratio = ALL_polyA_median / ALL_riboD_median)
+
+# Filter out genes with no or near-zero expression
+ALL_gene_medians_filtered <- ALL_gene_medians %>%
+  filter(ALL_polyA_median > 0 & ALL_riboD_median > 0)
+
+# Recompute median ratio value
+ALL_median_ratio_val <- median(ALL_gene_medians_filtered$ALL_median_ratio, na.rm = TRUE)
+
+# Find gene closest to that median ratio
+ALL_most_average_gene <- ALL_gene_medians_filtered %>%
+  mutate(dist = abs(ALL_median_ratio - ALL_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
+  arrange(dist) %>%
+  slice(1)         # Isolates gene closest to ave median ration
+
+ALL_most_average_gene_hugo <- ALL_most_average_gene %>%
+  convert_to_hugo()
+ALL_most_average_gene_hugo
+```
+
+```{r median expression gene - AML}
+# Find gene medians in polyA AML
+AML_polyA_medians <- AML_polyA_expr %>%
+  rowwise() %>%
+  mutate(AML_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, AML_polyA_median)
+
+# Find gene medians in riboD AML
+AML_riboD_medians <- AML_riboD_expr %>%
+  rowwise() %>%
+  mutate(AML_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, AML_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+AML_gene_medians <- AML_polyA_medians %>%
+  inner_join(AML_riboD_medians, by = "Gene") %>%
+  mutate(AML_median_ratio = AML_polyA_median / AML_riboD_median)
+
+# Filter out genes with no or near-zero expression
+AML_gene_medians_filtered <- AML_gene_medians %>%
+  filter(AML_polyA_median > 1 & AML_riboD_median > 0.9)
+
+# Recompute median ratio value
+AML_median_ratio_val <- median(AML_gene_medians_filtered$AML_median_ratio, na.rm = TRUE)
+
+# Find gene closest to that median ratio
+AML_most_average_gene <- AML_gene_medians_filtered %>%
+  mutate(dist = abs(AML_median_ratio - AML_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
+  arrange(dist) %>%
+  slice(1)         # Isolates gene closest to ave median ration
+
+AML_most_average_gene_hugo <- AML_most_average_gene %>%
+  convert_to_hugo()
+AML_most_average_gene_hugo
+```
+
+Converting expression to hugoIDs
+
+```{r convert to HugoIDs}
+# SS
+SS_polyA_expression_hugo <- SS_polyA_expr %>%
+  convert_to_hugo()
+
+SS_riboD_expression_hugo <- SS_riboD_expr %>%
+  convert_to_hugo()
+
+SS_gene_medians_hugo <- SS_gene_medians %>%
+  convert_to_hugo()
+
+# aRMS
+aRMS_polyA_expression_hugo <- aRMS_polyA_expr %>%
+  convert_to_hugo() 
+
+aRMS_riboD_expression_hugo <- aRMS_riboD_expr %>%
+  convert_to_hugo()
+
+aRMS_gene_median_hugo <- aRMS_gene_medians %>%
+  convert_to_hugo()
+
+# WT
+WT_polyA_expression_hugo <- WT_polyA_expr %>%
+  convert_to_hugo()
+
+WT_riboD_expression_hugo <- WT_riboD_expr %>%
+  convert_to_hugo()
+
+WT_gene_medians_hugo <- WT_gene_medians %>%
+  convert_to_hugo()
+
+# NB
+NB_polyA_expression_hugo <- NB_polyA_expr %>%
+  convert_to_hugo()
+
+NB_riboD_expression_hugo <- NB_riboD_expr %>%
+  convert_to_hugo()
+
+NB_gene_medians_hugo <- NB_gene_medians %>%
+  convert_to_hugo()
+
+# ALL
+ALL_polyA_expression_hugo <- ALL_polyA_expr %>%
+  convert_to_hugo()
+
+ALL_riboD_expression_hugo <- ALL_riboD_expr %>%
+  convert_to_hugo()
+
+ALL_gene_medians_hugo <- ALL_gene_medians %>%
+  convert_to_hugo()
+
+# AML
+AML_polyA_expression_hugo <- AML_polyA_expr %>%
+  convert_to_hugo()
+
+AML_riboD_expression_hugo <- AML_riboD_expr %>%
+  convert_to_hugo()
+
+AML_gene_medians_hugo <- AML_gene_medians %>%
+  convert_to_hugo()
+```
+
+Filtering for HIST1H1B, a non-polyadenylated gene
+
+```{r HIST1H1B filter}
+H1B_SS_polyA_expression <- SS_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_SS_riboD_expression <- SS_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_aRMS_polyA_expression <- aRMS_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B")
+
+H1B_aRMS_riboD_expression <- aRMS_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_WT_polyA_expression <- WT_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B")
+
+H1B_WT_riboD_expression <- WT_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_NB_polyA_expression <- NB_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B")
+
+H1B_NB_riboD_expression <- NB_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_ALL_polyA_expression <- ALL_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B")
+
+H1B_ALL_riboD_expression <- ALL_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_AML_polyA_expression <- AML_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B")
+
+H1B_AML_riboD_expression <- AML_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+```
+
+Filtering for most averagely expressed gene
+
+```{r avg expression gene filter}
+#SS Most Average Expressed gene
+avg_SS_polyA_expression <- SS_polyA_expression_hugo %>%
+   filter(Gene == SS_most_average_gene_hugo$Gene) 
+
+avg_SS_riboD_expression <- SS_riboD_expression_hugo %>%
+   filter(Gene == SS_most_average_gene_hugo$Gene)
+
+#aRMS Most Average Expressed gene
+avg_aRMS_riboD_expression <- aRMS_riboD_expression_hugo %>%
+   filter(Gene == aRMS_most_average_gene_hugo$Gene)
+
+avg_aRMS_polyA_expression <- aRMS_polyA_expression_hugo %>%
+   filter(Gene == aRMS_most_average_gene_hugo$Gene)
+
+#WT Most Average Expressed gene 
+avg_WT_riboD_expression <- WT_riboD_expression_hugo %>%
+   filter(Gene == WT_most_average_gene_hugo$Gene)
+
+avg_WT_polyA_expression <- WT_polyA_expression_hugo %>%
+   filter(Gene == WT_most_average_gene_hugo$Gene)
+
+#NB Most Average Expressed gene
+avg_NB_riboD_expression <- NB_riboD_expression_hugo %>%
+   filter(Gene == NB_most_average_gene_hugo$Gene)
+
+avg_NB_polyA_expression <- NB_polyA_expression_hugo %>%
+   filter(Gene == NB_most_average_gene_hugo$Gene)
+
+#ALL Most Average Expressed gene
+avg_ALL_riboD_expression <- ALL_riboD_expression_hugo %>%
+   filter(Gene == ALL_most_average_gene_hugo$Gene)
+
+avg_ALL_polyA_expression <- ALL_polyA_expression_hugo %>%
+   filter(Gene == ALL_most_average_gene_hugo$Gene)
+
+#AML Most Average Expressed gene
+avg_AML_riboD_expression <- AML_riboD_expression_hugo %>%
+   filter(Gene == AML_most_average_gene_hugo$Gene)
+
+avg_AML_polyA_expression <- AML_polyA_expression_hugo %>%
+   filter(Gene == AML_most_average_gene_hugo$Gene)
+```
+
+Reformating HIST1H1B data
+
+```{r reformat HIST1H1B}
+H1B_SS_polyA_long <- H1B_SS_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "SS", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_SS_riboD_long <- H1B_SS_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "SS", Compendia = "riboD", Gene = "HIST1H1B")
+
+H1B_aRMS_polyA_long <- H1B_aRMS_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "aRMS", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_aRMS_riboD_long <- H1B_aRMS_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "aRMS", Compendia = "riboD", Gene = "HIST1H1B")
+
+H1B_WT_polyA_long <- H1B_WT_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "WT", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_WT_riboD_long <- H1B_WT_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "WT", Compendia = "riboD", Gene = "HIST1H1B")
+
+H1B_NB_polyA_long <- H1B_NB_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "NB", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_NB_riboD_long <- H1B_NB_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "NB", Compendia = "riboD", Gene = "HIST1H1B")
+
+H1B_ALL_polyA_long <- H1B_ALL_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "ALL", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_ALL_riboD_long <- H1B_ALL_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "ALL", Compendia = "riboD", Gene = "HIST1H1B")
+
+H1B_AML_polyA_long <- H1B_AML_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "AML", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_AML_riboD_long <- H1B_AML_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "AML", Compendia = "riboD", Gene = "HIST1H1B")
+```
+
+Reformatting avg gene
+
+```{r reformat avg gene}
+# SS polyA 
+avg_SS_polyA_long <- avg_SS_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "SS", Compendia = "polyA", Gene = Gene)
+
+# SS riboD
+avg_SS_riboD_long <- avg_SS_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "SS", Compendia = "riboD", Gene = Gene)
+
+# aRMS polyA
+avg_aRMS_polyA_long <- avg_aRMS_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "aRMS", Compendia = "polyA", Gene = Gene)
+
+# aRMS riboD
+avg_aRMS_riboD_long <- avg_aRMS_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "aRMS", Compendia = "riboD", Gene = Gene)
+
+#NB polyA
+avg_NB_polyA_long <- avg_NB_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "NB", Compendia = "polyA", Gene = Gene)
+
+#NB riboD
+avg_NB_riboD_long <- avg_NB_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "NB", Compendia = "riboD", Gene = Gene)
+
+#WT polyA
+avg_WT_polyA_long <- avg_WT_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "WT", Compendia = "polyA", Gene = Gene)
+
+#WT riboD
+avg_WT_riboD_long <- avg_WT_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "WT", Compendia = "riboD", Gene = Gene)
+
+#AML polyA
+avg_AML_polyA_long <- avg_AML_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "AML", Compendia = "polyA", Gene = Gene)
+
+#AML riboD
+avg_AML_riboD_long <- avg_AML_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "AML", Compendia = "riboD", Gene = Gene)
+
+#ALL polyA
+avg_ALL_polyA_long <- avg_ALL_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "ALL", Compendia = "polyA", Gene = Gene)
+
+#ALL riboD
+avg_ALL_riboD_long <- avg_ALL_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "ALL", Compendia = "riboD", Gene = Gene)
+```
+
+Combining dataframes
+
+```{r combining}
+combined_long <- bind_rows(
+
+  # -------------------------
+  # HIST1H1B — SS, aRMS, WT, NB, ALL, AML
+  # -------------------------
+  H1B_SS_polyA_long %>%
+    mutate(Disease = "SS"),
+  H1B_SS_riboD_long %>%
+    mutate(Disease = "SS"),
+  
+  H1B_aRMS_polyA_long %>%
+    mutate(Disease = "aRMS"),
+  H1B_aRMS_riboD_long %>%
+    mutate(Disease = "aRMS"),
+  
+  H1B_WT_polyA_long %>%
+    mutate(Disease = "WT"),
+  H1B_WT_riboD_long %>%
+    mutate(Disease = "WT"),
+  
+  H1B_NB_polyA_long %>%
+    mutate(Disease = "NB"),
+  H1B_NB_riboD_long %>%
+    mutate(Disease = "NB"),
+  
+  H1B_ALL_polyA_long %>%
+    mutate(Disease = "ALL"),
+  H1B_ALL_riboD_long %>%
+    mutate(Disease = "ALL"),
+  
+  H1B_AML_polyA_long %>%
+    mutate(Disease = "AML"),
+  H1B_AML_riboD_long %>%
+    mutate(Disease = "AML"),
+   # -------------------------
+  # Median-ratio genes (SS, aRMS, WT, NB, ALL, AML)
+  # -------------------------
+  avg_SS_polyA_long %>%
+    mutate(Disease = "SS"),
+  avg_SS_riboD_long %>%
+    mutate(Disease = "SS"),
+
+  avg_aRMS_polyA_long %>%
+    mutate(Disease = "aRMS"),
+  avg_aRMS_riboD_long %>%
+    mutate(Disease = "aRMS"),
+
+  avg_WT_polyA_long %>%
+    mutate(Disease = "WT"),
+  avg_WT_riboD_long %>%
+    mutate(Disease = "WT"),
+
+  avg_NB_polyA_long %>%
+    mutate(Disease = "NB"),
+  avg_NB_riboD_long %>%
+    mutate(Disease = "NB"),
+  
+  avg_ALL_polyA_long %>%
+    mutate(Disease = "ALL"),
+  avg_ALL_riboD_long %>%
+    mutate(Disease = "ALL"),
+  
+  avg_AML_polyA_long %>%
+    mutate(Disease = "AML"),
+  avg_AML_riboD_long %>%
+    mutate(Disease = "AML"),
+)
+```
+
+Custom color theme
+
+```{r color theme}
+color_theme <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16), 
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17), 
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+
+scale_fill_compendia <- function() {
+  scale_fill_manual(values = c(
+    "riboD" = "#E69F00",  # yellow
+    "polyA" = "#0072B2"   # blue
+  ))
+}
+scale_color_compendia <- function() {
+  scale_color_manual(values = c( 
+    "riboD" = "#E69F00", 
+    "polyA" = "#0072B2" ))
+  }
+```
+
+Merged plot
+
+```{r}
+# Map of median-ratio genes
+median_gene_map <- list(
+  SS      = SS_most_average_gene_hugo$Gene,
+  aRMS    = aRMS_most_average_gene_hugo$Gene,
+  WT      = WT_most_average_gene_hugo$Gene,
+  NB      = NB_most_average_gene_hugo$Gene,
+  ALL     = ALL_most_average_gene_hugo$Gene,
+  AML     = AML_most_average_gene_hugo$Gene
+)
+
+diseases <- unique(combined_long$Disease)
+
+```
+
+Generate merged plot for each disease
+
+```{r generate merged plot}
+merged_plots <- map(diseases, function(d) {
+
+  median_gene <- median_gene_map[[d]]
+
+  # HIST1H1B expression
+  df_h1b <- combined_long %>%
+    filter(Disease == d, Gene == "HIST1H1B") %>%
+    mutate(PlotType = "HIST1H1B (PolyA-)")
+
+  # Median-ratio gene expression
+  df_median <- combined_long %>%
+    filter(Disease == d, Gene == median_gene) %>%
+    mutate(PlotType = "Median Ratio Gene (PolyA+)")
+
+  # Combine
+  df_combined <- bind_rows(df_h1b, df_median)
+
+  ggplot(df_combined, aes(x = Gene, y = Expression, fill = Compendia)) +
+    geom_boxplot(
+      alpha = 0.7,
+      position = position_dodge(width = 0.8),
+      outlier.shape = NA,
+      linewidth = 0.4
+    ) +
+    geom_jitter(
+      aes(color = Compendia),
+      position = position_jitterdodge(jitter.width = 0.2,
+                                      dodge.width = 0.8),
+      size = 1.2,
+      alpha = 0.6
+    ) +
+    scale_fill_compendia() +
+    scale_color_compendia() +
+    coord_cartesian(ylim = c(0, 17)) +
+    facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
+    labs(
+      title = paste("Expression of Representative PolyA+ and PolyA- Gene in", d),
+      x = "Gene",
+      y = "Expression log2(TPM+1)"
+    ) +
+    color_theme()
+})
+
+names(merged_plots) <- diseases
+merged_plots
+
+```
