@@ -938,3 +938,302 @@ merged_plots
     $AML
 
 ![](Fig1E_files/figure-commonmark/generate%20merged%20plot-6.png)
+
+Statistical test for significance
+
+``` r
+choose_test <- function(poly, ribo) {
+  
+  # Shapiro tests
+  p_norm_poly  <- shapiro.test(poly)$p.value
+  p_norm_ribo  <- shapiro.test(ribo)$p.value
+  
+  poly_normal <- p_norm_poly  > 0.05
+  ribo_normal <- p_norm_ribo  > 0.05
+  
+  # Both normal → variance test
+  if (poly_normal & ribo_normal) {
+    
+    p_var <- var.test(poly, ribo)$p.value
+    equal_var <- p_var > 0.05
+    
+    # Normal + equal variance → Student t-test
+    if (equal_var) {
+      return(list(
+        p_value = t.test(poly, ribo, var.equal = TRUE)$p.value,
+        test_used = "student_t"
+      ))
+    }
+    
+    # Normal + unequal variance → Welch t-test
+    else {
+      return(list(
+        p_value = t.test(poly, ribo, var.equal = FALSE)$p.value,
+        test_used = "welch_t"
+      ))
+    }
+  }
+  
+  # Non-normal → Mann–Whitney U test
+  return(list(
+    p_value = wilcox.test(poly, ribo, exact = FALSE)$p.value,
+    test_used = "mann_whitney"
+  ))
+}
+```
+
+Assigning P-value to significance star
+
+``` r
+p_to_stars <- function(p) 
+{ vapply(p, function(x) 
+{ if (is.na(x)) return("NA") 
+  if (x < 0.0001) return("****") 
+  if (x < 0.001) return("***") 
+  if (x < 0.01) return("**") 
+  if (x < 0.05) return("*") 
+  "ns" 
+  }, FUN.VALUE = character(1)) }
+```
+
+Applying to data
+
+``` r
+compute_significance_table <- function(df) {
+  
+  # 1. Clean and deduplicate input
+  df_clean <- df %>%
+    select(Disease, Gene, Compendia, Expression) %>%
+    distinct()
+  
+  # 2. Collapse to one row per Disease × Gene × Compendia
+  df_collapsed <- df_clean %>%
+    group_by(Disease, Gene, Compendia) %>%
+    summarise(Expression = list(Expression), .groups = "drop")
+  
+  # 3. Pivot to wide: polyA and riboD in separate columns
+  df_wide <- df_collapsed %>%
+    tidyr::pivot_wider(
+      names_from = Compendia,
+      values_from = Expression
+    )
+  
+  # 4. Apply statistical test to each row
+  df_results <- df_wide %>%
+    rowwise() %>%
+    mutate(
+      # wrap the returned list so mutate() treats it as a single object
+      test = list(choose_test(unlist(polyA), unlist(riboD))),
+      p_value = test$p_value,
+      test_used = test$test_used,
+      stars = p_to_stars(p_value)
+    ) %>%
+    ungroup() %>%
+    select(-test)
+  
+    # Benjamini–Hochberg FDR correction
+  df_results2 <- df_results %>%
+    group_by(Disease) %>%
+    mutate(padj = p.adjust(p_value, method = "BH")) %>%
+    ungroup() %>%
+    mutate(stars_adj = p_to_stars(padj))
+  
+  df_results2
+}
+
+
+sig_results <- compute_significance_table(combined_long)
+
+sig_results
+```
+
+| Disease | Gene | polyA | riboD | p_value | test_used | stars | padj | stars_adj |
+|:---|:---|:---|:---|---:|:---|:---|---:|:---|
+| ALL | HIST1H1B | 0.4854268, 0.1763228, 0.0000000, 0.7136958, 0.9030383, 0.5753123, 0.3219281, 3.5668152, 3.1953476, 0.6415460, 3.0959244, 1.3840498, 0.4436067, 0.6690268, 0.7824086, 3.2570106, 1.9068906, 1.0000000 | 7.499368, 7.899659, 7.974415, 6.757157, 6.547974, 7.524189, 6.972922, 7.657497, 6.785681, 8.443441, 7.566130, 8.312611, 7.493855, 7.279750, 7.029232, 7.887099, 7.563463, 7.077884, 6.657640, 6.593802 | 2.00e-07 | mann_whitney | \*\*\*\* | 2.00e-07 | \*\*\*\* |
+| ALL | XPO5 | 5.447579, 4.785027, 4.890933, 5.489928, 5.286512, 5.469235, 5.282069, 4.614710, 5.418190, 4.861955, 4.694323, 5.549669, 5.392317, 5.855242, 4.859473, 5.761019, 5.137504, 5.384395, 5.056584, 5.187451 | 1.678072, 2.257011, 2.400538, 1.752749, 2.358959, 2.336283, 2.035624, 2.389567, 2.032101, 2.189034, 2.121015, 2.622930, 1.970854, 2.182692, 2.025029, 1.769772, 2.244887, 2.124328, 1.782409 | 0.00e+00 | student_t | \*\*\*\* | 0.00e+00 | \*\*\*\* |
+| AML | EML3 | 5.421920, 5.820926, 5.648427, 5.876250, 5.752488, 5.950892, 5.330182, 5.914792, 6.077208, 5.600517, 5.498247, 6.350671, 6.094450, 6.376948, 5.727661, 6.108148, 5.389210, 5.928365, 5.952564, 6.134465 | 3.026800, 4.209453, 3.144046, 3.001802, 3.246408, 3.823749, 3.872829, 3.285402, 3.582556, 4.137504, 2.865919, 4.156235, 3.371559, 3.221877, 2.899176, 3.928844, 3.288359, 3.913608, 3.500802, 2.887525 | 0.00e+00 | student_t | \*\*\*\* | 0.00e+00 | \*\*\*\* |
+| AML | HIST1H1B | 0.1244596, 0.4437205, 0.6136316, 0.8156711, 0.0000000, 0.1376322, 0.2631601, 0.4006362, 1.2869577, 0.2389150, 0.2510757, 0.9108029, 1.0566703, 0.2017566, 0.4542836, 1.0635974, 0.3674849, 0.1636298 | 7.762017, 7.537917, 7.451294, 8.303507, 5.789990, 6.708877, 6.950702, 7.079058, 8.038645, 7.425258, 7.743959, 7.729417, 6.226316, 6.221490, 6.068456, 7.161888, 7.567652, 6.010780, 7.687761, 6.452530 | 0.00e+00 | welch_t | \*\*\*\* | 0.00e+00 | \*\*\*\* |
+| NB | CCDC64 | 4.250962, 5.667639, 5.997046, 5.333400, 5.722461, 4.979527, 5.579268, 6.195898, 5.974999, 5.705686, 5.910760, 4.782449, 5.346567, 4.908316, 6.692405 | 3.228049, 3.698218, 3.001802, 3.533563, 3.471187, 3.195348, 3.549669, 2.400538, 1.669027, 2.643856, 4.671859, 3.381283, 3.638074, 3.125982, 1.773996 | 0.00e+00 | student_t | \*\*\*\* | 0.00e+00 | \*\*\*\* |
+| NB | HIST1H1B | 0.04278404, 0.73994064, 0.13763218, 0.29878223, 0.51612818, 0.11116746, 0.55591464, 0.00000000, 0.45428360, 0.66001219, 0.18916444, 0.07052473, 0.21424465, 0.38968015, 0.09774809 | 4.866413, 4.683696, 5.180307, 6.172528, 4.809929, 3.408712, 3.589763, 7.021924, 5.826040, 3.648465, 4.938756, 6.137913, 3.875780, 2.378512, 3.153805 | 0.00e+00 | welch_t | \*\*\*\* | 0.00e+00 | \*\*\*\* |
+| SS | HIST1H1B | 0.18903382, 0.05672351, 0.48542683, 0.07038933, 0.00000000, 0.21424463, 0.95605665, 0.08406426, 0.08420307, 0.42223300 | 5.480911, 4.917432, 5.080231, 4.204767, 3.982765, 5.044831, 5.594549, 3.760221, 5.142413, 1.469886, 6.399171, 6.007644, 4.563158, 6.052677, 2.558268 | 3.59e-05 | mann_whitney | \*\*\*\* | 3.59e-05 | \*\*\*\* |
+| SS | MTMR2 | 4.370164, 4.472532, 4.458776, 4.869871, 4.771357, 4.832883, 4.823749, 5.116448, 5.057450, 4.797532, 4.689858, 4.841973, 3.653083, 4.622930, 4.927896 | 3.344828, 3.496974, 3.235727, 3.217231, 3.442280, 2.914565, 2.435629, 2.639232, 2.992768, 2.965323, 1.903038, 2.811471, 2.954196, 2.757023, 1.220330 | 3.40e-06 | mann_whitney | \*\*\*\* | 6.80e-06 | \*\*\*\* |
+| WT | HIST1H1B | 1.7355312, 0.3449496, 1.4751447, 1.5110093, 1.3449054, 1.5310872, 0.5559146, 1.7398738, 1.9411447, 2.0976171, 1.5509181, 2.0250578, 1.6508209, 1.7866591 | 7.276962, 7.303141, 8.023810, 7.387845, 7.817879, 7.113117, 8.372647, 7.557042, 8.135453, 7.485185, 8.715585, 7.308248, 6.970509, 7.379292, 8.057342 | 5.10e-06 | mann_whitney | \*\*\*\* | 5.10e-06 | \*\*\*\* |
+| WT | SYPL1 | 5.905253, 5.808943, 6.436934, 6.170353, 5.358566, 6.251149, 6.023431, 5.721971, 7.211061, 5.536103, 6.359660, 5.872318, 6.028748, 6.511882, 6.706369 | 4.025029, 3.099295, 3.587365, 3.084064, 2.935460, 3.132577, 3.169925, 3.716991, 2.669027, 4.016140, 3.092546, 3.755956, 4.202418, 3.788686, 4.265287 | 0.00e+00 | student_t | \*\*\*\* | 0.00e+00 | \*\*\*\* |
+| aRMS | HIST1H1B | 0.13750352, 0.65076456, 0.59454855, 2.45680615, 0.23878686, 0.09761080, 0.08406426, 1.46988598, 0.94110631, 0.54596837, 1.01435529, 0.41142625, 0.16349873, 0.22650853 | 6.483655, 8.466219, 5.283551, 9.088550, 6.588265, 7.465158, 7.260120, 6.940519, 4.895303, 8.416375, 6.124121, 4.242603, 7.101398, 5.907852, 8.798115 | 5.10e-06 | mann_whitney | \*\*\*\* | 5.10e-06 | \*\*\*\* |
+| aRMS | TM2D1 | 5.010780, 4.244126, 4.599318, 4.748461, 5.377124, 5.503985, 5.365623, 5.294988, 4.625270, 5.261531, 4.914565, 4.349082, 5.029011, 4.154616, 5.081936 | 3.590961, 2.538538, 3.340562, 3.482848, 3.928844, 3.292782, 2.691534, 3.704872, 3.065228, 4.569856, 2.931683, 2.963474, 2.531069, 2.957915, 2.965323 | 0.00e+00 | student_t | \*\*\*\* | 0.00e+00 | \*\*\*\* |
+
+Apply stars to figures
+
+``` r
+merged_plots <- map(diseases, function(d) {
+
+  median_gene <- median_gene_map[[d]]
+
+  # HIST1H1B expression
+  df_h1b <- combined_long %>%
+    filter(Disease == d, Gene == "HIST1H1B") %>%
+    mutate(PlotType = "HIST1H1B (PolyA-)")
+
+  # Median-ratio gene expression
+  df_median <- combined_long %>%
+    filter(Disease == d, Gene == median_gene) %>%
+    mutate(PlotType = "Median Ratio Gene (PolyA+)")
+
+  # Combine
+  df_combined <- bind_rows(df_h1b, df_median)
+
+  # SIGNIFICANCE STARS
+  star_df <- tibble(
+    Disease = d,
+    Gene = c("HIST1H1B", median_gene),
+    PlotType = c("HIST1H1B (PolyA-)", "Median Ratio Gene (PolyA+)"),
+    stars_adj = sig_results %>%
+      filter(Disease == d, Gene %in% c("HIST1H1B", median_gene)) %>%
+      arrange(match(Gene, c("HIST1H1B", median_gene))) %>%
+      pull(stars_adj)
+  )
+
+  # y-position for stars (slightly above max)
+  y_star <- max(df_combined$Expression, na.rm = TRUE) * 1.05
+
+  ggplot(df_combined, aes(x = Gene, y = Expression, fill = Compendia)) +
+    geom_boxplot(
+      alpha = 0.7,
+      position = position_dodge(width = 0.8),
+      outlier.shape = NA,
+      linewidth = 0.4
+    ) +
+    geom_jitter(
+      aes(color = Compendia),
+      position = position_jitterdodge(jitter.width = 0.2,
+                                      dodge.width = 0.8),
+      size = 1.2,
+      alpha = 0.6
+    ) +
+    # ADD STARS
+    geom_text(
+      data = star_df,
+      aes(x = Gene, y = y_star, label = stars_adj),
+      inherit.aes = FALSE,
+      size = 6
+    ) +
+    scale_fill_compendia() +
+    scale_color_compendia() +
+    coord_cartesian(ylim = c(0, y_star * 1.1)) +
+    facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
+    labs(
+      title = paste("Expression of Representative PolyA+ and PolyA- Gene in", d),
+      x = "Gene",
+      y = "Expression log2(TPM+1)"
+    ) +
+    color_theme()
+})
+merged_plots
+```
+
+    [[1]]
+
+![](Fig1E_files/figure-commonmark/unnamed-chunk-3-1.png)
+
+
+    [[2]]
+
+![](Fig1E_files/figure-commonmark/unnamed-chunk-3-2.png)
+
+
+    [[3]]
+
+![](Fig1E_files/figure-commonmark/unnamed-chunk-3-3.png)
+
+
+    [[4]]
+
+![](Fig1E_files/figure-commonmark/unnamed-chunk-3-4.png)
+
+
+    [[5]]
+
+![](Fig1E_files/figure-commonmark/unnamed-chunk-3-5.png)
+
+
+    [[6]]
+
+![](Fig1E_files/figure-commonmark/unnamed-chunk-3-6.png)
+
+Session Info
+
+``` r
+sessioninfo::session_info()
+```
+
+    ─ Session info ───────────────────────────────────────────────────────────────
+     setting  value
+     version  R version 4.5.2 (2025-10-31)
+     os       macOS Tahoe 26.5
+     system   aarch64, darwin20
+     ui       X11
+     language (EN)
+     collate  en_US.UTF-8
+     ctype    en_US.UTF-8
+     tz       America/Los_Angeles
+     date     2026-06-11
+     pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
+     quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
+
+    ─ Packages ───────────────────────────────────────────────────────────────────
+     ! package      * version date (UTC) lib source
+     P bit            4.6.0   2025-03-06 [?] RSPM
+     P bit64          4.8.0   2026-04-21 [?] RSPM
+     P cli            3.6.5   2025-04-23 [?] RSPM
+     P crayon         1.5.3   2024-06-20 [?] RSPM
+     P digest         0.6.37  2024-08-19 [?] RSPM
+     P dplyr        * 1.2.1   2026-04-03 [?] RSPM
+     P evaluate       1.0.5   2025-08-27 [?] RSPM
+     P farver         2.1.2   2024-05-13 [?] RSPM
+     P fastmap        1.2.0   2024-05-15 [?] RSPM
+     P forcats      * 1.0.1   2025-09-25 [?] RSPM
+     P generics       0.1.4   2025-05-09 [?] RSPM
+     P ggplot2      * 4.0.3   2026-04-22 [?] RSPM
+     P glue           1.8.0   2024-09-30 [?] RSPM
+     P gtable         0.3.6   2024-10-25 [?] RSPM
+     P hms            1.1.4   2025-10-17 [?] RSPM
+     P htmltools      0.5.8.1 2024-04-04 [?] RSPM
+     P jsonlite       2.0.0   2025-03-27 [?] RSPM
+     P knitr          1.50    2025-03-16 [?] RSPM
+     P labeling       0.4.3   2023-08-29 [?] RSPM
+     P lifecycle      1.0.5   2026-01-08 [?] RSPM
+     P lubridate    * 1.9.5   2026-02-04 [?] RSPM
+     P magrittr       2.0.5   2026-04-04 [?] RSPM
+     P pillar         1.11.1  2025-09-17 [?] RSPM
+     P pkgconfig      2.0.3   2019-09-22 [?] RSPM
+     P purrr        * 1.2.2   2026-04-10 [?] RSPM
+     P R6             2.6.1   2025-02-15 [?] RSPM
+     P RColorBrewer   1.1-3   2022-04-03 [?] RSPM
+     P readr        * 2.2.0   2026-02-19 [?] RSPM
+     P rlang          1.2.0   2026-04-06 [?] RSPM
+     P rmarkdown      2.30    2025-09-28 [?] RSPM
+     P rstudioapi     0.18.0  2026-01-16 [?] RSPM
+     P S7             0.2.2   2026-04-22 [?] RSPM
+     P scales         1.4.0   2025-04-24 [?] RSPM
+     P sessioninfo    1.2.3   2025-02-05 [?] CRAN (R 4.5.0)
+     P stringi        1.8.7   2025-03-27 [?] RSPM
+     P stringr      * 1.6.0   2025-11-04 [?] RSPM
+     P tibble       * 3.3.1   2026-01-11 [?] RSPM
+     P tidyr        * 1.3.2   2025-12-19 [?] RSPM
+     P tidyselect     1.2.1   2024-03-11 [?] RSPM
+     P tidyverse    * 2.0.0   2023-02-22 [?] RSPM
+     P timechange     0.4.0   2026-01-29 [?] RSPM
+     P tzdb           0.5.0   2025-03-15 [?] RSPM
+     P vctrs          0.7.3   2026-04-11 [?] RSPM
+     P vroom          1.7.1   2026-03-31 [?] RSPM
+     P withr          3.0.2   2024-10-28 [?] RSPM
+     P xfun           0.55    2025-12-16 [?] CRAN (R 4.5.2)
+     P yaml           2.3.10  2024-07-26 [?] RSPM
+
+     [1] /Users/maryke/Documents/Treehouse/Lab_Notebooks/transcript_enrichment_bias_assessment/Fig_1/renv/library/macos/R-4.5/aarch64-apple-darwin20
+     [2] /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library
+
+     * ── Packages attached to the search path.
+     P ── Loaded and on-disk path mismatch.
+
+    ──────────────────────────────────────────────────────────────────────────────
