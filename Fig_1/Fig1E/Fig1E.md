@@ -1334,7 +1334,7 @@ Fig1F_WT
     Warning: Removed 26797 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_files/figure-commonmark/fig%201f%20WT-1.png)
+![](Fig1E_files/figure-commonmark/fig1f%20WT-1.png)
 
 ``` r
 Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
