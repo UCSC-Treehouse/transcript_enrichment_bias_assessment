@@ -912,32 +912,32 @@ merged_plots
 
     $SS
 
-![](Fig1E_files/figure-commonmark/generate%20merged%20plot-1.png)
+![](Fig1E_files/figure-commonmark/Fig1E_nostars-1.png)
 
 
     $aRMS
 
-![](Fig1E_files/figure-commonmark/generate%20merged%20plot-2.png)
+![](Fig1E_files/figure-commonmark/Fig1E_nostars-2.png)
 
 
     $WT
 
-![](Fig1E_files/figure-commonmark/generate%20merged%20plot-3.png)
+![](Fig1E_files/figure-commonmark/Fig1E_nostars-3.png)
 
 
     $NB
 
-![](Fig1E_files/figure-commonmark/generate%20merged%20plot-4.png)
+![](Fig1E_files/figure-commonmark/Fig1E_nostars-4.png)
 
 
     $ALL
 
-![](Fig1E_files/figure-commonmark/generate%20merged%20plot-5.png)
+![](Fig1E_files/figure-commonmark/Fig1E_nostars-5.png)
 
 
     $AML
 
-![](Fig1E_files/figure-commonmark/generate%20merged%20plot-6.png)
+![](Fig1E_files/figure-commonmark/Fig1E_nostars-6.png)
 
 Statistical test for significance
 
@@ -1133,32 +1133,316 @@ merged_plots
 
     [[1]]
 
-![](Fig1E_files/figure-commonmark/unnamed-chunk-3-1.png)
+![](Fig1E_files/figure-commonmark/Fig1E-1.png)
 
 
     [[2]]
 
-![](Fig1E_files/figure-commonmark/unnamed-chunk-3-2.png)
+![](Fig1E_files/figure-commonmark/Fig1E-2.png)
 
 
     [[3]]
 
-![](Fig1E_files/figure-commonmark/unnamed-chunk-3-3.png)
+![](Fig1E_files/figure-commonmark/Fig1E-3.png)
 
 
     [[4]]
 
-![](Fig1E_files/figure-commonmark/unnamed-chunk-3-4.png)
+![](Fig1E_files/figure-commonmark/Fig1E-4.png)
 
 
     [[5]]
 
-![](Fig1E_files/figure-commonmark/unnamed-chunk-3-5.png)
+![](Fig1E_files/figure-commonmark/Fig1E-5.png)
 
 
     [[6]]
 
-![](Fig1E_files/figure-commonmark/unnamed-chunk-3-6.png)
+![](Fig1E_files/figure-commonmark/Fig1E-6.png)
+
+## Fig 1F
+
+Histogram of median ratio distributions, calculated as the median
+expression level in PolyA samples divided by the median expression level
+in RiboD samples
+
+``` r
+ss_ratios <- SS_gene_medians %>%
+  select(Gene, Ratio = SS_median_ratio) %>%
+  mutate(Disease = "SS")
+
+arms_ratios <- aRMS_gene_medians %>%
+  select(Gene = Gene, Ratio = aRMS_median_ratio) %>%
+  mutate(Disease = "aRMS")
+
+wt_ratios <- WT_gene_medians %>%
+  select(Gene, Ratio = WT_median_ratio) %>%
+  mutate(Disease = "WT")
+
+nb_ratios <- NB_gene_medians %>%
+  select(Gene = Gene, Ratio = NB_median_ratio) %>%
+  mutate(Disease = "NB")
+
+all_ratios <- ALL_gene_medians %>%
+  select(Gene = Gene, Ratio = ALL_median_ratio) %>%
+  mutate(Disease = "ALL")
+
+aml_ratios <- AML_gene_medians %>%
+  select(Gene = Gene, Ratio = AML_median_ratio) %>%
+  mutate(Disease = "AML")
+
+#Combining median ratios
+ratio_df <- bind_rows(ss_ratios, arms_ratios, wt_ratios, nb_ratios, aml_ratios, all_ratios)
+```
+
+``` r
+theme_Fig1F <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+```
+
+``` r
+SS_HIST1H1B <- SS_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+aRMS_HIST1H1B <- aRMS_gene_median_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+WT_HIST1H1B <- WT_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+NB_HIST1H1B <- NB_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+AML_HIST1H1B <- AML_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+ALL_HIST1H1B <- ALL_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+```
+
+``` r
+Fig1F_aRMS <- ggplot(arms_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  geom_vline(xintercept = aRMS_most_average_gene_hugo$aRMS_median_ratio, color = "#0072B2", linetype = "dashed") +
+  geom_text(aes(x = 2.2, y = 2000, label = aRMS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  geom_vline(xintercept = aRMS_HIST1H1B$aRMS_median_ratio, color = "#E69F00", linetype = "dashed") +
+  geom_text(aes(x = 0.8, y = 3000, label = aRMS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in aRMS Samples",
+    x = "aRMS Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_aRMS
+```
+
+    Warning in geom_text(aes(x = 2.2, y = 2000, label = aRMS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.8, y = 3000, label = aRMS_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 27707 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+![](Fig1E_files/figure-commonmark/fig1F%20aRMS-1.png)
+
+``` r
+Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = SS_most_average_gene_hugo$SS_median_ratio, color = "#0072B2", linetype = "dashed") +
+  
+  geom_text(aes(x = 2.2, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  
+  geom_vline(xintercept = SS_HIST1H1B$SS_median_ratio, color = "#E69F00", linetype = "dashed") +
+  
+  geom_text(aes(x = 0.8, y = 3000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in SS Samples",
+    x = "SS Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_SS
+```
+
+    Warning in geom_text(aes(x = 2.2, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.8, y = 3000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 29257 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+![](Fig1E_files/figure-commonmark/fig1F%20SS-1.png)
+
+``` r
+Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = WT_most_average_gene_hugo$WT_median_ratio, color = "#0072B2", linetype = "dashed") +
+  
+  geom_text(aes(x = 2.2, y = 2000, label = WT_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  
+  geom_vline(xintercept = WT_HIST1H1B$WT_median_ratio, color = "#E69F00", linetype = "dashed") +
+  
+  geom_text(aes(x = 0.95, y = 3000, label = WT_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in WT Samples",
+    x = "WT Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_WT
+```
+
+    Warning in geom_text(aes(x = 2.2, y = 2000, label = WT_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.95, y = 3000, label = WT_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 26797 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+![](Fig1E_files/figure-commonmark/fig%201f%20WT-1.png)
+
+``` r
+Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = NB_most_average_gene_hugo$NB_median_ratio, color = "#0072B2", linetype = "dashed") +
+  
+  geom_text(aes(x = 2.4, y = 2000, label = NB_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  
+  geom_vline(xintercept = NB_HIST1H1B$NB_median_ratio, color = "#E69F00", linetype = "dashed") +
+  
+  geom_text(aes(x = 0.9, y = 3000, label = NB_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in NB Samples",
+    x = "NB Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_NB
+```
+
+    Warning in geom_text(aes(x = 2.4, y = 2000, label = NB_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 3000, label = NB_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 25112 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+![](Fig1E_files/figure-commonmark/fig1F%20NB-1.png)
+
+``` r
+Fig1F_ALL <- ggplot(all_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = ALL_most_average_gene_hugo$ALL_median_ratio, color = "#0072B2", linetype = "dashed") +
+  
+  geom_text(aes(x = 2.9, y = 2000, label = ALL_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  
+  geom_vline(xintercept = ALL_HIST1H1B$ALL_median_ratio, color = "#E69F00", linetype = "dashed") +
+  
+  geom_text(aes(x = 0.9, y = 2500, label = ALL_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in ALL Samples",
+    x = "ALL Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_ALL
+```
+
+    Warning in geom_text(aes(x = 2.9, y = 2000, label = ALL_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2500, label = ALL_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 31150 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+![](Fig1E_files/figure-commonmark/fig1F%20ALL-1.png)
+
+``` r
+Fig1F_AML <- ggplot(aml_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = AML_most_average_gene_hugo$AML_median_ratio, color = "#0072B2", linetype = "dashed") +
+  
+  geom_text(aes(x = 2.5, y = 1500, label = AML_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  
+  geom_vline(xintercept = AML_HIST1H1B$AML_median_ratio, color = "#E69F00", linetype = "dashed") +
+  
+  geom_text(aes(x = 0.9, y = 1500, label = AML_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in AML Samples",
+    x = "AML Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_AML
+```
+
+    Warning in geom_text(aes(x = 2.5, y = 1500, label = AML_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 1500, label = AML_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 30953 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+![](Fig1E_files/figure-commonmark/fig1F%20AML-1.png)
 
 Session Info
 
@@ -1176,7 +1460,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-06-11
+     date     2026-06-12
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 

@@ -134,7 +134,7 @@ AML_riboD_expr <- ALL_AML_log2tpm1 %>%
 
 Convert EnsemblIDs to HugoIDs
 
-```{r}
+```{r convert to Hugo function}
 convert_to_hugo <- function(df) {
   df %>%
     left_join(gene_names, by = c("Gene" = "EnsGeneID")) %>%
@@ -764,7 +764,7 @@ diseases <- unique(combined_long$Disease)
 
 Generate merged plot for each disease
 
-```{r generate merged plot}
+```{r Fig1E_nostars}
 merged_plots <- map(diseases, function(d) {
 
   median_gene <- median_gene_map[[d]]
@@ -923,7 +923,7 @@ sig_results
 
 Apply stars to figures
 
-```{r}
+```{r Fig1E}
 merged_plots <- map(diseases, function(d) {
 
   median_gene <- median_gene_map[[d]]
@@ -988,6 +988,210 @@ merged_plots <- map(diseases, function(d) {
     color_theme()
 })
 merged_plots
+```
+
+## Fig 1F
+
+Histogram of median ratio distributions, calculated as the median expression level in PolyA samples divided by the median expression level in RiboD samples
+
+```{r selecting gene ratios}
+ss_ratios <- SS_gene_medians %>%
+  select(Gene, Ratio = SS_median_ratio) %>%
+  mutate(Disease = "SS")
+
+arms_ratios <- aRMS_gene_medians %>%
+  select(Gene = Gene, Ratio = aRMS_median_ratio) %>%
+  mutate(Disease = "aRMS")
+
+wt_ratios <- WT_gene_medians %>%
+  select(Gene, Ratio = WT_median_ratio) %>%
+  mutate(Disease = "WT")
+
+nb_ratios <- NB_gene_medians %>%
+  select(Gene = Gene, Ratio = NB_median_ratio) %>%
+  mutate(Disease = "NB")
+
+all_ratios <- ALL_gene_medians %>%
+  select(Gene = Gene, Ratio = ALL_median_ratio) %>%
+  mutate(Disease = "ALL")
+
+aml_ratios <- AML_gene_medians %>%
+  select(Gene = Gene, Ratio = AML_median_ratio) %>%
+  mutate(Disease = "AML")
+
+#Combining median ratios
+ratio_df <- bind_rows(ss_ratios, arms_ratios, wt_ratios, nb_ratios, aml_ratios, all_ratios)
+```
+
+```{r theme for fig1F}
+theme_Fig1F <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+```
+
+```{r finding HIST1H1B expression}
+SS_HIST1H1B <- SS_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+aRMS_HIST1H1B <- aRMS_gene_median_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+WT_HIST1H1B <- WT_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+NB_HIST1H1B <- NB_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+AML_HIST1H1B <- AML_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+ALL_HIST1H1B <- ALL_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+```
+
+```{r fig1F aRMS}
+Fig1F_aRMS <- ggplot(arms_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  geom_vline(xintercept = aRMS_most_average_gene_hugo$aRMS_median_ratio, color = "#0072B2", linetype = "dashed") +
+  geom_text(aes(x = 2.2, y = 2000, label = aRMS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  geom_vline(xintercept = aRMS_HIST1H1B$aRMS_median_ratio, color = "#E69F00", linetype = "dashed") +
+  geom_text(aes(x = 0.8, y = 3000, label = aRMS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in aRMS Samples",
+    x = "aRMS Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_aRMS
+```
+
+```{r fig1F SS}
+Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = SS_most_average_gene_hugo$SS_median_ratio, color = "#0072B2", linetype = "dashed") +
+  
+  geom_text(aes(x = 2.2, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  
+  geom_vline(xintercept = SS_HIST1H1B$SS_median_ratio, color = "#E69F00", linetype = "dashed") +
+  
+  geom_text(aes(x = 0.8, y = 3000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in SS Samples",
+    x = "SS Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_SS
+```
+
+```{r fig 1f WT}
+Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = WT_most_average_gene_hugo$WT_median_ratio, color = "#0072B2", linetype = "dashed") +
+  
+  geom_text(aes(x = 2.2, y = 2000, label = WT_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  
+  geom_vline(xintercept = WT_HIST1H1B$WT_median_ratio, color = "#E69F00", linetype = "dashed") +
+  
+  geom_text(aes(x = 0.95, y = 3000, label = WT_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in WT Samples",
+    x = "WT Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_WT
+```
+
+```{r fig1F NB}
+Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = NB_most_average_gene_hugo$NB_median_ratio, color = "#0072B2", linetype = "dashed") +
+  
+  geom_text(aes(x = 2.4, y = 2000, label = NB_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  
+  geom_vline(xintercept = NB_HIST1H1B$NB_median_ratio, color = "#E69F00", linetype = "dashed") +
+  
+  geom_text(aes(x = 0.9, y = 3000, label = NB_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in NB Samples",
+    x = "NB Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_NB
+```
+
+```{r fig1F ALL}
+Fig1F_ALL <- ggplot(all_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = ALL_most_average_gene_hugo$ALL_median_ratio, color = "#0072B2", linetype = "dashed") +
+  
+  geom_text(aes(x = 2.9, y = 2000, label = ALL_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  
+  geom_vline(xintercept = ALL_HIST1H1B$ALL_median_ratio, color = "#E69F00", linetype = "dashed") +
+  
+  geom_text(aes(x = 0.9, y = 2500, label = ALL_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in ALL Samples",
+    x = "ALL Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_ALL
+```
+
+```{r fig1F AML}
+Fig1F_AML <- ggplot(aml_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = AML_most_average_gene_hugo$AML_median_ratio, color = "#0072B2", linetype = "dashed") +
+  
+  geom_text(aes(x = 2.5, y = 1500, label = AML_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  
+  geom_vline(xintercept = AML_HIST1H1B$AML_median_ratio, color = "#E69F00", linetype = "dashed") +
+  
+  geom_text(aes(x = 0.9, y = 1500, label = AML_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+#    title = "Distribution of polyA / riboD Median Ratios in AML Samples",
+    x = "AML Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F()
+
+Fig1F_AML
 ```
 
 Session Info
