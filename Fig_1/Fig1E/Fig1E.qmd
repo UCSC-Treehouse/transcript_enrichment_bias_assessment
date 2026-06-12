@@ -1102,7 +1102,11 @@ Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
 Fig1F_SS
 ```
 
+<<<<<<< HEAD
 ```{r fig1f WT}
+=======
+```{r fig 1f WT}
+>>>>>>> origin/Fig1E_sigstars
 Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
   geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
   
