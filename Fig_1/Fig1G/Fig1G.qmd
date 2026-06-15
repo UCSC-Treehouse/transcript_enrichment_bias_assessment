@@ -1,0 +1,131 @@
+---
+title: "Fig1G"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## Fig 1G
+
+Scatterplot showing median expression per gene.
+
+```{r load libraries}
+library(tidyverse)
+```
+
+```{r load in files}
+# expression files
+SS_aRMS_log2tpm1 <- read_tsv("../../input_data/SS_aRMS_log2TPM1_ensembl_TEBA.tsv.gz")
+WT_NB_log2tpm1 <- read_tsv("../../input_data/WT_NB_log2TPM1_ensembl_TEBA.tsv.gz")
+ALL_AML_log2tpm1 <- read_tsv("../../input_data/ALL_AML_log2TPM1_ensembl_TEBA.tsv.gz")
+
+# sample ID files, from correlation_analysis
+filtered_SS_aRMS_list <- read_tsv("../../input_data/filtered_SS_aRMS_list.tsv")
+filtered_WT_NB_list <- read_tsv("../../input_data/filtered_WT_NB_list.tsv")
+filtered_ALL_AML_list <- read_tsv("../../input_data/filtered_ALL_AML_list.tsv")
+
+# to convert EnsemblIDs to HugoIDs
+gene_names <- read.table("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt",
+header = TRUE, sep = "\t", stringsAsFactors = FALSE )
+```
+
+```{r separate into diseases}
+# SS polyA
+SS_polyA_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("SS_polyA")) %>% 
+  select(term, disease_and_prep)
+
+SS_polyA_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(SS_polyA_list$term))
+
+# SS riboD
+SS_riboD_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("SS_riboD")) %>% 
+  select(term, disease_and_prep)
+
+SS_riboD_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(SS_riboD_list$term))
+
+# aRMS polyA
+aRMS_polyA_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("aRMS_polyA")) %>% 
+  select(term, disease_and_prep)
+
+aRMS_polyA_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(aRMS_polyA_list$term))
+
+# aRMS riboD
+aRMS_riboD_list <- filtered_SS_aRMS_list %>%
+  filter(disease_and_prep %in% c("aRMS_riboD")) %>% 
+  select(term, disease_and_prep)
+
+aRMS_riboD_expr <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(aRMS_riboD_list$term))
+
+# WT polyA
+WT_polyA_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("WT_polyA")) %>% 
+  select(term, disease_and_prep)
+
+WT_polyA_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(WT_polyA_list$term))
+
+# WT riboD 
+WT_riboD_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("WT_riboD")) %>% 
+  select(term, disease_and_prep)
+
+WT_riboD_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(WT_riboD_list$term))
+
+# NB polyA
+NB_polyA_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("NB_polyA")) %>% 
+  select(term, disease_and_prep)
+
+NB_polyA_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(NB_polyA_list$term))
+
+# NB riboD
+NB_riboD_list <- filtered_WT_NB_list %>%
+  filter(disease_and_prep %in% c("NB_riboD")) %>% 
+  select(term, disease_and_prep)
+
+NB_riboD_expr <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(NB_riboD_list$term))
+
+# ALL polyA
+ALL_polyA_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("ALL_polyA")) %>% 
+  select(term, disease_and_prep)
+
+ALL_polyA_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(ALL_polyA_list$term))
+
+# ALL riboD
+ALL_riboD_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("ALL_riboD")) %>% 
+  select(term, disease_and_prep)
+
+ALL_riboD_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(ALL_riboD_list$term))
+
+
+# AML polyA
+AML_polyA_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("AML_polyA")) %>% 
+  select(term, disease_and_prep)
+
+AML_polyA_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(AML_polyA_list$term))
+
+# AML riboD
+AML_riboD_list <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep %in% c("AML_riboD")) %>% 
+  select(term, disease_and_prep)
+
+AML_riboD_expr <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(AML_riboD_list$term))
+```
