@@ -1,4 +1,4 @@
-# Fig1E
+# Fig1E_F
 
 
 ## Fig 1E
@@ -912,32 +912,32 @@ merged_plots
 
     $SS
 
-![](Fig1E_files/figure-commonmark/Fig1E_nostars-1.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-1.png)
 
 
     $aRMS
 
-![](Fig1E_files/figure-commonmark/Fig1E_nostars-2.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-2.png)
 
 
     $WT
 
-![](Fig1E_files/figure-commonmark/Fig1E_nostars-3.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-3.png)
 
 
     $NB
 
-![](Fig1E_files/figure-commonmark/Fig1E_nostars-4.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-4.png)
 
 
     $ALL
 
-![](Fig1E_files/figure-commonmark/Fig1E_nostars-5.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-5.png)
 
 
     $AML
 
-![](Fig1E_files/figure-commonmark/Fig1E_nostars-6.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-6.png)
 
 Statistical test for significance
 
@@ -1133,32 +1133,32 @@ merged_plots
 
     [[1]]
 
-![](Fig1E_files/figure-commonmark/Fig1E-1.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E-1.png)
 
 
     [[2]]
 
-![](Fig1E_files/figure-commonmark/Fig1E-2.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E-2.png)
 
 
     [[3]]
 
-![](Fig1E_files/figure-commonmark/Fig1E-3.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E-3.png)
 
 
     [[4]]
 
-![](Fig1E_files/figure-commonmark/Fig1E-4.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E-4.png)
 
 
     [[5]]
 
-![](Fig1E_files/figure-commonmark/Fig1E-5.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E-5.png)
 
 
     [[6]]
 
-![](Fig1E_files/figure-commonmark/Fig1E-6.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E-6.png)
 
 ## Fig 1F
 
@@ -1262,7 +1262,7 @@ Fig1F_aRMS
     Warning: Removed 27707 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_files/figure-commonmark/fig1F%20aRMS-1.png)
+![](Fig1E_F_files/figure-commonmark/fig1F%20aRMS-1.png)
 
 ``` r
 Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
@@ -1298,7 +1298,7 @@ Fig1F_SS
     Warning: Removed 29257 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_files/figure-commonmark/fig1F%20SS-1.png)
+![](Fig1E_F_files/figure-commonmark/fig1F%20SS-1.png)
 
 ``` r
 Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
@@ -1334,7 +1334,7 @@ Fig1F_WT
     Warning: Removed 26797 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_files/figure-commonmark/fig1f%20WT-1.png)
+![](Fig1E_F_files/figure-commonmark/fig1f%20WT-1.png)
 
 ``` r
 Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
@@ -1370,7 +1370,7 @@ Fig1F_NB
     Warning: Removed 25112 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_files/figure-commonmark/fig1F%20NB-1.png)
+![](Fig1E_F_files/figure-commonmark/fig1F%20NB-1.png)
 
 ``` r
 Fig1F_ALL <- ggplot(all_ratios, aes(x = Ratio)) +
@@ -1406,7 +1406,7 @@ Fig1F_ALL
     Warning: Removed 31150 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_files/figure-commonmark/fig1F%20ALL-1.png)
+![](Fig1E_F_files/figure-commonmark/fig1F%20ALL-1.png)
 
 ``` r
 Fig1F_AML <- ggplot(aml_ratios, aes(x = Ratio)) +
@@ -1442,7 +1442,7 @@ Fig1F_AML
     Warning: Removed 30953 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_files/figure-commonmark/fig1F%20AML-1.png)
+![](Fig1E_F_files/figure-commonmark/fig1F%20AML-1.png)
 
 Session Info
 
