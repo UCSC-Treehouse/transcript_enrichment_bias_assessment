@@ -1,0 +1,269 @@
+---
+title: "Fig1H"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## Fig 1H
+
+Median expression of Treehouse Druggable Genes.
+
+```{r load library}
+library(tidyverse)
+```
+
+```{r load in files}
+# sample ID files
+# polyA
+SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv")
+aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv")
+WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv")
+NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv")
+ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv")
+AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv")
+
+# riboD
+SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv")
+aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv")
+WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv")
+NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv")
+ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv")
+AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv")
+
+# log2(TPM+1) expression files
+# polyA
+SS_polyA_expr <- read_tsv("../../input_data/sample_selection/SS_polyA_expr.tsv")
+aRMS_polyA_expr <- read_tsv("../../input_data/sample_selection/aRMS_polyA_expr.tsv")
+WT_polyA_expr <- read_tsv("../../input_data/sample_selection/WT_polyA_expr.tsv")
+NB_polyA_expr <- read_tsv("../../input_data/sample_selection/NB_polyA_expr.tsv")
+ALL_polyA_expr <- read_tsv("../../input_data/sample_selection/ALL_polyA_expr.tsv")
+AML_polyA_expr <- read_tsv("../../input_data/sample_selection/AML_polyA_expr.tsv")
+
+# riboD
+SS_riboD_expr <- read_tsv("../../input_data/sample_selection/SS_riboD_expr.tsv")
+aRMS_riboD_expr <- read_tsv("../../input_data/sample_selection/aRMS_riboD_expr.tsv")
+WT_riboD_expr <- read_tsv("../../input_data/sample_selection/WT_riboD_expr.tsv")
+NB_riboD_expr <- read_tsv("../../input_data/sample_selection/NB_riboD_expr.tsv")
+ALL_riboD_expr <- read_tsv("../../input_data/sample_selection/ALL_riboD_expr.tsv")
+AML_riboD_expr <- read_tsv("../../input_data/sample_selection/AML_riboD_expr.tsv")
+
+# to convert EnsemblIDs to HugoIDs
+gene_names <- read.table("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt",
+header = TRUE, sep = "\t", stringsAsFactors = FALSE )
+
+# treehouse druggable gene list
+drug_genes <- read_tsv("../../input_data/treehouseDruggableGenes_2019-06-12.txt") %>%
+  select(gene)
+```
+
+Function for filtering for druggable genes
+
+```{r druggable genes function}
+filter_druggable <- function(df, drug_genes) {
+  df %>% filter(Gene %in% drug_genes$gene)
+}
+```
+
+Function for calculating median expression across samples
+
+```{r function for median expression}
+compute_gene_medians_polyA <- function(polyA_df, disease_name, Compendia ) {
+  polyA_medians <- polyA_df %>%
+    rowwise() %>%
+    mutate(polyA_medians = median(c_across(-Gene), na.rm = TRUE)) %>%
+    ungroup() %>%
+    select(Gene, polyA_medians)
+}
+compute_gene_medians_riboD <- function(riboD_df, disease_name, Compendia) {
+   riboD_medians <- riboD_df %>%
+    rowwise() %>%
+    mutate(riboD_medians = median(c_across(-Gene), na.rm = TRUE)) %>%
+    ungroup() %>%
+    select(Gene, riboD_medians)
+}
+```
+
+Converting EnsemblID to HugoID for readability
+
+```{r function for hugoID conversion}
+convert_to_hugo <- function(df) {
+  df %>%
+    left_join(gene_names, by = c("Gene" = "EnsGeneID")) %>%
+    mutate(Gene = ifelse(!is.na(HugoID), HugoID, Gene)) %>%
+    select(-HugoID)
+}
+```
+
+Applying gene medians function
+
+```{r calculate median expression}
+aRMS_polyA_medians <- compute_gene_medians_polyA(aRMS_polyA_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "aRMS", Compendia = "polyA") %>%
+  convert_to_hugo()
+
+aRMS_riboD_medians <- compute_gene_medians_riboD(aRMS_riboD_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "aRMS", Compendia = "riboD") %>%
+  convert_to_hugo()
+
+SS_polyA_medians <- compute_gene_medians_polyA(SS_polyA_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "SS", Compendia = "polyA") %>%
+  convert_to_hugo()
+
+SS_riboD_medians <- compute_gene_medians_riboD(SS_riboD_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "SS", Compendia = "riboD") %>%
+  convert_to_hugo()
+
+WT_polyA_medians <- compute_gene_medians_polyA(WT_polyA_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "WT", Compendia = "polyA") %>%
+  convert_to_hugo()
+
+WT_riboD_medians <- compute_gene_medians_riboD(WT_riboD_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "WT", Compendia = "riboD") %>%
+  convert_to_hugo()
+
+NB_polyA_medians <- compute_gene_medians_polyA(NB_polyA_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "NB", Compendia = "polyA") %>%
+  convert_to_hugo()
+
+NB_riboD_medians <- compute_gene_medians_riboD(NB_riboD_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "NB", Compendia = "riboD") %>%
+  convert_to_hugo()
+
+ALL_polyA_medians <- compute_gene_medians_polyA(ALL_polyA_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "ALL", Compendia = "polyA") %>%
+  convert_to_hugo()
+
+ALL_riboD_medians <- compute_gene_medians_riboD(ALL_riboD_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "ALL", Compendia = "riboD") %>%
+  convert_to_hugo()
+
+AML_polyA_medians <- compute_gene_medians_polyA(AML_polyA_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "AML", Compendia = "polyA") %>%
+  convert_to_hugo()
+
+AML_riboD_medians <- compute_gene_medians_riboD(AML_riboD_expr) %>%
+  pivot_longer(-Gene, values_to = "Expression") %>%
+  mutate(Disease = "AML", Compendia = "riboD") %>%
+  convert_to_hugo()
+```
+
+Filtering for druggable genes
+
+```{r filter for druggable genes}
+aRMS_polyA_medians_drug <- filter_druggable(aRMS_polyA_medians, drug_genes)
+aRMS_riboD_medians_drug <- filter_druggable(aRMS_riboD_medians, drug_genes)
+
+SS_polyA_medians_drug <- filter_druggable(SS_polyA_medians, drug_genes)
+SS_riboD_medians_drug <- filter_druggable(SS_riboD_medians, drug_genes)
+
+WT_polyA_medians_drug <- filter_druggable(WT_polyA_medians, drug_genes)
+WT_riboD_medians_drug <- filter_druggable(WT_riboD_medians, drug_genes)
+
+NB_polyA_medians_drug <- filter_druggable(NB_polyA_medians, drug_genes)
+NB_riboD_medians_drug <- filter_druggable(NB_riboD_medians, drug_genes)
+
+ALL_polyA_medians_drug <- filter_druggable(ALL_polyA_medians, drug_genes)
+ALL_riboD_medians_drug <- filter_druggable(ALL_riboD_medians, drug_genes)
+
+AML_polyA_medians_drug <- filter_druggable(AML_polyA_medians, drug_genes)
+AML_riboD_medians_drug <- filter_druggable(AML_riboD_medians, drug_genes)
+```
+
+```{r combined druggable genes}
+combined_medians_drug <- bind_rows(
+  aRMS_polyA_medians_drug,
+  aRMS_riboD_medians_drug,
+  SS_polyA_medians_drug,
+  SS_riboD_medians_drug,
+  WT_polyA_medians_drug,
+  WT_riboD_medians_drug,
+  NB_polyA_medians_drug,
+  NB_riboD_medians_drug,
+  ALL_polyA_medians_drug,
+  ALL_riboD_medians_drug,
+  AML_polyA_medians_drug,
+  AML_riboD_medians_drug
+)
+```
+
+Define palette
+
+```{r define color palette}
+# Define consistent color-blind–safe palette
+scale_color_compendia <- function() {
+  scale_color_manual(values = c(
+    "riboD" = "#E69F00",  # yellow
+    "polyA" = "#0072B2"   # blue
+  ))
+}
+```
+
+Generate plots
+
+```{r generate plots}
+# Loop through diseases and generate plots
+druggable_plots <- map(unique(combined_medians_drug$Disease), function(d) {
+
+ df <- combined_medians_drug %>% 
+  filter(Disease == d)
+
+df <- combined_medians_drug %>% 
+  filter(Disease == d) %>%
+  mutate(Gene = factor(Gene, levels = df %>% 
+                         group_by(Gene) %>% 
+                         summarize(median_expr = median(Expression), .groups = "drop") %>% 
+                         arrange(median_expr) %>% 
+                         pull(Gene)))
+
+
+  ggplot(df, aes(x = Gene, y = Expression, color = Compendia)) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
+    # 1. vertical lines for each gene 
+    geom_vline(aes(xintercept = as.numeric(Gene)), color = "grey85", linewidth = 0.3) + 
+    # 2. points that stay centered on those lines 
+    geom_point(size = 1.4, alpha = 0.75) +
+    scale_x_discrete(expand = expansion(mult = c(0.01, 0.01))) +
+    scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
+    scale_color_compendia() +
+    labs(
+      title = paste(d),
+      x = "Treehouse Druggable Genes",
+      y = "Expression log2(TPM+1)",
+      color = "Library Prep"
+    ) +
+    theme(
+      axis.text.x = element_text(angle = 90, hjust = 1, size = 13),
+      panel.grid.major.x = element_blank(),
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 20), 
+      axis.text.y = element_text(angle = 0, hjust = 1, size = 12),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 20)
+    )
+})
+```
+
+```{r Fig1H}
+# Assign names for easy access
+names(druggable_plots) <- unique(combined_medians_drug$Disease)
+
+# View plots
+druggable_plots
+```
+
+```{r session info}
+sessioninfo::session_info()
+```
