@@ -59,6 +59,45 @@ ALL_AML_log2tpm1 <- read_tsv("../../input_data/ALL_AML_log2TPM1_ensembl_TEBA.tsv
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
+SS_aRMS_counts <- read_tsv("../../input_data/expression_SS_aRMS.tsv.gz")
+```
+
+    Rows: 60498 Columns: 170
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr   (1): Gene
+    dbl (169): TH03_0112_S01, TH03_0112_S02, TH27_1157_S01, TH27_1157_S02, TH27_...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+WT_NB_counts <- read_tsv("../../input_data/expression_WT_NB.tsv.gz")
+```
+
+    Rows: 60498 Columns: 502
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr   (1): Gene
+    dbl (501): TH03_0012_S01, TH03_0012_S02, TH27_1356_S01, TH27_1403_S01, TH27_...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+ALL_AML_counts <- read_tsv("../../input_data/expression_ALL_AML.tsv.gz")
+```
+
+    Rows: 60498 Columns: 1927
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr    (1): Gene
+    dbl (1926): TH03_0011_S01, TH03_0118_S01, TH34_1238_S01, TH34_1239_S01, TH27...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
 # sample ID files, from correlation_analysis
 filtered_SS_aRMS_list <- read_tsv("../../input_data/filtered_SS_aRMS_list.tsv")
 ```
@@ -101,7 +140,10 @@ SS_polyA_list <- filtered_SS_aRMS_list %>%
   filter(disease_and_prep %in% c("SS_polyA")) %>% 
   select(term, disease_and_prep)
 
-SS_polyA_expr <- SS_aRMS_log2tpm1 %>%
+SS_polyA_log2tpm1 <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(SS_polyA_list$term))
+
+SS_polyA_counts <- SS_aRMS_counts %>%
   select(Gene, all_of(SS_polyA_list$term))
 
 # SS riboD
@@ -109,20 +151,28 @@ SS_riboD_list <- filtered_SS_aRMS_list %>%
   filter(disease_and_prep %in% c("SS_riboD")) %>% 
   select(term, disease_and_prep)
 
-SS_riboD_expr <- SS_aRMS_log2tpm1 %>%
+SS_riboD_log2tpm1 <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(SS_riboD_list$term))
+
+SS_riboD_counts <- SS_aRMS_counts %>%
   select(Gene, all_of(SS_riboD_list$term))
 
 write_tsv(SS_polyA_list, "../../input_data/sample_selection/SS_polyA_list.tsv")
 write_tsv(SS_riboD_list, "../../input_data/sample_selection/SS_riboD_list.tsv")
-write_tsv(SS_polyA_expr, "../../input_data/sample_selection/SS_polyA_expr.tsv")
-write_tsv(SS_riboD_expr, "../../input_data/sample_selection/SS_riboD_expr.tsv")
+write_tsv(SS_polyA_log2tpm1, "../../input_data/sample_selection/SS_polyA_log2tpm1.tsv")
+write_tsv(SS_riboD_log2tpm1, "../../input_data/sample_selection/SS_riboD_log2tpm1.tsv")
+write_tsv(SS_polyA_counts, "../../input_data/sample_selection/SS_polyA_counts.tsv")
+write_tsv(SS_riboD_counts, "../../input_data/sample_selection/SS_riboD_counts.tsv")
 
 # aRMS polyA
 aRMS_polyA_list <- filtered_SS_aRMS_list %>%
   filter(disease_and_prep %in% c("aRMS_polyA")) %>% 
   select(term, disease_and_prep)
 
-aRMS_polyA_expr <- SS_aRMS_log2tpm1 %>%
+aRMS_polyA_log2tpm1 <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(aRMS_polyA_list$term))
+
+aRMS_polyA_counts <- SS_aRMS_counts %>%
   select(Gene, all_of(aRMS_polyA_list$term))
 
 # aRMS riboD
@@ -130,20 +180,28 @@ aRMS_riboD_list <- filtered_SS_aRMS_list %>%
   filter(disease_and_prep %in% c("aRMS_riboD")) %>% 
   select(term, disease_and_prep)
 
-aRMS_riboD_expr <- SS_aRMS_log2tpm1 %>%
+aRMS_riboD_log2tpm1 <- SS_aRMS_log2tpm1 %>%
+  select(Gene, all_of(aRMS_riboD_list$term))
+
+aRMS_riboD_counts <- SS_aRMS_counts %>%
   select(Gene, all_of(aRMS_riboD_list$term))
 
 write_tsv(aRMS_polyA_list, "../../input_data/sample_selection/aRMS_polyA_list.tsv")
 write_tsv(aRMS_riboD_list, "../../input_data/sample_selection/aRMS_riboD_list.tsv")
-write_tsv(aRMS_polyA_expr, "../../input_data/sample_selection/aRMS_polyA_expr.tsv")
-write_tsv(aRMS_riboD_expr, "../../input_data/sample_selection/aRMS_riboD_expr.tsv")
+write_tsv(aRMS_polyA_log2tpm1, "../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv")
+write_tsv(aRMS_riboD_log2tpm1, "../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv")
+write_tsv(aRMS_polyA_counts, "../../input_data/sample_selection/aRMS_polyA_counts.tsv")
+write_tsv(aRMS_riboD_counts, "../../input_data/sample_selection/aRMS_riboD_counts.tsv")
 
 # WT polyA
 WT_polyA_list <- filtered_WT_NB_list %>%
   filter(disease_and_prep %in% c("WT_polyA")) %>% 
   select(term, disease_and_prep)
 
-WT_polyA_expr <- WT_NB_log2tpm1 %>%
+WT_polyA_log2tpm1 <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(WT_polyA_list$term))
+
+WT_polyA_counts <- WT_NB_counts %>%
   select(Gene, all_of(WT_polyA_list$term))
 
 # WT riboD 
@@ -151,20 +209,29 @@ WT_riboD_list <- filtered_WT_NB_list %>%
   filter(disease_and_prep %in% c("WT_riboD")) %>% 
   select(term, disease_and_prep)
 
-WT_riboD_expr <- WT_NB_log2tpm1 %>%
+WT_riboD_log2tpm1 <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(WT_riboD_list$term))
+
+WT_riboD_counts <- WT_NB_counts %>%
   select(Gene, all_of(WT_riboD_list$term))
 
 write_tsv(WT_polyA_list, "../../input_data/sample_selection/WT_polyA_list.tsv")
 write_tsv(WT_riboD_list, "../../input_data/sample_selection/WT_riboD_list.tsv")
-write_tsv(WT_polyA_expr, "../../input_data/sample_selection/WT_polyA_expr.tsv")
-write_tsv(WT_riboD_expr, "../../input_data/sample_selection/WT_riboD_expr.tsv")
+write_tsv(WT_polyA_log2tpm1, "../../input_data/sample_selection/WT_polyA_log2tpm1.tsv")
+write_tsv(WT_riboD_log2tpm1, "../../input_data/sample_selection/WT_riboD_log2tpm1.tsv")
+write_tsv(WT_polyA_counts, "../../input_data/sample_selection/WT_polyA_counts.tsv")
+write_tsv(WT_riboD_counts, "../../input_data/sample_selection/WT_riboD_counts.tsv")
+
 
 # NB polyA
 NB_polyA_list <- filtered_WT_NB_list %>%
   filter(disease_and_prep %in% c("NB_polyA")) %>% 
   select(term, disease_and_prep)
 
-NB_polyA_expr <- WT_NB_log2tpm1 %>%
+NB_polyA_log2tpm1 <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(NB_polyA_list$term))
+
+NB_polyA_counts <- WT_NB_counts %>%
   select(Gene, all_of(NB_polyA_list$term))
 
 # NB riboD
@@ -172,20 +239,28 @@ NB_riboD_list <- filtered_WT_NB_list %>%
   filter(disease_and_prep %in% c("NB_riboD")) %>% 
   select(term, disease_and_prep)
 
-NB_riboD_expr <- WT_NB_log2tpm1 %>%
+NB_riboD_log2tpm1 <- WT_NB_log2tpm1 %>%
+  select(Gene, all_of(NB_riboD_list$term))
+
+NB_riboD_counts <- WT_NB_counts %>%
   select(Gene, all_of(NB_riboD_list$term))
 
 write_tsv(NB_polyA_list, "../../input_data/sample_selection/NB_polyA_list.tsv")
 write_tsv(NB_riboD_list, "../../input_data/sample_selection/NB_riboD_list.tsv")
-write_tsv(NB_polyA_expr, "../../input_data/sample_selection/NB_polyA_expr.tsv")
-write_tsv(NB_riboD_expr, "../../input_data/sample_selection/NB_riboD_expr.tsv")
+write_tsv(NB_polyA_log2tpm1, "../../input_data/sample_selection/NB_polyA_log2tpm1.tsv")
+write_tsv(NB_riboD_log2tpm1, "../../input_data/sample_selection/NB_riboD_log2tpm1.tsv")
+write_tsv(NB_polyA_counts, "../../input_data/sample_selection/NB_polyA_counts.tsv")
+write_tsv(NB_riboD_counts, "../../input_data/sample_selection/NB_riboD_counts.tsv")
 
 # ALL polyA
 ALL_polyA_list <- filtered_ALL_AML_list %>%
   filter(disease_and_prep %in% c("ALL_polyA")) %>% 
   select(term, disease_and_prep)
 
-ALL_polyA_expr <- ALL_AML_log2tpm1 %>%
+ALL_polyA_log2tpm1 <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(ALL_polyA_list$term))
+
+ALL_polyA_counts <- ALL_AML_counts %>%
   select(Gene, all_of(ALL_polyA_list$term))
 
 # ALL riboD
@@ -193,20 +268,28 @@ ALL_riboD_list <- filtered_ALL_AML_list %>%
   filter(disease_and_prep %in% c("ALL_riboD")) %>% 
   select(term, disease_and_prep)
 
-ALL_riboD_expr <- ALL_AML_log2tpm1 %>%
+ALL_riboD_log2tpm1 <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(ALL_riboD_list$term))
+
+ALL_riboD_counts <- ALL_AML_counts %>%
   select(Gene, all_of(ALL_riboD_list$term))
 
 write_tsv(ALL_polyA_list, "../../input_data/sample_selection/ALL_polyA_list.tsv")
 write_tsv(ALL_riboD_list, "../../input_data/sample_selection/ALL_riboD_list.tsv")
-write_tsv(ALL_polyA_expr, "../../input_data/sample_selection/ALL_polyA_expr.tsv")
-write_tsv(ALL_riboD_expr, "../../input_data/sample_selection/ALL_riboD_expr.tsv")
+write_tsv(ALL_polyA_log2tpm1, "../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv")
+write_tsv(ALL_riboD_log2tpm1, "../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv")
+write_tsv(ALL_polyA_counts, "../../input_data/sample_selection/ALL_polyA_counts.tsv")
+write_tsv(ALL_riboD_counts, "../../input_data/sample_selection/ALL_riboD_counts.tsv")
 
 # AML polyA
 AML_polyA_list <- filtered_ALL_AML_list %>%
   filter(disease_and_prep %in% c("AML_polyA")) %>% 
   select(term, disease_and_prep)
 
-AML_polyA_expr <- ALL_AML_log2tpm1 %>%
+AML_polyA_log2tpm1 <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(AML_polyA_list$term))
+
+AML_polyA_counts <- ALL_AML_counts %>%
   select(Gene, all_of(AML_polyA_list$term))
 
 # AML riboD
@@ -214,13 +297,18 @@ AML_riboD_list <- filtered_ALL_AML_list %>%
   filter(disease_and_prep %in% c("AML_riboD")) %>% 
   select(term, disease_and_prep)
 
-AML_riboD_expr <- ALL_AML_log2tpm1 %>%
+AML_riboD_log2tpm1 <- ALL_AML_log2tpm1 %>%
+  select(Gene, all_of(AML_riboD_list$term))
+
+AML_riboD_counts <- ALL_AML_counts %>%
   select(Gene, all_of(AML_riboD_list$term))
 
 write_tsv(AML_polyA_list, "../../input_data/sample_selection/AML_polyA_list.tsv")
 write_tsv(AML_riboD_list, "../../input_data/sample_selection/AML_riboD_list.tsv")
-write_tsv(AML_polyA_expr, "../../input_data/sample_selection/AML_polyA_expr.tsv")
-write_tsv(AML_riboD_expr, "../../input_data/sample_selection/AML_riboD_expr.tsv")
+write_tsv(AML_polyA_log2tpm1, "../../input_data/sample_selection/AML_polyA_log2tpm1.tsv")
+write_tsv(AML_riboD_log2tpm1, "../../input_data/sample_selection/AML_riboD_log2tpm1.tsv")
+write_tsv(AML_polyA_counts, "../../input_data/sample_selection/AML_polyA_counts.tsv")
+write_tsv(AML_riboD_counts, "../../input_data/sample_selection/AML_riboD_counts.tsv")
 ```
 
 ``` r
@@ -237,7 +325,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-06-15
+     date     2026-06-16
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
