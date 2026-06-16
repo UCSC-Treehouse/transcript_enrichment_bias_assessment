@@ -13,6 +13,8 @@ Median expression of Treehouse Druggable Genes.
 
 ```{r load library}
 library(tidyverse)
+library(patchwork)
+library(cowplot)
 ```
 
 ```{r load in files}
@@ -102,62 +104,62 @@ Applying gene medians function
 ```{r calculate median expression}
 aRMS_polyA_medians <- compute_gene_medians_polyA(aRMS_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "aRMS", Compendia = "polyA") %>%
+  mutate(Disease = "aRMS", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 aRMS_riboD_medians <- compute_gene_medians_riboD(aRMS_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "aRMS", Compendia = "riboD") %>%
+  mutate(Disease = "aRMS", Compendia = "RiboD") %>%
   convert_to_hugo()
 
 SS_polyA_medians <- compute_gene_medians_polyA(SS_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "SS", Compendia = "polyA") %>%
+  mutate(Disease = "SS", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 SS_riboD_medians <- compute_gene_medians_riboD(SS_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "SS", Compendia = "riboD") %>%
+  mutate(Disease = "SS", Compendia = "RiboD") %>%
   convert_to_hugo()
 
 WT_polyA_medians <- compute_gene_medians_polyA(WT_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "WT", Compendia = "polyA") %>%
+  mutate(Disease = "WT", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 WT_riboD_medians <- compute_gene_medians_riboD(WT_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "WT", Compendia = "riboD") %>%
+  mutate(Disease = "WT", Compendia = "RiboD") %>%
   convert_to_hugo()
 
 NB_polyA_medians <- compute_gene_medians_polyA(NB_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "NB", Compendia = "polyA") %>%
+  mutate(Disease = "NB", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 NB_riboD_medians <- compute_gene_medians_riboD(NB_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "NB", Compendia = "riboD") %>%
+  mutate(Disease = "NB", Compendia = "RiboD") %>%
   convert_to_hugo()
 
 ALL_polyA_medians <- compute_gene_medians_polyA(ALL_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "ALL", Compendia = "polyA") %>%
+  mutate(Disease = "ALL", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 ALL_riboD_medians <- compute_gene_medians_riboD(ALL_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "ALL", Compendia = "riboD") %>%
+  mutate(Disease = "ALL", Compendia = "RiboD") %>%
   convert_to_hugo()
 
 AML_polyA_medians <- compute_gene_medians_polyA(AML_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "AML", Compendia = "polyA") %>%
+  mutate(Disease = "AML", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 AML_riboD_medians <- compute_gene_medians_riboD(AML_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "AML", Compendia = "riboD") %>%
+  mutate(Disease = "AML", Compendia = "RiboD") %>%
   convert_to_hugo()
 ```
 
@@ -206,15 +208,15 @@ Define palette
 # Define consistent color-blind–safe palette
 scale_color_compendia <- function() {
   scale_color_manual(values = c(
-    "riboD" = "#E69F00",  # yellow
-    "polyA" = "#0072B2"   # blue
+    "RiboD" = "#E69F00",  # yellow
+    "PolyA" = "#0072B2"   # blue
   ))
 }
 ```
 
 Generate plots
 
-```{r generate plots}
+```{r Fig1H}
 # Loop through diseases and generate plots
 druggable_plots <- map(unique(combined_medians_drug$Disease), function(d) {
 
@@ -228,7 +230,6 @@ df <- combined_medians_drug %>%
                          summarize(median_expr = median(Expression), .groups = "drop") %>% 
                          arrange(median_expr) %>% 
                          pull(Gene)))
-
 
   ggplot(df, aes(x = Gene, y = Expression, color = Compendia)) +
     geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
@@ -246,22 +247,59 @@ df <- combined_medians_drug %>%
       color = "Library Prep"
     ) +
     theme(
-      axis.text.x = element_text(angle = 90, hjust = 1, size = 13),
+      # axis.text.x = element_blank(),
+      # axis.title.x = element_blank(), 
+      # axis.ticks.x = element_blank(),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8),
       panel.grid.major.x = element_blank(),
-      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 20), 
       axis.text.y = element_text(angle = 0, hjust = 1, size = 12),
       axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
-      plot.title = element_text(hjust = 0.5, face = "bold", size = 20)
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+      legend.position = "bottom"
     )
 })
-```
 
-```{r Fig1H}
 # Assign names for easy access
 names(druggable_plots) <- unique(combined_medians_drug$Disease)
 
 # View plots
 druggable_plots
+```
+
+## Fig S7
+
+```{r FigS7}
+diseases_to_plot <- names(druggable_plots)[names(druggable_plots) != "SS"]
+n <- length(diseases_to_plot)
+
+druggable_plots_subset <- imap(druggable_plots[diseases_to_plot], function(p, name) {
+  if (name != diseases_to_plot[n]) {
+    # hide x-axis on all panels except the last
+    p + theme(
+      axis.text.x = element_blank(),
+      axis.title.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
+  } else {
+    # show x-axis only on the last panel
+    p + theme(
+      axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+      axis.title.x = element_text(size = 12)
+    )
+  }
+})
+
+combined_figureS7 <- wrap_plots(druggable_plots_subset, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 5, r = 5),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+  )
+
+combined_figureS7
 ```
 
 ```{r session info}

@@ -21,6 +21,22 @@ library(tidyverse)
     ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 
 ``` r
+library(patchwork)
+library(cowplot)
+```
+
+
+    Attaching package: 'cowplot'
+
+    The following object is masked from 'package:patchwork':
+
+        align_plots
+
+    The following object is masked from 'package:lubridate':
+
+        stamp
+
+``` r
 # sample ID files
 # polyA
 SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv")
@@ -387,62 +403,62 @@ Applying gene medians function
 ``` r
 aRMS_polyA_medians <- compute_gene_medians_polyA(aRMS_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "aRMS", Compendia = "polyA") %>%
+  mutate(Disease = "aRMS", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 aRMS_riboD_medians <- compute_gene_medians_riboD(aRMS_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "aRMS", Compendia = "riboD") %>%
+  mutate(Disease = "aRMS", Compendia = "RiboD") %>%
   convert_to_hugo()
 
 SS_polyA_medians <- compute_gene_medians_polyA(SS_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "SS", Compendia = "polyA") %>%
+  mutate(Disease = "SS", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 SS_riboD_medians <- compute_gene_medians_riboD(SS_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "SS", Compendia = "riboD") %>%
+  mutate(Disease = "SS", Compendia = "RiboD") %>%
   convert_to_hugo()
 
 WT_polyA_medians <- compute_gene_medians_polyA(WT_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "WT", Compendia = "polyA") %>%
+  mutate(Disease = "WT", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 WT_riboD_medians <- compute_gene_medians_riboD(WT_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "WT", Compendia = "riboD") %>%
+  mutate(Disease = "WT", Compendia = "RiboD") %>%
   convert_to_hugo()
 
 NB_polyA_medians <- compute_gene_medians_polyA(NB_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "NB", Compendia = "polyA") %>%
+  mutate(Disease = "NB", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 NB_riboD_medians <- compute_gene_medians_riboD(NB_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "NB", Compendia = "riboD") %>%
+  mutate(Disease = "NB", Compendia = "RiboD") %>%
   convert_to_hugo()
 
 ALL_polyA_medians <- compute_gene_medians_polyA(ALL_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "ALL", Compendia = "polyA") %>%
+  mutate(Disease = "ALL", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 ALL_riboD_medians <- compute_gene_medians_riboD(ALL_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "ALL", Compendia = "riboD") %>%
+  mutate(Disease = "ALL", Compendia = "RiboD") %>%
   convert_to_hugo()
 
 AML_polyA_medians <- compute_gene_medians_polyA(AML_polyA_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "AML", Compendia = "polyA") %>%
+  mutate(Disease = "AML", Compendia = "PolyA") %>%
   convert_to_hugo()
 
 AML_riboD_medians <- compute_gene_medians_riboD(AML_riboD_expr) %>%
   pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "AML", Compendia = "riboD") %>%
+  mutate(Disease = "AML", Compendia = "RiboD") %>%
   convert_to_hugo()
 ```
 
@@ -491,8 +507,8 @@ Define palette
 # Define consistent color-blind–safe palette
 scale_color_compendia <- function() {
   scale_color_manual(values = c(
-    "riboD" = "#E69F00",  # yellow
-    "polyA" = "#0072B2"   # blue
+    "RiboD" = "#E69F00",  # yellow
+    "PolyA" = "#0072B2"   # blue
   ))
 }
 ```
@@ -514,7 +530,6 @@ df <- combined_medians_drug %>%
                          arrange(median_expr) %>% 
                          pull(Gene)))
 
-
   ggplot(df, aes(x = Gene, y = Expression, color = Compendia)) +
     geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
     # 1. vertical lines for each gene 
@@ -531,17 +546,18 @@ df <- combined_medians_drug %>%
       color = "Library Prep"
     ) +
     theme(
-      axis.text.x = element_text(angle = 90, hjust = 1, size = 13),
+      # axis.text.x = element_blank(),
+      # axis.title.x = element_blank(), 
+      # axis.ticks.x = element_blank(),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8),
       panel.grid.major.x = element_blank(),
-      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 20), 
       axis.text.y = element_text(angle = 0, hjust = 1, size = 12),
       axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
-      plot.title = element_text(hjust = 0.5, face = "bold", size = 20)
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+      legend.position = "bottom"
     )
 })
-```
 
-``` r
 # Assign names for easy access
 names(druggable_plots) <- unique(combined_medians_drug$Disease)
 
@@ -581,6 +597,47 @@ druggable_plots
 
 ![](Fig1H_files/figure-commonmark/Fig1H-6.png)
 
+## Fig S7
+
+``` r
+diseases_to_plot <- names(druggable_plots)[names(druggable_plots) != "SS"]
+n <- length(diseases_to_plot)
+
+druggable_plots_subset <- imap(druggable_plots[diseases_to_plot], function(p, name) {
+  if (name != diseases_to_plot[n]) {
+    # hide x-axis on all panels except the last
+    p + theme(
+      axis.text.x = element_blank(),
+      axis.title.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
+  } else {
+    # show x-axis only on the last panel
+    p + theme(
+      axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+      axis.title.x = element_text(size = 12)
+    )
+  }
+})
+
+combined_figureS7 <- wrap_plots(druggable_plots_subset, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 5, r = 5),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14)
+  )
+
+combined_figureS7
+```
+
+    Warning: Removed 1 row containing missing values or values outside the scale range
+    (`geom_point()`).
+
+![](Fig1H_files/figure-commonmark/FigS7-1.png)
+
 ``` r
 sessioninfo::session_info()
 ```
@@ -604,6 +661,7 @@ sessioninfo::session_info()
      P bit            4.6.0   2025-03-06 [?] RSPM
      P bit64          4.8.0   2026-04-21 [?] RSPM
      P cli            3.6.5   2025-04-23 [?] RSPM
+     P cowplot      * 1.2.0   2025-07-07 [?] RSPM
      P crayon         1.5.3   2024-06-20 [?] RSPM
      P digest         0.6.37  2024-08-19 [?] RSPM
      P dplyr        * 1.2.1   2026-04-03 [?] RSPM
@@ -623,6 +681,7 @@ sessioninfo::session_info()
      P lifecycle      1.0.5   2026-01-08 [?] RSPM
      P lubridate    * 1.9.5   2026-02-04 [?] RSPM
      P magrittr       2.0.5   2026-04-04 [?] RSPM
+     P patchwork    * 1.3.2   2025-08-25 [?] RSPM
      P pillar         1.11.1  2025-09-17 [?] RSPM
      P pkgconfig      2.0.3   2019-09-22 [?] RSPM
      P purrr        * 1.2.2   2026-04-10 [?] RSPM
