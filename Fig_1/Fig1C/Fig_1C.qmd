@@ -17,144 +17,143 @@ library(tidyverse)
 
 ```{r load in files}
 # expression files
-SS_aRMS_log2tpm1 <- read_tsv("../input_data/SS_aRMS_log2TPM1_ensembl_TEBA.tsv.gz")
-WT_NB_log2tpm1 <- read_tsv("../input_data/WT_NB_log2TPM1_ensembl_TEBA.tsv.gz")
-ALL_AML_log2tpm1 <- read_tsv("../input_data/ALL_AML_log2TPM1_ensembl_TEBA.tsv.gz")
+SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv")
+SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv")
+
+aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv")
+aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv")
+
+WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv")
+WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv")
+
+NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv")
+NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv")
+
+ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv")
+ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv")
+
+AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv")
+AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv")
 
 # sample ID files, from correlation_analysis
-filtered_SS_aRMS_list <- read_tsv("../input_data/filtered_SS_aRMS_list.tsv")
-filtered_WT_NB_list <- read_tsv("../input_data/filtered_WT_NB_list.tsv")
-filtered_ALL_AML_list <- read_tsv("../input_data/filtered_ALL_AML_list.tsv")
+SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv")
+SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv")
+
+aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv")
+aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv")
+
+WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv")
+WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv")
+
+NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv")
+NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv")
+
+ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv")
+ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv")
+
+AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv")
+AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv")
 ```
 
 ```{r reformat files}
 # Since "Gene" is a column name, it won't match the row names
 # use values from the first column ("Gene") as row names
-fix_SS_aRMS_log2tpm1 <- SS_aRMS_log2tpm1 %>%
+fix_SS_polyA_log2tpm1 <- SS_polyA_log2tpm1 %>%
   remove_rownames %>%
   column_to_rownames(var = "Gene")
 
-fix_WT_NB_log2tpm1 <- WT_NB_log2tpm1 %>%
+fix_SS_riboD_log2tpm1 <- SS_riboD_log2tpm1 %>%
   remove_rownames %>%
   column_to_rownames(var = "Gene")
 
-fix_ALL_AML_log2tpm1 <- ALL_AML_log2tpm1 %>%
+fix_aRMS_polyA_log2tpm1 <- aRMS_polyA_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_aRMS_riboD_log2tpm1 <- aRMS_riboD_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_WT_polyA_log2tpm1 <- WT_polyA_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_WT_riboD_log2tpm1 <- WT_riboD_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_NB_polyA_log2tpm1 <- NB_polyA_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_NB_riboD_log2tpm1 <- NB_riboD_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_ALL_polyA_log2tpm1 <- ALL_polyA_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_ALL_riboD_log2tpm1 <- ALL_riboD_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_AML_polyA_log2tpm1 <- AML_polyA_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_AML_riboD_log2tpm1 <- AML_riboD_log2tpm1 %>%
   remove_rownames %>%
   column_to_rownames(var = "Gene")
 
 # use values from first column ("th_dataset_id") as row names
-fix_filtered_SS_aRMS_list <- filtered_SS_aRMS_list %>%
+fix_SS_polyA_list <- SS_polyA_list %>%
   remove_rownames %>%
   column_to_rownames(var = "term")
 
-fix_filtered_WT_NB_list <- filtered_WT_NB_list %>%
+fix_SS_riboD_list <- SS_riboD_list %>%
   remove_rownames %>%
   column_to_rownames(var = "term")
 
-fix_filtered_ALL_AML_list <- filtered_ALL_AML_list %>%
+fix_aRMS_polyA_list <- aRMS_polyA_list %>%
   remove_rownames %>%
   column_to_rownames(var = "term")
-```
 
-Separating THIDs into disease and lib prep
+fix_aRMS_riboD_list <- aRMS_riboD_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
 
-```{r separating THIDs into disease + prep}
-# SS polyA
-SS_polyA_list <- filtered_SS_aRMS_list %>%
-  filter(disease_and_prep %in% c("SS_polyA")) %>% 
-  select(term, disease_and_prep)
+fix_WT_polyA_list <- WT_polyA_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
 
-SS_polyA_expr <- SS_aRMS_log2tpm1 %>%
-  select(Gene, all_of(SS_polyA_list$term))
+fix_WT_riboD_list <- WT_riboD_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
 
-# SS riboD
-SS_riboD_list <- filtered_SS_aRMS_list %>%
-  filter(disease_and_prep %in% c("SS_riboD")) %>% 
-  select(term, disease_and_prep)
+fix_NB_polyA_list <- NB_polyA_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
 
-SS_riboD_expr <- SS_aRMS_log2tpm1 %>%
-  select(Gene, all_of(SS_riboD_list$term))
+fix_NB_riboD_list <- NB_riboD_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
 
-# aRMS polyA
-aRMS_polyA_list <- filtered_SS_aRMS_list %>%
-  filter(disease_and_prep %in% c("aRMS_polyA")) %>% 
-  select(term, disease_and_prep)
+fix_ALL_polyA_list <- ALL_polyA_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
 
-aRMS_polyA_expr <- SS_aRMS_log2tpm1 %>%
-  select(Gene, all_of(aRMS_polyA_list$term))
+fix_ALL_riboD_list <- ALL_riboD_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
 
-# aRMS riboD
-aRMS_riboD_list <- filtered_SS_aRMS_list %>%
-  filter(disease_and_prep %in% c("aRMS_riboD")) %>% 
-  select(term, disease_and_prep)
+fix_AML_polyA_list <- AML_polyA_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
 
-aRMS_riboD_expr <- SS_aRMS_log2tpm1 %>%
-  select(Gene, all_of(aRMS_riboD_list$term))
-
-# WT polyA
-WT_polyA_list <- filtered_WT_NB_list %>%
-  filter(disease_and_prep %in% c("WT_polyA")) %>% 
-  select(term, disease_and_prep)
-
-WT_polyA_expr <- WT_NB_log2tpm1 %>%
-  select(Gene, all_of(WT_polyA_list$term))
-
-# WT riboD 
-WT_riboD_list <- filtered_WT_NB_list %>%
-  filter(disease_and_prep %in% c("WT_riboD")) %>% 
-  select(term, disease_and_prep)
-
-WT_riboD_expr <- WT_NB_log2tpm1 %>%
-  select(Gene, all_of(WT_riboD_list$term))
-
-# NB polyA
-NB_polyA_list <- filtered_WT_NB_list %>%
-  filter(disease_and_prep %in% c("NB_polyA")) %>% 
-  select(term, disease_and_prep)
-
-NB_polyA_expr <- WT_NB_log2tpm1 %>%
-  select(Gene, all_of(NB_polyA_list$term))
-
-# NB riboD
-NB_riboD_list <- filtered_WT_NB_list %>%
-  filter(disease_and_prep %in% c("NB_riboD")) %>% 
-  select(term, disease_and_prep)
-
-NB_riboD_expr <- WT_NB_log2tpm1 %>%
-  select(Gene, all_of(NB_riboD_list$term))
-
-# ALL polyA
-ALL_polyA_list <- filtered_ALL_AML_list %>%
-  filter(disease_and_prep %in% c("ALL_polyA")) %>% 
-  select(term, disease_and_prep)
-
-ALL_polyA_expr <- ALL_AML_log2tpm1 %>%
-  select(Gene, all_of(ALL_polyA_list$term))
-
-# ALL riboD
-ALL_riboD_list <- filtered_ALL_AML_list %>%
-  filter(disease_and_prep %in% c("ALL_riboD")) %>% 
-  select(term, disease_and_prep)
-
-ALL_riboD_expr <- ALL_AML_log2tpm1 %>%
-  select(Gene, all_of(ALL_riboD_list$term))
-
-
-# AML polyA
-AML_polyA_list <- filtered_ALL_AML_list %>%
-  filter(disease_and_prep %in% c("AML_polyA")) %>% 
-  select(term, disease_and_prep)
-
-AML_polyA_expr <- ALL_AML_log2tpm1 %>%
-  select(Gene, all_of(AML_polyA_list$term))
-
-# AML riboD
-AML_riboD_list <- filtered_ALL_AML_list %>%
-  filter(disease_and_prep %in% c("AML_riboD")) %>% 
-  select(term, disease_and_prep)
-
-AML_riboD_expr <- ALL_AML_log2tpm1 %>%
-  select(Gene, all_of(AML_riboD_list$term))
+fix_AML_riboD_list <- AML_riboD_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
 ```
 
 Defining log2(TPM+1) bins
@@ -185,18 +184,18 @@ compute_gene_medians <- function(df, disease, compendia) {
 Compute gene medians
 
 ```{r compute gene medians}
-SS_polyA_med   <- compute_gene_medians(SS_polyA_expr,   "SS",   "polyA")
-SS_riboD_med   <- compute_gene_medians(SS_riboD_expr,   "SS",   "riboD")
-aRMS_polyA_med <- compute_gene_medians(aRMS_polyA_expr, "aRMS", "polyA")
-aRMS_riboD_med <- compute_gene_medians(aRMS_riboD_expr, "aRMS", "riboD")
-WT_polyA_med   <- compute_gene_medians(WT_polyA_expr,   "WT",   "polyA")
-WT_riboD_med   <- compute_gene_medians(WT_riboD_expr,   "WT",   "riboD")
-NB_polyA_med   <- compute_gene_medians(NB_polyA_expr,   "NB",   "polyA")
-NB_riboD_med   <- compute_gene_medians(NB_riboD_expr,   "NB",   "riboD")
-AML_polyA_med   <- compute_gene_medians(AML_polyA_expr,   "AML",   "polyA")
-AML_riboD_med   <- compute_gene_medians(AML_riboD_expr,   "AML",   "riboD")
-ALL_polyA_med   <- compute_gene_medians(ALL_polyA_expr,   "ALL",   "polyA")
-ALL_riboD_med  <- compute_gene_medians(ALL_riboD_expr,   "ALL",   "riboD")
+SS_polyA_med   <- compute_gene_medians(SS_polyA_log2tpm1,   "SS",   "polyA")
+SS_riboD_med   <- compute_gene_medians(SS_riboD_log2tpm1,   "SS",   "riboD")
+aRMS_polyA_med <- compute_gene_medians(aRMS_polyA_log2tpm1, "aRMS", "polyA")
+aRMS_riboD_med <- compute_gene_medians(aRMS_riboD_log2tpm1, "aRMS", "riboD")
+WT_polyA_med   <- compute_gene_medians(WT_polyA_log2tpm1,   "WT",   "polyA")
+WT_riboD_med   <- compute_gene_medians(WT_riboD_log2tpm1,   "WT",   "riboD")
+NB_polyA_med   <- compute_gene_medians(NB_polyA_log2tpm1,   "NB",   "polyA")
+NB_riboD_med   <- compute_gene_medians(NB_riboD_log2tpm1,   "NB",   "riboD")
+AML_polyA_med   <- compute_gene_medians(AML_polyA_log2tpm1,   "AML",   "polyA")
+AML_riboD_med   <- compute_gene_medians(AML_riboD_log2tpm1,   "AML",   "riboD")
+ALL_polyA_med   <- compute_gene_medians(ALL_polyA_log2tpm1,   "ALL",   "polyA")
+ALL_riboD_med  <- compute_gene_medians(ALL_riboD_log2tpm1,   "ALL",   "riboD")
 
 all_medians <- bind_rows(
   SS_polyA_med, SS_riboD_med,
