@@ -13,6 +13,8 @@ Stacked bar chart showing the proportion of unique genes expressed at different 
 
 ```{r install package}
 library(tidyverse)
+library(patchwork)
+library(cowplot)
 ```
 
 ```{r load in files}
@@ -269,7 +271,7 @@ scale_color_compendia <- function() {
 
 Generate stacked bar plot
 
-```{r}
+```{r Fig1C}
 # Get unique diseases
 diseasesC <- unique(bin_prop$Disease)
 
@@ -280,12 +282,12 @@ plots_by_diseaseC <- map(diseasesC, function(d) {
   
   ggplot(dfC, aes(x = Compendia, y = Proportion, fill = ExprBin)) +
     geom_bar(stat = "identity", position = "stack") +
-    scale_fill_viridis_d(option = "D") +
+    scale_fill_viridis_d(option = "D", name = "Expression \nin log2(TPM+1)") +
     labs(
-      title = paste("Proportion of Genes in log2(TPM+1) Thresholds -", d),
-      x = "Library Prep",
+      title = paste(d),
+      # x = "Library Prep",
       y = "Proportion of Genes",
-      fill = "Expression Bin"
+      fill = "Expression Level"
     ) +
     theme_2D()
 })
@@ -297,12 +299,62 @@ plots_by_diseaseC
 
 Save plot
 
-```{r}
+```{r save fig1c}
 # ggsave("/figures/fig1C.png", plot = plots_by_diseaseC, width = 6, height = 4, units = "in", dpi = 300)
+
+
+ggsave("../../Figures/Fig1C.png", plot = plots_by_diseaseC$SS)
+ggsave("../../Figures/Fig1C.tif", plot = plots_by_diseaseC$SS)
+
+```
+
+## Fig S2
+
+```{r FigS2}
+diseases_to_plot <- names(plots_by_diseaseC)
+n <- length(diseases_to_plot)
+ncols <- 6
+bottom_row <- diseases_to_plot[seq(from = ceiling(n / ncols) * ncols - ncols + 1, to = n)]
+
+
+plots_subset <- imap(plots_by_diseaseC[diseases_to_plot], function(p, name) {
+  if (!name %in% bottom_row) {
+    # hide x-axis on all panels except the last
+    p + theme(
+      axis.text.x = element_blank(),
+      axis.title.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
+  } else {
+    # show x-axis only on the last panel
+    p + theme(
+      axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+      axis.title.x = element_text(size = 12)
+    )
+  }
+})
+
+combined_figS2 <- wrap_plots(plots_subset, ncol = 6) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "right")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 4, r = 4),
+    plot.title = element_text(hjust = 0.35, face = "bold", size = 14),
+    legend.title = element_text(size = 12)
+  )
+
+combined_figS2
+```
+
+```{r save FigS2}
+ggsave("../../Figures/FigS2.png", plot = combined_figS2)
+ggsave("../../Figures/FigS2.tif", plot = combined_figS2)
 ```
 
 Session Info
 
-```{r}
+```{r session info}
 sessioninfo::session_info()
 ```
