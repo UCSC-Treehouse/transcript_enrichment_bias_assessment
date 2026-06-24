@@ -15,62 +15,195 @@ library(tidyverse)
 ```
 
     ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-    ✔ dplyr     1.2.1     ✔ readr     2.2.0
-    ✔ forcats   1.0.1     ✔ stringr   1.6.0
-    ✔ ggplot2   4.0.3     ✔ tibble    3.3.1
-    ✔ lubridate 1.9.5     ✔ tidyr     1.3.2
-    ✔ purrr     1.2.2     
+    ✔ dplyr     1.1.4     ✔ readr     2.1.5
+    ✔ forcats   1.0.1     ✔ stringr   1.5.2
+    ✔ ggplot2   4.0.0     ✔ tibble    3.3.0
+    ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+    ✔ purrr     1.1.0     
     ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
     ✖ dplyr::filter() masks stats::filter()
     ✖ dplyr::lag()    masks stats::lag()
     ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 
 ``` r
+library(patchwork)
+library(cowplot)
+```
+
+
+    Attaching package: 'cowplot'
+
+    The following object is masked from 'package:patchwork':
+
+        align_plots
+
+    The following object is masked from 'package:lubridate':
+
+        stamp
+
+``` r
 # expression files
-SS_aRMS_log2tpm1 <- read_tsv("../../input_data/SS_aRMS_log2TPM1_ensembl_TEBA.tsv.gz")
+SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv")
 ```
 
-    Rows: 60498 Columns: 61
+    Rows: 60498 Columns: 16
     ── Column specification ────────────────────────────────────────────────────────
     Delimiter: "\t"
     chr  (1): Gene
-    dbl (60): THR51_4556_S01, THR51_4558_S01, THR51_4554_S01, THR24_3992_S01, TH...
+    dbl (15): THR39_1373_S01, TCGA-WK-A8XT-01, TH40_2281_S01, THR39_1375_S01, TH...
 
     ℹ Use `spec()` to retrieve the full column specification for this data.
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-WT_NB_log2tpm1 <- read_tsv("../../input_data/WT_NB_log2TPM1_ensembl_TEBA.tsv.gz")
+SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv")
 ```
 
-    Rows: 60498 Columns: 61
+    Rows: 60498 Columns: 16
     ── Column specification ────────────────────────────────────────────────────────
     Delimiter: "\t"
     chr  (1): Gene
-    dbl (60): THR24_3218_S01, THR24_4194_S01, THR24_4284_S01, THR24_4369_S01, TH...
+    dbl (15): THR51_4556_S01, THR51_4558_S01, THR51_4554_S01, THR24_3992_S01, TH...
 
     ℹ Use `spec()` to retrieve the full column specification for this data.
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-ALL_AML_log2tpm1 <- read_tsv("../../input_data/ALL_AML_log2TPM1_ensembl_TEBA.tsv.gz")
+aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv")
 ```
 
-    Rows: 60498 Columns: 81
+    Rows: 60498 Columns: 16
     ── Column specification ────────────────────────────────────────────────────────
     Delimiter: "\t"
     chr  (1): Gene
-    dbl (80): THR24_1667_S01, THR24_2131_S01, THR24_2119_S01, THR24_1921_S01, TH...
+    dbl (15): THR29_0788_S01, THR29_0775_S01, THR29_0757_S01, THR29_0762_S01, TH...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv")
+```
+
+    Rows: 60498 Columns: 16
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr  (1): Gene
+    dbl (15): THR24_3244_S01, THR24_3371_S01, THR24_3181_S01, THR24_3178_S01, TH...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv")
+```
+
+    Rows: 60498 Columns: 16
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr  (1): Gene
+    dbl (15): TARGET-50-PAJNCZ-01, TARGET-50-PAEBXA-01, TARGET-50-PALERC-01, TAR...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv")
+```
+
+    Rows: 60498 Columns: 16
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr  (1): Gene
+    dbl (15): THR24_3218_S01, THR24_4194_S01, THR24_4284_S01, THR24_4369_S01, TH...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv")
+```
+
+    Rows: 60498 Columns: 16
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr  (1): Gene
+    dbl (15): TARGET-30-PASUML-01, TARGET-30-PASEGA-01, TARGET-30-PAPUAR-01, TAR...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv")
+```
+
+    Rows: 60498 Columns: 16
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr  (1): Gene
+    dbl (15): THR24_4310_S01, THR24_2779_S01, THR24_3516_S01, THR24_4114_S01, TH...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv")
+```
+
+    Rows: 60498 Columns: 21
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr  (1): Gene
+    dbl (20): THR24_1667_S01, THR24_2131_S01, THR24_2119_S01, THR24_1921_S01, TH...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv")
+```
+
+    Rows: 60498 Columns: 21
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr  (1): Gene
+    dbl (20): THR24_4203_S01, THR24_3471_S01, THR24_3688_S01, THR24_4235_S01, TH...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv")
+```
+
+    Rows: 60498 Columns: 21
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr  (1): Gene
+    dbl (20): TCGA-AB-2889-03, TCGA-AB-2844-03, TCGA-AB-2846-03, TCGA-AB-2881-03...
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv")
+```
+
+    Rows: 60498 Columns: 21
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr  (1): Gene
+    dbl (20): THR24_4050_S01, THR24_4356_S01, THR24_4265_S01, THR24_4263_S01, TH...
 
     ℹ Use `spec()` to retrieve the full column specification for this data.
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
 # sample ID files, from correlation_analysis
-filtered_SS_aRMS_list <- read_tsv("../../input_data/filtered_SS_aRMS_list.tsv")
+SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv")
 ```
 
-    Rows: 60 Columns: 2
+    Rows: 15 Columns: 2
     ── Column specification ────────────────────────────────────────────────────────
     Delimiter: "\t"
     chr (2): term, disease_and_prep
@@ -79,10 +212,10 @@ filtered_SS_aRMS_list <- read_tsv("../../input_data/filtered_SS_aRMS_list.tsv")
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-filtered_WT_NB_list <- read_tsv("../../input_data/filtered_WT_NB_list.tsv")
+SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv")
 ```
 
-    Rows: 60 Columns: 2
+    Rows: 15 Columns: 2
     ── Column specification ────────────────────────────────────────────────────────
     Delimiter: "\t"
     chr (2): term, disease_and_prep
@@ -91,10 +224,118 @@ filtered_WT_NB_list <- read_tsv("../../input_data/filtered_WT_NB_list.tsv")
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-filtered_ALL_AML_list <- read_tsv("../../input_data/filtered_ALL_AML_list.tsv")
+aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv")
 ```
 
-    Rows: 80 Columns: 2
+    Rows: 15 Columns: 2
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr (2): term, disease_and_prep
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv")
+```
+
+    Rows: 15 Columns: 2
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr (2): term, disease_and_prep
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv")
+```
+
+    Rows: 15 Columns: 2
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr (2): term, disease_and_prep
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv")
+```
+
+    Rows: 15 Columns: 2
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr (2): term, disease_and_prep
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv")
+```
+
+    Rows: 15 Columns: 2
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr (2): term, disease_and_prep
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv")
+```
+
+    Rows: 15 Columns: 2
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr (2): term, disease_and_prep
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv")
+```
+
+    Rows: 20 Columns: 2
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr (2): term, disease_and_prep
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv")
+```
+
+    Rows: 20 Columns: 2
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr (2): term, disease_and_prep
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv")
+```
+
+    Rows: 20 Columns: 2
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr (2): term, disease_and_prep
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv")
+```
+
+    Rows: 20 Columns: 2
     ── Column specification ────────────────────────────────────────────────────────
     Delimiter: "\t"
     chr (2): term, disease_and_prep
@@ -106,105 +347,6 @@ filtered_ALL_AML_list <- read_tsv("../../input_data/filtered_ALL_AML_list.tsv")
 # to convert EnsemblIDs to HugoIDs
 gene_names <- read.table("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt",
 header = TRUE, sep = "\t", stringsAsFactors = FALSE )
-```
-
-``` r
-# SS polyA
-SS_polyA_list <- filtered_SS_aRMS_list %>%
-  filter(disease_and_prep %in% c("SS_polyA")) %>% 
-  select(term, disease_and_prep)
-
-SS_polyA_expr <- SS_aRMS_log2tpm1 %>%
-  select(Gene, all_of(SS_polyA_list$term))
-
-# SS riboD
-SS_riboD_list <- filtered_SS_aRMS_list %>%
-  filter(disease_and_prep %in% c("SS_riboD")) %>% 
-  select(term, disease_and_prep)
-
-SS_riboD_expr <- SS_aRMS_log2tpm1 %>%
-  select(Gene, all_of(SS_riboD_list$term))
-
-# aRMS polyA
-aRMS_polyA_list <- filtered_SS_aRMS_list %>%
-  filter(disease_and_prep %in% c("aRMS_polyA")) %>% 
-  select(term, disease_and_prep)
-
-aRMS_polyA_expr <- SS_aRMS_log2tpm1 %>%
-  select(Gene, all_of(aRMS_polyA_list$term))
-
-# aRMS riboD
-aRMS_riboD_list <- filtered_SS_aRMS_list %>%
-  filter(disease_and_prep %in% c("aRMS_riboD")) %>% 
-  select(term, disease_and_prep)
-
-aRMS_riboD_expr <- SS_aRMS_log2tpm1 %>%
-  select(Gene, all_of(aRMS_riboD_list$term))
-
-# WT polyA
-WT_polyA_list <- filtered_WT_NB_list %>%
-  filter(disease_and_prep %in% c("WT_polyA")) %>% 
-  select(term, disease_and_prep)
-
-WT_polyA_expr <- WT_NB_log2tpm1 %>%
-  select(Gene, all_of(WT_polyA_list$term))
-
-# WT riboD 
-WT_riboD_list <- filtered_WT_NB_list %>%
-  filter(disease_and_prep %in% c("WT_riboD")) %>% 
-  select(term, disease_and_prep)
-
-WT_riboD_expr <- WT_NB_log2tpm1 %>%
-  select(Gene, all_of(WT_riboD_list$term))
-
-# NB polyA
-NB_polyA_list <- filtered_WT_NB_list %>%
-  filter(disease_and_prep %in% c("NB_polyA")) %>% 
-  select(term, disease_and_prep)
-
-NB_polyA_expr <- WT_NB_log2tpm1 %>%
-  select(Gene, all_of(NB_polyA_list$term))
-
-# NB riboD
-NB_riboD_list <- filtered_WT_NB_list %>%
-  filter(disease_and_prep %in% c("NB_riboD")) %>% 
-  select(term, disease_and_prep)
-
-NB_riboD_expr <- WT_NB_log2tpm1 %>%
-  select(Gene, all_of(NB_riboD_list$term))
-
-# ALL polyA
-ALL_polyA_list <- filtered_ALL_AML_list %>%
-  filter(disease_and_prep %in% c("ALL_polyA")) %>% 
-  select(term, disease_and_prep)
-
-ALL_polyA_expr <- ALL_AML_log2tpm1 %>%
-  select(Gene, all_of(ALL_polyA_list$term))
-
-# ALL riboD
-ALL_riboD_list <- filtered_ALL_AML_list %>%
-  filter(disease_and_prep %in% c("ALL_riboD")) %>% 
-  select(term, disease_and_prep)
-
-ALL_riboD_expr <- ALL_AML_log2tpm1 %>%
-  select(Gene, all_of(ALL_riboD_list$term))
-
-
-# AML polyA
-AML_polyA_list <- filtered_ALL_AML_list %>%
-  filter(disease_and_prep %in% c("AML_polyA")) %>% 
-  select(term, disease_and_prep)
-
-AML_polyA_expr <- ALL_AML_log2tpm1 %>%
-  select(Gene, all_of(AML_polyA_list$term))
-
-# AML riboD
-AML_riboD_list <- filtered_ALL_AML_list %>%
-  filter(disease_and_prep %in% c("AML_riboD")) %>% 
-  select(term, disease_and_prep)
-
-AML_riboD_expr <- ALL_AML_log2tpm1 %>%
-  select(Gene, all_of(AML_riboD_list$term))
 ```
 
 Convert EnsemblIDs to HugoIDs
@@ -222,14 +364,14 @@ Finding median expression genes
 
 ``` r
 # Find gene medians in polyA SS
-SS_polyA_medians <- SS_polyA_expr %>%
+SS_polyA_medians <- SS_polyA_log2tpm1 %>%
   rowwise() %>%
   mutate(SS_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
   select(Gene, SS_polyA_median)
 
 # Find gene medians in riboD SS
-SS_riboD_medians <- SS_riboD_expr %>%
+SS_riboD_medians <- SS_riboD_log2tpm1 %>%
   rowwise() %>%
   mutate(SS_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
@@ -264,14 +406,14 @@ SS_most_average_gene_hugo
 
 ``` r
 # Find gene medians in polyA aRMS
-aRMS_polyA_medians <- aRMS_polyA_expr %>%
+aRMS_polyA_medians <- aRMS_polyA_log2tpm1 %>%
   rowwise() %>%
   mutate(aRMS_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
   select(Gene, aRMS_polyA_median)
 
 # Find gene medians in riboD aRMS
-aRMS_riboD_medians <- aRMS_riboD_expr %>%
+aRMS_riboD_medians <- aRMS_riboD_log2tpm1 %>%
   rowwise() %>%
   mutate(aRMS_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
@@ -306,14 +448,14 @@ aRMS_most_average_gene_hugo
 
 ``` r
 # Find gene medians in polyA WT
-WT_polyA_medians <- WT_polyA_expr %>%
+WT_polyA_medians <- WT_polyA_log2tpm1 %>%
   rowwise() %>%
   mutate(WT_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
   select(Gene, WT_polyA_median)
 
 # Find gene medians in riboD WT
-WT_riboD_medians <- WT_riboD_expr %>%
+WT_riboD_medians <- WT_riboD_log2tpm1 %>%
   rowwise() %>%
   mutate(WT_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
@@ -348,14 +490,14 @@ WT_most_average_gene_hugo
 
 ``` r
 # Find gene medians in polyA NB
-NB_polyA_medians <- NB_polyA_expr %>%
+NB_polyA_medians <- NB_polyA_log2tpm1 %>%
   rowwise() %>%
   mutate(NB_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
   select(Gene, NB_polyA_median)
 
 # Find gene medians in riboD NB
-NB_riboD_medians <- NB_riboD_expr %>%
+NB_riboD_medians <- NB_riboD_log2tpm1 %>%
   rowwise() %>%
   mutate(NB_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
@@ -390,14 +532,14 @@ NB_most_average_gene_hugo
 
 ``` r
 # Find gene medians in polyA ALL
-ALL_polyA_medians <- ALL_polyA_expr %>%
+ALL_polyA_medians <- ALL_polyA_log2tpm1 %>%
   rowwise() %>%
   mutate(ALL_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
   select(Gene, ALL_polyA_median)
 
 # Find gene medians in riboD ALL
-ALL_riboD_medians <- ALL_riboD_expr %>%
+ALL_riboD_medians <- ALL_riboD_log2tpm1 %>%
   rowwise() %>%
   mutate(ALL_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
@@ -432,14 +574,14 @@ ALL_most_average_gene_hugo
 
 ``` r
 # Find gene medians in polyA AML
-AML_polyA_medians <- AML_polyA_expr %>%
+AML_polyA_medians <- AML_polyA_log2tpm1 %>%
   rowwise() %>%
   mutate(AML_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
   select(Gene, AML_polyA_median)
 
 # Find gene medians in riboD AML
-AML_riboD_medians <- AML_riboD_expr %>%
+AML_riboD_medians <- AML_riboD_log2tpm1 %>%
   rowwise() %>%
   mutate(AML_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
   ungroup() %>%
@@ -476,60 +618,60 @@ Converting expression to hugoIDs
 
 ``` r
 # SS
-SS_polyA_expression_hugo <- SS_polyA_expr %>%
+SS_polyA_expression_hugo <- SS_polyA_log2tpm1 %>%
   convert_to_hugo()
 
-SS_riboD_expression_hugo <- SS_riboD_expr %>%
+SS_riboD_expression_hugo <- SS_riboD_log2tpm1 %>%
   convert_to_hugo()
 
 SS_gene_medians_hugo <- SS_gene_medians %>%
   convert_to_hugo()
 
 # aRMS
-aRMS_polyA_expression_hugo <- aRMS_polyA_expr %>%
+aRMS_polyA_expression_hugo <- aRMS_polyA_log2tpm1 %>%
   convert_to_hugo() 
 
-aRMS_riboD_expression_hugo <- aRMS_riboD_expr %>%
+aRMS_riboD_expression_hugo <- aRMS_riboD_log2tpm1 %>%
   convert_to_hugo()
 
 aRMS_gene_median_hugo <- aRMS_gene_medians %>%
   convert_to_hugo()
 
 # WT
-WT_polyA_expression_hugo <- WT_polyA_expr %>%
+WT_polyA_expression_hugo <- WT_polyA_log2tpm1 %>%
   convert_to_hugo()
 
-WT_riboD_expression_hugo <- WT_riboD_expr %>%
+WT_riboD_expression_hugo <- WT_riboD_log2tpm1 %>%
   convert_to_hugo()
 
 WT_gene_medians_hugo <- WT_gene_medians %>%
   convert_to_hugo()
 
 # NB
-NB_polyA_expression_hugo <- NB_polyA_expr %>%
+NB_polyA_expression_hugo <- NB_polyA_log2tpm1 %>%
   convert_to_hugo()
 
-NB_riboD_expression_hugo <- NB_riboD_expr %>%
+NB_riboD_expression_hugo <- NB_riboD_log2tpm1 %>%
   convert_to_hugo()
 
 NB_gene_medians_hugo <- NB_gene_medians %>%
   convert_to_hugo()
 
 # ALL
-ALL_polyA_expression_hugo <- ALL_polyA_expr %>%
+ALL_polyA_expression_hugo <- ALL_polyA_log2tpm1 %>%
   convert_to_hugo()
 
-ALL_riboD_expression_hugo <- ALL_riboD_expr %>%
+ALL_riboD_expression_hugo <- ALL_riboD_log2tpm1 %>%
   convert_to_hugo()
 
 ALL_gene_medians_hugo <- ALL_gene_medians %>%
   convert_to_hugo()
 
 # AML
-AML_polyA_expression_hugo <- AML_polyA_expr %>%
+AML_polyA_expression_hugo <- AML_polyA_log2tpm1 %>%
   convert_to_hugo()
 
-AML_riboD_expression_hugo <- AML_riboD_expr %>%
+AML_riboD_expression_hugo <- AML_riboD_log2tpm1 %>%
   convert_to_hugo()
 
 AML_gene_medians_hugo <- AML_gene_medians %>%
@@ -622,7 +764,7 @@ avg_AML_polyA_expression <- AML_polyA_expression_hugo %>%
    filter(Gene == AML_most_average_gene_hugo$Gene)
 ```
 
-Reformating HIST1H1B data
+Reformatting HIST1H1B data
 
 ``` r
 H1B_SS_polyA_long <- H1B_SS_polyA_expression %>%
@@ -844,8 +986,6 @@ scale_color_compendia <- function() {
   }
 ```
 
-Merged plot
-
 ``` r
 # Map of median-ratio genes
 median_gene_map <- list(
@@ -859,85 +999,6 @@ median_gene_map <- list(
 
 diseases <- unique(combined_long$Disease)
 ```
-
-Generate merged plot for each disease
-
-``` r
-merged_plots <- map(diseases, function(d) {
-
-  median_gene <- median_gene_map[[d]]
-
-  # HIST1H1B expression
-  df_h1b <- combined_long %>%
-    filter(Disease == d, Gene == "HIST1H1B") %>%
-    mutate(PlotType = "HIST1H1B (PolyA-)")
-
-  # Median-ratio gene expression
-  df_median <- combined_long %>%
-    filter(Disease == d, Gene == median_gene) %>%
-    mutate(PlotType = "Median Ratio Gene (PolyA+)")
-
-  # Combine
-  df_combined <- bind_rows(df_h1b, df_median)
-
-  ggplot(df_combined, aes(x = Gene, y = Expression, fill = Compendia)) +
-    geom_boxplot(
-      alpha = 0.7,
-      position = position_dodge(width = 0.8),
-      outlier.shape = NA,
-      linewidth = 0.4
-    ) +
-    geom_jitter(
-      aes(color = Compendia),
-      position = position_jitterdodge(jitter.width = 0.2,
-                                      dodge.width = 0.8),
-      size = 1.2,
-      alpha = 0.6
-    ) +
-    scale_fill_compendia() +
-    scale_color_compendia() +
-    coord_cartesian(ylim = c(0, 17)) +
-    facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
-    labs(
-      title = paste("Expression of Representative PolyA+ and PolyA- Gene in", d),
-      x = "Gene",
-      y = "Expression log2(TPM+1)"
-    ) +
-    color_theme()
-})
-
-names(merged_plots) <- diseases
-merged_plots
-```
-
-    $SS
-
-![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-1.png)
-
-
-    $aRMS
-
-![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-2.png)
-
-
-    $WT
-
-![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-3.png)
-
-
-    $NB
-
-![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-4.png)
-
-
-    $ALL
-
-![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-5.png)
-
-
-    $AML
-
-![](Fig1E_F_files/figure-commonmark/Fig1E_nostars-6.png)
 
 Statistical test for significance
 
@@ -1065,7 +1126,7 @@ sig_results
 Apply stars to figures
 
 ``` r
-merged_plots <- map(diseases, function(d) {
+Fig1E_SS <- map(diseases, function(d) {
 
   median_gene <- median_gene_map[[d]]
 
@@ -1115,20 +1176,154 @@ merged_plots <- map(diseases, function(d) {
       data = star_df,
       aes(x = Gene, y = y_star, label = stars_adj),
       inherit.aes = FALSE,
-      size = 6
+      size = 12
     ) +
     scale_fill_compendia() +
     scale_color_compendia() +
-    coord_cartesian(ylim = c(0, y_star * 1.1)) +
+    coord_cartesian(ylim = c(0, 10)) +
     facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
     labs(
-      title = paste("Expression of Representative PolyA+ and PolyA- Gene in", d),
-      x = "Gene",
+      title = paste(d),
+      x = NULL,
       y = "Expression log2(TPM+1)"
     ) +
-    color_theme()
+    color_theme() +
+    theme(
+      axis.title.y = element_text(size = 20),
+      axis.text.y = element_text(size = 14),
+      axis.text.x = element_text(size = 20),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2),
+      legend.position = "bottom",
+      legend.text = element_text(size = 16),       # <-- label text size
+      legend.title = element_text(size = 18),      # <-- title text size
+      legend.key.size = unit(1, "cm"), # <-- box/key size
+      legend.margin = margin(t = -2) 
+    ) 
 })
-merged_plots
+Fig1E_SS
+```
+
+    [[1]]
+
+![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-1.png)
+
+
+    [[2]]
+
+![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-2.png)
+
+
+    [[3]]
+
+![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-3.png)
+
+
+    [[4]]
+
+![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-4.png)
+
+
+    [[5]]
+
+![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-5.png)
+
+
+    [[6]]
+
+![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-6.png)
+
+``` r
+ggsave("../../Figures/Fig1E.png", plot = Fig1E_SS[[1]])
+```
+
+    Saving 7 x 5 in image
+
+``` r
+ggsave("../../Figures/Fig1E.tif", plot = Fig1E_SS[[1]])
+```
+
+    Saving 7 x 5 in image
+
+``` r
+saveRDS(Fig1E_SS[[1]],"../../Figures/Fig1E.rds")
+```
+
+``` r
+Fig1E <- map(diseases, function(d) {
+
+  median_gene <- median_gene_map[[d]]
+
+  # HIST1H1B expression
+  df_h1b <- combined_long %>%
+    filter(Disease == d, Gene == "HIST1H1B") %>%
+    mutate(PlotType = "HIST1H1B (PolyA-)")
+
+  # Median-ratio gene expression
+  df_median <- combined_long %>%
+    filter(Disease == d, Gene == median_gene) %>%
+    mutate(PlotType = "Median Ratio Gene (PolyA+)")
+
+  # Combine
+  df_combined <- bind_rows(df_h1b, df_median)
+
+  # SIGNIFICANCE STARS
+  star_df <- tibble(
+    Disease = d,
+    Gene = c("HIST1H1B", median_gene),
+    PlotType = c("HIST1H1B (PolyA-)", "Median Ratio Gene (PolyA+)"),
+    stars_adj = sig_results %>%
+      filter(Disease == d, Gene %in% c("HIST1H1B", median_gene)) %>%
+      arrange(match(Gene, c("HIST1H1B", median_gene))) %>%
+      pull(stars_adj)
+  )
+
+  # y-position for stars (slightly above max)
+  y_star <- max(df_combined$Expression, na.rm = TRUE) * 1.05
+
+  ggplot(df_combined, aes(x = Gene, y = Expression, fill = Compendia)) +
+    geom_boxplot(
+      alpha = 0.7,
+      position = position_dodge(width = 0.8),
+      outlier.shape = NA,
+      linewidth = 0.4
+    ) +
+    geom_jitter(
+      aes(color = Compendia),
+      position = position_jitterdodge(jitter.width = 0.2,
+                                      dodge.width = 0.8),
+      size = 1.2,
+      alpha = 0.6
+    ) +
+    # ADD STARS
+    geom_text(
+      data = star_df,
+      aes(x = Gene, y = y_star, label = stars_adj),
+      inherit.aes = FALSE,
+      size = 12
+    ) +
+    scale_fill_compendia() +
+    scale_color_compendia() +
+    coord_cartesian(ylim = c(0, 10)) +
+    facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
+    labs(
+      title = paste(d),
+      x = NULL,
+      y = "Expression log2(TPM+1)"
+    ) +
+    color_theme() +
+    theme(
+      axis.title.y = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2),
+      legend.text = element_text(size = 26),       # <-- label text size
+      legend.title = element_text(size = 26),      # <-- title text size
+      legend.key.size = unit(2, "cm") # <-- box/key size
+    )
+})
+Fig1E
 ```
 
     [[1]]
@@ -1159,6 +1354,35 @@ merged_plots
     [[6]]
 
 ![](Fig1E_F_files/figure-commonmark/Fig1E-6.png)
+
+## Fig S4
+
+``` r
+SS <- Fig1E[[1]]
+aRMS <- Fig1E[[2]]
+WT <- Fig1E[[3]]
+NB <- Fig1E[[4]]
+ALL <- Fig1E[[5]]
+AML <- Fig1E[[6]]
+
+FigS4 <- wrap_plots(SS, aRMS, WT, NB, ALL, AML, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 4, r = 4),
+    plot.title = element_text(face = "bold", size = 30)
+  )
+FigS4
+```
+
+![](Fig1E_F_files/figure-commonmark/FigS4-1.png)
+
+``` r
+ggsave("../../Figures/FigS4.png", FigS4, width = 20, height = 30, dpi = 500)
+ggsave("../../Figures/FigS4.tif", FigS4, width = 20, height = 30, dpi = 500)
+```
 
 ## Fig 1F
 
@@ -1234,215 +1458,577 @@ ALL_HIST1H1B <- ALL_gene_medians_hugo %>%
 ```
 
 ``` r
-Fig1F_aRMS <- ggplot(arms_ratios, aes(x = Ratio)) +
-  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
-  geom_vline(xintercept = aRMS_most_average_gene_hugo$aRMS_median_ratio, color = "#0072B2", linetype = "dashed") +
-  geom_text(aes(x = 2.2, y = 2000, label = aRMS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
-  geom_vline(xintercept = aRMS_HIST1H1B$aRMS_median_ratio, color = "#E69F00", linetype = "dashed") +
-  geom_text(aes(x = 0.8, y = 3000, label = aRMS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
-  coord_cartesian(xlim = c(0, 10)) +
-  labs(
-#    title = "Distribution of polyA / riboD Median Ratios in aRMS Samples",
-    x = "aRMS Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
-  ) +
-  theme_Fig1F()
-
-Fig1F_aRMS
-```
-
-    Warning in geom_text(aes(x = 2.2, y = 2000, label = aRMS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.8, y = 3000, label = aRMS_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 27707 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-![](Fig1E_F_files/figure-commonmark/fig1F%20aRMS-1.png)
-
-``` r
-Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
+# Fig1F - SS standalone
+Fig1F <- ggplot(ss_ratios, aes(x = Ratio)) +
   geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
   
-  geom_vline(xintercept = SS_most_average_gene_hugo$SS_median_ratio, color = "#0072B2", linetype = "dashed") +
+  geom_vline(xintercept = SS_most_average_gene_hugo$SS_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.2, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.4, hjust = 0.3, color = "#0072B2", size = 8) +
   
-  geom_vline(xintercept = SS_HIST1H1B$SS_median_ratio, color = "#E69F00", linetype = "dashed") +
+  geom_vline(xintercept = SS_HIST1H1B$SS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.8, y = 3000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -5, hjust = 0.2, color = "#E69F00", size = 8) +
   
-  coord_cartesian(xlim = c(0, 10)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
   labs(
-#    title = "Distribution of polyA / riboD Median Ratios in SS Samples",
-    x = "SS Median Expression Ratio (polyA / riboD)",
+    title = "SS",
+    x = "Median Expression Ratio",
     y = "Number of Genes"
   ) +
-  theme_Fig1F()
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 22),
+      axis.title.x = element_text(size = 22),
+      axis.text.y = element_text(size = 18),
+      axis.text.x = element_text(size = 18),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
 
-Fig1F_SS
+Fig1F
 ```
 
-    Warning in geom_text(aes(x = 2.2, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
     ℹ Please consider using `annotate()` or provide this layer with data containing
       a single row.
 
-    Warning in geom_text(aes(x = 0.8, y = 3000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
     ℹ Please consider using `annotate()` or provide this layer with data containing
       a single row.
 
     Warning: Removed 29257 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_F_files/figure-commonmark/fig1F%20SS-1.png)
+![](Fig1E_F_files/figure-commonmark/Fig1F-1.png)
+
+``` r
+ggsave("../../Figures/Fig1F.png", plot = Fig1F)
+```
+
+    Saving 7 x 5 in image
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 29257 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+``` r
+ggsave("../../Figures/Fig1F.tif", plot = Fig1F)
+```
+
+    Saving 7 x 5 in image
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 29257 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+``` r
+saveRDS(Fig1F, "../../Figures/Fig1F.rds")
+```
+
+``` r
+Fig1F_aRMS <- ggplot(arms_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  geom_vline(xintercept = aRMS_most_average_gene_hugo$aRMS_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
+  
+  geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+  
+  geom_vline(xintercept = aRMS_HIST1H1B$aRMS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
+  
+  geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  labs(
+    title = "aRMS",
+    x = "Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
+
+Fig1F_aRMS
+```
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 27707 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+![](Fig1E_F_files/figure-commonmark/fig1F_aRMS-1.png)
+
+``` r
+Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = SS_most_average_gene_hugo$SS_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
+  
+  geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+  
+  geom_vline(xintercept = SS_HIST1H1B$SS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
+  
+  geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+  
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  labs(
+    title = "SS",
+    x = "Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
+
+Fig1F_SS
+```
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 29257 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+![](Fig1E_F_files/figure-commonmark/fig1F_SS-1.png)
 
 ``` r
 Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
   geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
   
-  geom_vline(xintercept = WT_most_average_gene_hugo$WT_median_ratio, color = "#0072B2", linetype = "dashed") +
+  geom_vline(xintercept = WT_most_average_gene_hugo$WT_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.2, y = 2000, label = WT_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
   
-  geom_vline(xintercept = WT_HIST1H1B$WT_median_ratio, color = "#E69F00", linetype = "dashed") +
+  geom_vline(xintercept = WT_HIST1H1B$WT_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.95, y = 3000, label = WT_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
   labs(
-#    title = "Distribution of polyA / riboD Median Ratios in WT Samples",
-    x = "WT Median Expression Ratio (polyA / riboD)",
+    title = "WT",
+    x = "Median Expression Ratio (polyA / riboD)",
     y = "Number of Genes"
   ) +
-  theme_Fig1F()
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
 
 Fig1F_WT
 ```
 
-    Warning in geom_text(aes(x = 2.2, y = 2000, label = WT_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
     ℹ Please consider using `annotate()` or provide this layer with data containing
       a single row.
 
-    Warning in geom_text(aes(x = 0.95, y = 3000, label = WT_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
     ℹ Please consider using `annotate()` or provide this layer with data containing
       a single row.
 
     Warning: Removed 26797 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_F_files/figure-commonmark/fig1f%20WT-1.png)
+![](Fig1E_F_files/figure-commonmark/fig1f_WT-1.png)
 
 ``` r
 Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
   geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
   
-  geom_vline(xintercept = NB_most_average_gene_hugo$NB_median_ratio, color = "#0072B2", linetype = "dashed") +
+  geom_vline(xintercept = NB_most_average_gene_hugo$NB_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.4, y = 2000, label = NB_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
   
-  geom_vline(xintercept = NB_HIST1H1B$NB_median_ratio, color = "#E69F00", linetype = "dashed") +
+  geom_vline(xintercept = NB_HIST1H1B$NB_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.9, y = 3000, label = NB_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
   labs(
-#    title = "Distribution of polyA / riboD Median Ratios in NB Samples",
-    x = "NB Median Expression Ratio (polyA / riboD)",
+    title = "NB",
+    x = "Median Expression Ratio (polyA / riboD)",
     y = "Number of Genes"
   ) +
-  theme_Fig1F()
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
 
 Fig1F_NB
 ```
 
-    Warning in geom_text(aes(x = 2.4, y = 2000, label = NB_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
     ℹ Please consider using `annotate()` or provide this layer with data containing
       a single row.
 
-    Warning in geom_text(aes(x = 0.9, y = 3000, label = NB_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
     ℹ Please consider using `annotate()` or provide this layer with data containing
       a single row.
 
     Warning: Removed 25112 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_F_files/figure-commonmark/fig1F%20NB-1.png)
+![](Fig1E_F_files/figure-commonmark/fig1F_NB-1.png)
 
 ``` r
 Fig1F_ALL <- ggplot(all_ratios, aes(x = Ratio)) +
   geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
   
-  geom_vline(xintercept = ALL_most_average_gene_hugo$ALL_median_ratio, color = "#0072B2", linetype = "dashed") +
+  geom_vline(xintercept = ALL_most_average_gene_hugo$ALL_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.9, y = 2000, label = ALL_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
   
-  geom_vline(xintercept = ALL_HIST1H1B$ALL_median_ratio, color = "#E69F00", linetype = "dashed") +
+  geom_vline(xintercept = ALL_HIST1H1B$AML_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.9, y = 2500, label = ALL_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
   labs(
-#    title = "Distribution of polyA / riboD Median Ratios in ALL Samples",
-    x = "ALL Median Expression Ratio (polyA / riboD)",
+    title = "ALL",
+    x = "Median Expression Ratio (polyA / riboD)",
     y = "Number of Genes"
   ) +
-  theme_Fig1F()
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
+```
 
+    Warning: Unknown or uninitialised column: `AML_median_ratio`.
+
+``` r
 Fig1F_ALL
 ```
 
-    Warning in geom_text(aes(x = 2.9, y = 2000, label = ALL_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
     ℹ Please consider using `annotate()` or provide this layer with data containing
       a single row.
 
-    Warning in geom_text(aes(x = 0.9, y = 2500, label = ALL_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
     ℹ Please consider using `annotate()` or provide this layer with data containing
       a single row.
 
     Warning: Removed 31150 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_F_files/figure-commonmark/fig1F%20ALL-1.png)
+![](Fig1E_F_files/figure-commonmark/fig1F_ALL-1.png)
 
 ``` r
 Fig1F_AML <- ggplot(aml_ratios, aes(x = Ratio)) +
   geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
   
-  geom_vline(xintercept = AML_most_average_gene_hugo$AML_median_ratio, color = "#0072B2", linetype = "dashed") +
+  geom_vline(xintercept = AML_most_average_gene_hugo$AML_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.5, y = 1500, label = AML_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
   
-  geom_vline(xintercept = AML_HIST1H1B$AML_median_ratio, color = "#E69F00", linetype = "dashed") +
+  geom_vline(xintercept = AML_HIST1H1B$AML_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.9, y = 1500, label = AML_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
   labs(
-#    title = "Distribution of polyA / riboD Median Ratios in AML Samples",
-    x = "AML Median Expression Ratio (polyA / riboD)",
+   title = "AML",
+    x = "Median Expression Ratio (polyA / riboD)",
     y = "Number of Genes"
   ) +
-  theme_Fig1F()
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
 
 Fig1F_AML
 ```
 
-    Warning in geom_text(aes(x = 2.5, y = 1500, label = AML_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
     ℹ Please consider using `annotate()` or provide this layer with data containing
       a single row.
 
-    Warning in geom_text(aes(x = 0.9, y = 1500, label = AML_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
     ℹ Please consider using `annotate()` or provide this layer with data containing
       a single row.
 
     Warning: Removed 30953 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-![](Fig1E_F_files/figure-commonmark/fig1F%20AML-1.png)
+![](Fig1E_F_files/figure-commonmark/fig1F_AML-1.png)
+
+## Fig S5
+
+``` r
+FigS5 <- wrap_plots(Fig1F_SS, Fig1F_aRMS, Fig1F_WT, Fig1F_NB, Fig1F_ALL, Fig1F_AML, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 4, r = 4),
+    plot.title = element_text(face = "bold", size = 30),
+    legend.title = NULL
+  )
+FigS5
+```
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 29257 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 27707 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 26797 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 25112 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 31150 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 30953 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+![](Fig1E_F_files/figure-commonmark/FigS5-1.png)
+
+``` r
+ggsave("../../Figures/FigS5.png", FigS5, width = 20, height = 30, dpi = 500)
+```
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 29257 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 27707 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 26797 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 25112 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 31150 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 30953 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+``` r
+ggsave("../../Figures/FigS5.tif", FigS5, width = 20, height = 30, dpi = 500)
+```
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 29257 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 27707 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 26797 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 25112 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 31150 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+    Warning in geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 30953 rows containing non-finite outside the scale range
+    (`stat_bin()`).
 
 Session Info
 
@@ -1460,64 +2046,66 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-06-12
+     date     2026-06-24
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
     ─ Packages ───────────────────────────────────────────────────────────────────
-     ! package      * version date (UTC) lib source
-     P bit            4.6.0   2025-03-06 [?] RSPM
-     P bit64          4.8.0   2026-04-21 [?] RSPM
-     P cli            3.6.5   2025-04-23 [?] RSPM
-     P crayon         1.5.3   2024-06-20 [?] RSPM
-     P digest         0.6.37  2024-08-19 [?] RSPM
-     P dplyr        * 1.2.1   2026-04-03 [?] RSPM
-     P evaluate       1.0.5   2025-08-27 [?] RSPM
-     P farver         2.1.2   2024-05-13 [?] RSPM
-     P fastmap        1.2.0   2024-05-15 [?] RSPM
-     P forcats      * 1.0.1   2025-09-25 [?] RSPM
-     P generics       0.1.4   2025-05-09 [?] RSPM
-     P ggplot2      * 4.0.3   2026-04-22 [?] RSPM
-     P glue           1.8.0   2024-09-30 [?] RSPM
-     P gtable         0.3.6   2024-10-25 [?] RSPM
-     P hms            1.1.4   2025-10-17 [?] RSPM
-     P htmltools      0.5.8.1 2024-04-04 [?] RSPM
-     P jsonlite       2.0.0   2025-03-27 [?] RSPM
-     P knitr          1.50    2025-03-16 [?] RSPM
-     P labeling       0.4.3   2023-08-29 [?] RSPM
-     P lifecycle      1.0.5   2026-01-08 [?] RSPM
-     P lubridate    * 1.9.5   2026-02-04 [?] RSPM
-     P magrittr       2.0.5   2026-04-04 [?] RSPM
-     P pillar         1.11.1  2025-09-17 [?] RSPM
-     P pkgconfig      2.0.3   2019-09-22 [?] RSPM
-     P purrr        * 1.2.2   2026-04-10 [?] RSPM
-     P R6             2.6.1   2025-02-15 [?] RSPM
-     P RColorBrewer   1.1-3   2022-04-03 [?] RSPM
-     P readr        * 2.2.0   2026-02-19 [?] RSPM
-     P rlang          1.2.0   2026-04-06 [?] RSPM
-     P rmarkdown      2.30    2025-09-28 [?] RSPM
-     P rstudioapi     0.18.0  2026-01-16 [?] RSPM
-     P S7             0.2.2   2026-04-22 [?] RSPM
-     P scales         1.4.0   2025-04-24 [?] RSPM
-     P sessioninfo    1.2.3   2025-02-05 [?] CRAN (R 4.5.0)
-     P stringi        1.8.7   2025-03-27 [?] RSPM
-     P stringr      * 1.6.0   2025-11-04 [?] RSPM
-     P tibble       * 3.3.1   2026-01-11 [?] RSPM
-     P tidyr        * 1.3.2   2025-12-19 [?] RSPM
-     P tidyselect     1.2.1   2024-03-11 [?] RSPM
-     P tidyverse    * 2.0.0   2023-02-22 [?] RSPM
-     P timechange     0.4.0   2026-01-29 [?] RSPM
-     P tzdb           0.5.0   2025-03-15 [?] RSPM
-     P vctrs          0.7.3   2026-04-11 [?] RSPM
-     P vroom          1.7.1   2026-03-31 [?] RSPM
-     P withr          3.0.2   2024-10-28 [?] RSPM
-     P xfun           0.55    2025-12-16 [?] CRAN (R 4.5.2)
-     P yaml           2.3.10  2024-07-26 [?] RSPM
+     package      * version date (UTC) lib source
+     bit            4.6.0   2025-03-06 [1] CRAN (R 4.5.0)
+     bit64          4.6.0-1 2025-01-16 [1] CRAN (R 4.5.0)
+     cli            3.6.5   2025-04-23 [1] CRAN (R 4.5.0)
+     cowplot      * 1.2.0   2025-07-07 [1] CRAN (R 4.5.0)
+     crayon         1.5.3   2024-06-20 [1] CRAN (R 4.5.0)
+     digest         0.6.37  2024-08-19 [1] CRAN (R 4.5.0)
+     dplyr        * 1.1.4   2023-11-17 [1] CRAN (R 4.5.0)
+     evaluate       1.0.5   2025-08-27 [1] CRAN (R 4.5.0)
+     farver         2.1.2   2024-05-13 [1] CRAN (R 4.5.0)
+     fastmap        1.2.0   2024-05-15 [1] CRAN (R 4.5.0)
+     forcats      * 1.0.1   2025-09-25 [1] CRAN (R 4.5.0)
+     generics       0.1.4   2025-05-09 [1] CRAN (R 4.5.0)
+     ggplot2      * 4.0.0   2025-09-11 [1] CRAN (R 4.5.0)
+     glue           1.8.0   2024-09-30 [1] CRAN (R 4.5.0)
+     gtable         0.3.6   2024-10-25 [1] CRAN (R 4.5.0)
+     hms            1.1.4   2025-10-17 [1] CRAN (R 4.5.0)
+     htmltools      0.5.8.1 2024-04-04 [1] CRAN (R 4.5.0)
+     jsonlite       2.0.0   2025-03-27 [1] CRAN (R 4.5.0)
+     knitr          1.50    2025-03-16 [1] CRAN (R 4.5.0)
+     labeling       0.4.3   2023-08-29 [1] CRAN (R 4.5.0)
+     lifecycle      1.0.4   2023-11-07 [1] CRAN (R 4.5.0)
+     lubridate    * 1.9.4   2024-12-08 [1] CRAN (R 4.5.0)
+     magrittr       2.0.4   2025-09-12 [1] CRAN (R 4.5.0)
+     patchwork    * 1.3.2   2025-08-25 [1] CRAN (R 4.5.0)
+     pillar         1.11.1  2025-09-17 [1] CRAN (R 4.5.0)
+     pkgconfig      2.0.3   2019-09-22 [1] CRAN (R 4.5.0)
+     purrr        * 1.1.0   2025-07-10 [1] CRAN (R 4.5.0)
+     R6             2.6.1   2025-02-15 [1] CRAN (R 4.5.0)
+     ragg           1.5.0   2025-09-02 [1] CRAN (R 4.5.0)
+     RColorBrewer   1.1-3   2022-04-03 [1] CRAN (R 4.5.0)
+     readr        * 2.1.5   2024-01-10 [1] CRAN (R 4.5.0)
+     rlang          1.2.0   2026-04-06 [1] CRAN (R 4.5.2)
+     rmarkdown      2.30    2025-09-28 [1] CRAN (R 4.5.0)
+     rstudioapi     0.17.1  2024-10-22 [1] CRAN (R 4.5.0)
+     S7             0.2.0   2024-11-07 [1] CRAN (R 4.5.0)
+     scales         1.4.0   2025-04-24 [1] CRAN (R 4.5.0)
+     sessioninfo    1.2.3   2025-02-05 [1] CRAN (R 4.5.0)
+     stringi        1.8.7   2025-03-27 [1] CRAN (R 4.5.0)
+     stringr      * 1.5.2   2025-09-08 [1] CRAN (R 4.5.0)
+     systemfonts    1.3.1   2025-10-01 [1] CRAN (R 4.5.0)
+     textshaping    1.0.4   2025-10-10 [1] CRAN (R 4.5.0)
+     tibble       * 3.3.0   2025-06-08 [1] CRAN (R 4.5.0)
+     tidyr        * 1.3.1   2024-01-24 [1] CRAN (R 4.5.0)
+     tidyselect     1.2.1   2024-03-11 [1] CRAN (R 4.5.0)
+     tidyverse    * 2.0.0   2023-02-22 [1] CRAN (R 4.5.0)
+     timechange     0.3.0   2024-01-18 [1] CRAN (R 4.5.0)
+     tzdb           0.5.0   2025-03-15 [1] CRAN (R 4.5.0)
+     vctrs          0.6.5   2023-12-01 [1] CRAN (R 4.5.0)
+     vroom          1.6.6   2025-09-19 [1] CRAN (R 4.5.0)
+     withr          3.0.2   2024-10-28 [1] CRAN (R 4.5.0)
+     xfun           0.55    2025-12-16 [1] CRAN (R 4.5.2)
+     yaml           2.3.10  2024-07-26 [1] CRAN (R 4.5.0)
 
-     [1] /Users/maryke/Documents/Treehouse/Lab_Notebooks/transcript_enrichment_bias_assessment/Fig_1/renv/library/macos/R-4.5/aarch64-apple-darwin20
-     [2] /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library
-
+     [1] /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library
      * ── Packages attached to the search path.
-     P ── Loaded and on-disk path mismatch.
 
     ──────────────────────────────────────────────────────────────────────────────
