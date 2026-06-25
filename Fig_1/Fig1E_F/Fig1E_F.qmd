@@ -801,7 +801,7 @@ sig_results
 
 Apply stars to figures
 
-```{r}
+```{r Fig1E_SS}
 Fig1E_SS <- map(diseases, function(d) {
 
   median_gene <- median_gene_map[[d]]

@@ -14,6 +14,7 @@ Scatterplot showing median expression per gene.
 ```{r load libraries}
 library(tidyverse)
 library(ggrepel)
+library(patchwork)
 ```
 
 ```{r load in files}
@@ -35,21 +36,23 @@ ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv
 AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv")
 
 # log2(TPM+1) expression files
-# polyA
-SS_polyA_expr <- read_tsv("../../input_data/sample_selection/SS_polyA_expr.tsv")
-aRMS_polyA_expr <- read_tsv("../../input_data/sample_selection/aRMS_polyA_expr.tsv")
-WT_polyA_expr <- read_tsv("../../input_data/sample_selection/WT_polyA_expr.tsv")
-NB_polyA_expr <- read_tsv("../../input_data/sample_selection/NB_polyA_expr.tsv")
-ALL_polyA_expr <- read_tsv("../../input_data/sample_selection/ALL_polyA_expr.tsv")
-AML_polyA_expr <- read_tsv("../../input_data/sample_selection/AML_polyA_expr.tsv")
+SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv")
+SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv")
 
-# riboD
-SS_riboD_expr <- read_tsv("../../input_data/sample_selection/SS_riboD_expr.tsv")
-aRMS_riboD_expr <- read_tsv("../../input_data/sample_selection/aRMS_riboD_expr.tsv")
-WT_riboD_expr <- read_tsv("../../input_data/sample_selection/WT_riboD_expr.tsv")
-NB_riboD_expr <- read_tsv("../../input_data/sample_selection/NB_riboD_expr.tsv")
-ALL_riboD_expr <- read_tsv("../../input_data/sample_selection/ALL_riboD_expr.tsv")
-AML_riboD_expr <- read_tsv("../../input_data/sample_selection/AML_riboD_expr.tsv")
+aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv")
+aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv")
+
+WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv")
+WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv")
+
+NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv")
+NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv")
+
+ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv")
+ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv")
+
+AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv")
+AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv")
 
 # to convert EnsemblIDs to HugoIDs
 gene_names <- read.table("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt",
@@ -83,12 +86,12 @@ compute_gene_medians <- function(polyA_df, riboD_df, disease_name) {
 Applying function to each disease/library prep type
 
 ```{r applying gene medians function}
-aRMS_medians <- compute_gene_medians(aRMS_polyA_expr, aRMS_riboD_expr, "aRMS")
-SS_medians   <- compute_gene_medians(SS_polyA_expr,   SS_riboD_expr,   "SS")
-WT_medians   <- compute_gene_medians(WT_polyA_expr,   WT_riboD_expr,   "WT")
-NB_medians   <- compute_gene_medians(NB_polyA_expr,   NB_riboD_expr,   "NB")
-ALL_medians   <- compute_gene_medians(ALL_polyA_expr,   ALL_riboD_expr,   "ALL")
-AML_medians   <- compute_gene_medians(AML_polyA_expr,   AML_riboD_expr,   "AML")
+aRMS_medians <- compute_gene_medians(aRMS_polyA_log2tpm1, aRMS_riboD_log2tpm1, "aRMS")
+SS_medians   <- compute_gene_medians(SS_polyA_log2tpm1,   SS_riboD_log2tpm1,   "SS")
+WT_medians   <- compute_gene_medians(WT_polyA_log2tpm1,   WT_riboD_log2tpm1,   "WT")
+NB_medians   <- compute_gene_medians(NB_polyA_log2tpm1,   NB_riboD_log2tpm1,   "NB")
+ALL_medians   <- compute_gene_medians(ALL_polyA_log2tpm1,   ALL_riboD_log2tpm1,   "ALL")
+AML_medians   <- compute_gene_medians(AML_polyA_log2tpm1,   AML_riboD_log2tpm1,   "AML")
 
 combined_medians <- bind_rows(aRMS_medians, SS_medians, WT_medians, NB_medians, ALL_medians, AML_medians)
 ```
@@ -124,7 +127,7 @@ scale_color_compendia <- function() {
 
 convert EnsemblIDs to Hugo IDs for readability
 
-```{r}
+```{r convert to hugo}
 convert_to_hugo <- function(df) {
   df %>%
     left_join(gene_names, by = c("Gene" = "EnsGeneID")) %>%
@@ -138,7 +141,8 @@ combined_medians_hugo <- combined_medians %>%
 
 Compute residual for each disease
 
-```{r}
+```{r compute residual}
+# for each gene in each disease, taking the average riboD expression and subtracting from the average polyA expression
 combined_medians_hugo_res <- combined_medians_hugo %>%
   mutate(
     residual = riboD_medians - polyA_medians
@@ -171,7 +175,6 @@ combined_medians_hugo_res <- combined_medians_hugo_res %>%
     label_color = case_when(
       Gene %in% poly_genes[Disease] ~ "#BB5566",                     # pinkish red
       Gene %in% nonpoly_gene ~ "#BB5566",                         # pinkish red
-      Gene == poly_genes & Disease == "ALL" ~ "#BB5566",
       TRUE ~ "grey70"
     )
   )
@@ -188,14 +191,17 @@ combined_medians_hugo_res <- combined_medians_hugo_res %>%
       TRUE ~ NA_character_
     )
   )
+# this creates a dataframe that shows the polyA median expression and riboD median expression with the calculated residual for each disease. The representative polyadenylated genes are colored for their respective disease. HIST1H1B is colored for all diseases as the representative nonpolyadenylated gene.
 ```
+
+Fig1G
 
 Plot average expression across library prep methods for each disease
 
 ```{r Fig1G}
 diseases <- unique(combined_medians_hugo_res$Disease)
 
-scatterplots_by_disease <- map(diseases, function(d) {
+Fig1G <- map(diseases, function(d) {
 
   df <- combined_medians_hugo_res %>% filter(Disease == d)
 
@@ -234,7 +240,96 @@ scatterplots_by_disease <- map(diseases, function(d) {
     theme_minimal(base_size = 14) +
     plot_theme()
 })
-names(scatterplots_by_disease) <- diseases
+names(Fig1G) <- diseases
 
-scatterplots_by_disease
+Fig1G
+```
+
+```{r save Fig1G}
+ggsave("../../Figures/Fig1G.png", plot = Fig1G$SS)
+ggsave("../../Figures/Fig1G.tif", plot = Fig1G$SS)
+```
+
+## Fig S6
+
+```{r Fig1G_tocombine}
+diseases <- unique(combined_medians_hugo_res$Disease)
+
+Fig1G_all <- map(diseases, function(d) {
+
+  df <- combined_medians_hugo_res %>% filter(Disease == d)
+
+ ggplot(df, aes(x = polyA_medians, y = riboD_medians)) +
+    
+   # background points
+    geom_point(data = df %>% filter(is.na(label)),
+               color = "grey70", alpha = 0.5, size = 4) +
+
+    # highlighted labeled points
+    geom_point(data = df %>% filter(!is.na(label)),
+               aes(color = label_color),
+               size = 8, alpha = 0.9) +
+
+    
+       # Labels for representative genes and HIST1H1B
+    geom_text_repel(
+      aes(label = label),
+      size = 12,
+      max.overlaps = Inf,
+      min.segment.length = 0,
+      box.padding = 0.4,
+      point.padding = 0.2
+    ) +
+
+    scale_color_identity() +   # use colors exactly as defined
+
+    geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", color = "gray50") +
+
+    labs(
+      title = paste(d),
+      x = "Average PolyA Expression (log2(TPM+1))",
+      y = "Average RiboD Expression (log2(TPM+1))",
+    ) +
+    theme_minimal(base_size = 14) +
+    plot_theme() +
+    coord_cartesian(xlim = c(0, 15), ylim = c(0, 20)) +
+    theme(
+    axis.title.y = element_text(size = 32),
+    axis.title.x = element_text(size = 32),
+    axis.text.y = element_text(size = 28),
+    axis.text.x = element_text(size = 28),
+    strip.text = element_blank(),
+    plot.title = element_text(vjust = -2),
+    legend.text = element_text(size = 26),       # <-- label text size
+    legend.title = element_text(size = 26)      # <-- title text size
+    )
+})
+names(Fig1G_all) <- diseases
+
+Fig1G_all
+```
+
+```{r FigS6}
+FigS6 <- wrap_plots(Fig1G_all, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 4, r = 4),
+    plot.title = element_text(face = "bold", size = 36)
+  )
+FigS6
+```
+
+```{r save FigS6}
+ggsave("../../Figures/FigS6.png", FigS6, width = 20, height = 36, dpi = 500)
+ggsave("../../Figures/FigS6.tif", FigS6, width = 20, height = 36, dpi = 500)
+```
+
+Session Info
+
+```{r session info}
+sessioninfo::session_info()
 ```
