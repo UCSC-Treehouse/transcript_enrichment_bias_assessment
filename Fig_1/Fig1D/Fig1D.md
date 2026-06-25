@@ -410,14 +410,14 @@ theme_1d <- function(base_size = 14) {
 
 scale_fill_compendia <- function() {
   scale_fill_manual(values = c(
-    "polyA" = "#E69F00",  # yellow
-    "riboD" = "#0072B2"   # blue
+    "polyA" = "#0072B2",  # blue
+    "riboD" = "#E69F00"   # yellow
   ))
 }
 scale_color_compendia <- function() {
   scale_color_manual(values = c(
-    "polyA" = "#E69F00",
-    "riboD" = "#0072B2" ))
+    "polyA" = "#0072B2",
+    "riboD" = "#E69F00" ))
   }
 ```
 
@@ -696,9 +696,9 @@ facet_labels <- c(
 )
 
 # Custom colors
-compendia_colors <- c(polyA = "#E69F00", riboD = "#0072B2")
-    "polyA" = "#E69F00"  # yellow
-    "riboD" = "#0072B2"   # blue
+compendia_colors <- c(polyA = "#0072B2", riboD = "#E69F00")
+    "polyA" = "#0072B2"  # blue
+    "riboD" = "#E69F00"   # yellow
 
 
 # List of diseases
@@ -710,7 +710,7 @@ max_y <- max(combined_counts$Count, na.rm = TRUE)
 Plot with sig stars
 
 ``` r
-plots_by_disease_1D <- map(diseases, function(d) {
+Fig1D <- map(diseases, function(d) {
 
   df <- combined_counts %>% filter(Disease == d)
 
@@ -755,9 +755,9 @@ plots_by_disease_1D <- map(diseases, function(d) {
       panel.spacing.x = unit(1, "lines")
     )
 })
-names(plots_by_disease_1D) <- diseases
+names(Fig1D) <- diseases
 
-plots_by_disease_1D
+Fig1D
 ```
 
     $SS
@@ -790,28 +790,114 @@ plots_by_disease_1D
 ![](Fig1D_files/figure-commonmark/Fig1D-6.png)
 
 ``` r
-ggsave("../../Figures/Fig1D.png", plot = plots_by_disease_1D$SS)
+ggsave("../../Figures/Fig1D.png", plot = Fig1D$SS)
 ```
 
     Saving 7 x 5 in image
 
 ``` r
-ggsave("../../Figures/Fig1D.tif", plot = plots_by_disease_1D$SS)
+ggsave("../../Figures/Fig1D.tif", plot = Fig1D$SS)
 ```
 
     Saving 7 x 5 in image
+
+``` r
+saveRDS(Fig1D$SS, "../../Figures/Fig1D.rds")
+```
 
 ## **Fig S3**
 
 ``` r
-SS <- plots_by_disease_1D$SS
-aRMS <- plots_by_disease_1D$aRMS
-WT <- plots_by_disease_1D$WT
-NB <- plots_by_disease_1D$NB
-ALL <- plots_by_disease_1D$ALL
-AML <- plots_by_disease_1D$AML
+Fig1D_all <- map(diseases, function(d) {
 
-FigS3 <- wrap_plots(SS, aRMS, WT, NB, ALL, AML, ncol = 1) +
+  df <- combined_counts %>% filter(Disease == d)
+
+  # SIGNIFICANCE STARS FOR EACH DISEASE 
+  sig_df <- sig_bins_all %>%
+    filter(Disease == d) %>%
+    select(Bin, stars_adj)
+
+  # y-position for stars
+  y_star <- max(df$Count, na.rm = TRUE) * 1.05
+
+  ggplot(df, aes(x = Compendia, y = Count, fill = Compendia)) +
+    geom_boxplot(outlier.shape = NA, alpha = 0.6,
+                 position = position_dodge(width = 0.8)) +
+    geom_jitter(aes(color = Compendia),
+                position = position_jitter(width = 0.15),
+                size = 3, alpha = 0.7) +
+
+    # ---- ADD STARS ABOVE EACH FACET ----
+    geom_text(
+      data = sig_df,
+      aes(x = 1.5, y = y_star, label = stars_adj),   # x = 1.5 centers between polyA/riboD
+      inherit.aes = FALSE,
+      size = 15
+    ) +
+
+    facet_grid(. ~ Bin, labeller = labeller(Bin = facet_labels)) +
+    scale_fill_compendia() +
+    scale_color_compendia() +
+#    coord_cartesian(ylim = c(0, y_star * 1.1)) +
+    labs(
+      title = paste(d),
+      x = "log2(TPM+1) = x",
+      y = "Number of Genes Expressed"
+    ) +
+    theme_minimal() +
+    theme_1d() +
+    theme(
+      strip.background = element_blank(),
+      axis.ticks.x = element_blank(),
+      panel.spacing.x = unit(1, "lines"),
+      
+      axis.title.y = element_text(size = 32, face = "bold"),
+      axis.title.x = element_text(size = 32, face = "bold"),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_blank(),
+      strip.text = element_text(size = 26, face = "bold"), # controls bin label size
+      plot.title = element_text(vjust = -2),
+      legend.text = element_text(size = 26),       # <-- label text size
+      legend.title = element_text(size = 26),      # <-- title text size
+      legend.key.size = unit(2, "cm") # <-- box/key size
+    )
+})
+names(Fig1D_all) <- diseases
+
+Fig1D_all
+```
+
+    $SS
+
+![](Fig1D_files/figure-commonmark/Fig1D_tocombine-1.png)
+
+
+    $aRMS
+
+![](Fig1D_files/figure-commonmark/Fig1D_tocombine-2.png)
+
+
+    $NB
+
+![](Fig1D_files/figure-commonmark/Fig1D_tocombine-3.png)
+
+
+    $WT
+
+![](Fig1D_files/figure-commonmark/Fig1D_tocombine-4.png)
+
+
+    $ALL
+
+![](Fig1D_files/figure-commonmark/Fig1D_tocombine-5.png)
+
+
+    $AML
+
+![](Fig1D_files/figure-commonmark/Fig1D_tocombine-6.png)
+
+``` r
+FigS3 <- wrap_plots(Fig1D_all, ncol = 1) +
   plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
   plot_annotation(
     theme = theme(legend.position = "bottom")
@@ -847,7 +933,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-06-23
+     date     2026-06-25
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
