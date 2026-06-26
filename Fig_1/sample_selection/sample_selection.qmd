@@ -11,6 +11,7 @@ editor: visual
 
 ```{r load library}
 library(tidyverse)
+library(janitor)
 ```
 
 ```{r load in files}
@@ -22,8 +23,6 @@ ALL_AML_log2tpm1 <- read_tsv("../../input_data/ALL_AML_log2TPM1_ensembl_TEBA.tsv
 SS_aRMS_counts <- read_tsv("../../input_data/expression_SS_aRMS.tsv.gz")
 WT_NB_counts <- read_tsv("../../input_data/expression_WT_NB.tsv.gz")
 ALL_AML_counts <- read_tsv("../../input_data/expression_ALL_AML.tsv.gz")
-
-
 
 # sample ID files, from correlation_analysis
 filtered_SS_aRMS_list <- read_tsv("../../input_data/filtered_SS_aRMS_list.tsv")
@@ -206,6 +205,232 @@ write_tsv(AML_polyA_log2tpm1, "../../input_data/sample_selection/AML_polyA_log2t
 write_tsv(AML_riboD_log2tpm1, "../../input_data/sample_selection/AML_riboD_log2tpm1.tsv")
 write_tsv(AML_polyA_counts, "../../input_data/sample_selection/AML_polyA_counts.tsv")
 write_tsv(AML_riboD_counts, "../../input_data/sample_selection/AML_riboD_counts.tsv")
+```
+
+### Samples for UMAP
+
+```{r subset_samples}
+subset_samples <- read_tsv("../../../lib-prep-visualization/matched_subsamples/polyA_riboD_disease_matched/subset_samples.tsv") %>% # this contains the samples that were randomly subsetted for UMAP
+  add_row(THR19_0450_S01 = "THR19_0450_S01", .before = 1) %>% # subset_samples had THR19_0450_S01 as column name, not as data point
+  rename(th_dataset_id = THR19_0450_S01)
+  
+
+polyA_v25 <- read_tsv("../../input_data/clinical_Treehouse-Tumor-Compendium-25.01-PolyA_20250131v1.tsv") %>% # will need this to determine which THIDs we can remove safely 
+  mutate(compendia = "polyA") %>%
+  select(th_dataset_id, disease, compendia)
+
+riboD_v25 <- read_tsv("../../input_data/clinical_Treehouse-Tumor-Compendium-25.01-RiboD_20250306v1.tsv") %>%
+  mutate(compendia = "riboD") %>%
+  select(th_dataset_id, disease, compendia)
+
+
+# During our analysis, we discovered that some ALL samples in the PolyA compendium were actually derived from a ribo-depleted RNA-seq library and were mislabeled as PolyA. We remove those mislabeled ALL samples from the UMAP.
+mislabeled_ALLpolyA <- read_tsv("../../input_data/TARGET_ALL_SSTR_SraRun.tsv") %>%
+  distinct(SAMPLE_ID, .keep_all = TRUE) %>% # this contains the THIDs that we need to remove from the PolyA samples, since they came from a riboD library. Many THIDs are duplicates.
+  select(SAMPLE_ID, disease_and_prep) %>%
+  rename(th_dataset_id = SAMPLE_ID)
+```
+
+```{r combine clinical files}
+# combining clinical files and samples we need to label
+polyA_riboD <- rbind(polyA_v25, riboD_v25)
+
+all_interested_samples <- rbind(filtered_SS_aRMS_list, filtered_WT_NB_list, filtered_ALL_AML_list) %>%
+  rename(th_dataset_id = term)
+
+write_tsv(all_interested_samples, "../../input_data/sample_selection/forUMAP/all_interested_samples.tsv")
+```
+
+```{r joining subset with compendia}
+subset_samples_disease <- left_join(subset_samples, polyA_riboD, by = "th_dataset_id")
+# joining so I know which THIDs in the subset_samples are from polyA, which from riboD, which are from which disease
+```
+
+```{r remove mislabeled ALL polyA}
+# how many mislabeled ALL_polyA samples were in the subset_samples?
+subset_samples_disease_mislabeledALL <- subset_samples_disease %>%
+  filter(subset_samples_disease$th_dataset_id %in% mislabeled_ALLpolyA$th_dataset_id)
+
+# remove the mislabeled ALL_polyA samples from subset_samples_disease
+subset_samples_disease_wo_mislabeledALL <- subset_samples_disease %>%
+  filter(!subset_samples_disease$th_dataset_id %in% mislabeled_ALLpolyA$th_dataset_id)
+
+print(paste("the number of samples in subset_samples is ",nrow(subset_samples_disease)))
+print(paste("the number of mislabeled ALL_polyA samples in subset_samples is ", nrow(subset_samples_disease_mislabeledALL)))
+print(paste("the new number of samples in subset_samples after removing mislabeled is ", nrow(subset_samples_disease_wo_mislabeledALL)))
+
+# how many samples are in subset_samples (after removing mislabeled ALL) for each disease?
+counts_woMislabeled <- subset_samples_disease_wo_mislabeledALL %>%
+  group_by(disease, compendia) %>%
+  summarise(n_disease = n()) %>% 
+  arrange(desc(n_disease))
+head(counts_woMislabeled, 8)
+```
+
+```{r}
+# now we need to remove the same number of ALL_riboD samples (22) from subset_samples to balance it out
+# but first we need to pull out the subset_samples samples that we are not interested in labelling
+
+# anti_join returns all rows from the first data frame (x) that do not have a match in the second data frame
+
+# the first dataframe will be all the ALL riboD samples from subset_samples_disease_wo_mislabeledALL
+# the second dataframe will be ALL_riboD that we want to label
+
+ALL_riboD_subset <- subset_samples_disease_wo_mislabeledALL %>%
+  filter(disease == "acute lymphoblastic leukemia") %>%
+  filter(compendia == "riboD")
+
+ALL_riboD_tolabel <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep == "ALL_riboD") %>%
+  rename(th_dataset_id = term)
+
+ALL_riboD_can_remove <- anti_join(ALL_riboD_subset, ALL_riboD_tolabel, by = "th_dataset_id")
+
+# finding the 22 ALL riboD samples we can remove
+set.seed(123)
+ALL_riboD_to_remove <- ALL_riboD_can_remove %>%
+  sample_n(22)
+
+# removing 22 ALL riboD samples from subset_samples
+subset_samples_wo_polyAriboD_ALL <- subset_samples_disease_wo_mislabeledALL %>%
+  filter(!subset_samples_disease_wo_mislabeledALL$th_dataset_id %in% ALL_riboD_to_remove$th_dataset_id)
+
+print(paste("the number of samples in subset_samples after removing 22 mislabeled ALL_polyA is ",nrow(subset_samples_disease_wo_mislabeledALL)))
+
+print(paste("the number of ALL riboD samples we want to label is ",nrow(ALL_riboD_tolabel)))
+
+print(paste("the number of ALL riboD samples that was present in subset is ",nrow(ALL_riboD_subset)))
+
+print(paste("the number of ALL riboD samples we are not interested in labelling is ",nrow(ALL_riboD_can_remove)))
+
+print(paste("the number of subset_samples after removing the 22 mislabeled ALL_polyA samples and corresponding 22 ALL_riboD samples is ",nrow(subset_samples_wo_polyAriboD_ALL)))
+
+```
+
+```{r checking sample counts}
+# double check that the sample counts are the same for each disease after removing 22 ALL samples from polyA and riboD
+
+counts_subset_samples_wo_polyAriboD_ALL <- subset_samples_wo_polyAriboD_ALL %>%
+  group_by(disease, compendia) %>%
+  summarise(n_disease = n()) %>% 
+  arrange(desc(n_disease))
+head(counts_subset_samples_wo_polyAriboD_ALL, 8)
+
+```
+
+```{r samples_to_add}
+# anti_join returns all rows from the first data frame (x) that do not have a match in the second data frame
+samples_to_add <- anti_join(all_interested_samples, subset_samples_wo_polyAriboD_ALL, by = "th_dataset_id") # these are the samples that we're interested in labeling but are not represented in subset_samples (after removing ALL)
+
+
+# how many of each disease do we need to add?
+samples_to_add_counts <- samples_to_add %>%
+  group_by(disease_and_prep) %>%
+  summarise(n_disease = n()) %>% 
+  arrange(desc(n_disease))
+samples_to_add_counts
+```
+
+```{r samples_can_remove}
+samples_can_remove <- anti_join(subset_samples_wo_polyAriboD_ALL, all_interested_samples, by = "th_dataset_id") %>%
+  filter(compendia == "polyA") # these are samples that we can safely remove from subset_samples after adding the samples we need (in order to balance the sample numbers)
+
+# anti_join returns all rows from the first data frame (x) that do not have a match in the second data frame
+
+samples_can_remove_counts <- samples_can_remove %>%
+  group_by(disease, compendia) %>%
+  summarise(n_disease = n()) %>% 
+  arrange(desc(n_disease))
+head(samples_can_remove_counts, 8)
+
+```
+
+```{r samples_to_remove}
+# make a list of equal number of samples to remove from subset_samples
+set.seed(1100)
+ALL_toremove <- samples_can_remove %>%
+  filter(disease == 'acute lymphoblastic leukemia') %>%
+  sample_n(15)
+  
+AML_toremove <- samples_can_remove %>% 
+  filter(disease == 'acute myeloid leukemia') %>%
+  sample_n(17)
+
+NB_toremove <- samples_can_remove %>% 
+  filter(disease == 'neuroblastoma') %>% 
+  sample_n(8)
+
+SS_toremove <- samples_can_remove %>%
+  filter(disease == 'synovial sarcoma') %>% 
+  sample_n(6)
+
+WT_toremove <- samples_can_remove %>%
+  filter(disease == 'wilms tumor') %>%
+  sample_n(11)
+
+aRMS_toremove <- samples_can_remove %>%
+  filter(disease == 'alveolar rhabdomyosarcoma') %>%
+  sample_n(13)
+
+samples_to_remove <- rbind(ALL_toremove, AML_toremove, NB_toremove, SS_toremove, WT_toremove, aRMS_toremove)
+```
+
+By now, we have removed the mislabeled ALL polyA samples and equal number ALL_riboD samples from subset_samples, we have made a list of samples we need to label that are missing from subset, and we have made a list of samples that we can remove from subset after adding the samples we want to label.
+
+Next, we need to add the samples that we want to label that are not in subset_samples, and then remove the same number of samples from subset_samples to balance the numbers (or vice versa, we can remove first and then add).
+
+```{r}
+# removing the samples from each disease
+subset_samples_wo_polyAriboD_ALL_removed <- subset_samples_wo_polyAriboD_ALL %>%
+  filter(!subset_samples_wo_polyAriboD_ALL$th_dataset_id %in% samples_to_remove$th_dataset_id)
+
+# double check the numbers - polyA should have n less samples than riboD for the specified diseases
+subset_samples_wo_polyAriboD_ALL_removed_counts <- subset_samples_wo_polyAriboD_ALL_removed %>%
+  group_by(disease, compendia) %>%
+  summarise(n_disease = n()) %>% 
+  arrange(desc(n_disease))
+head(subset_samples_wo_polyAriboD_ALL_removed_counts, 8)
+
+```
+
+```{r}
+# first, we need to reformat the samples_to_add because it currently has disease_and_prep and we need it in disease and compendia
+
+samples_to_add_format <- samples_to_add %>%
+  separate(col = disease_and_prep, into = c("disease", "compendia"), sep = "_") %>%
+  mutate(disease = case_when(
+    disease == "SS" ~ "synovial sarcoma",
+    disease == "aRMS" ~ "alveolar rhabdomyosarcoma",
+    disease == "WT" ~ "wilms tumor",
+    disease == "NB" ~ "neuroblastoma",
+    disease == "ALL" ~ "acute lymphoblastic leukemia",
+    disease == "AML" ~ "acute myeloid leukemia"
+  ))
+```
+
+```{r new subset_samples}
+# adding back the samples we want to label
+subset_samples_new <- rbind(subset_samples_wo_polyAriboD_ALL_removed, samples_to_add_format)
+```
+
+```{r}
+# double check the numbers - polyA and riboD should have the same numbers now
+subset_samples_new_counts <- subset_samples_new %>%
+  group_by(disease, compendia) %>%
+  summarise(n_disease = n()) %>% 
+  arrange(desc(n_disease))
+head(subset_samples_new_counts, 8)
+```
+
+```{r save file}
+# saving the file for UMAP
+write_tsv(subset_samples_new, "../../input_data/sample_selection/forUMAP/final_subset_samples_forUMAP.tsv")
+
+subset_samples_new_IDonly <- subset_samples_new %>%
+  select(th_dataset_id) %>%
+  row_to_names(row_number = 1)
+
+write_tsv(subset_samples_new_IDonly, "../../input_data/sample_selection/forUMAP/final_subset_samples_forUMAP_IDonly.tsv")
 ```
 
 ```{r session info}
