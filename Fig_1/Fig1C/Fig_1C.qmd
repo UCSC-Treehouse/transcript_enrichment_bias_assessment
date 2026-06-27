@@ -221,6 +221,8 @@ all_medians_bins <- all_medians %>%
       include.lowest = TRUE
     )
   )
+
+write_tsv(all_medians_bins, "../../output_data/Fig1C/all_medians_bins.tsv.gz")
 ```
 
 Compute proportion of genes in each bin per lib prep
@@ -231,13 +233,13 @@ bin_prop <- all_medians_bins %>%
   summarise(n = n(), .groups = "drop") %>%
   group_by(Disease, Compendia) %>%
   mutate(Proportion = n / sum(n))
-
+write_tsv(bin_prop, "../../output_data/Fig1C/bin_prop.tsv.gz")
 ```
 
 Custom color theme
 
 ```{r custom theme}
-theme_2D <- function(base_size = 14) {
+theme_1C <- function(base_size = 14) {
   theme_minimal(base_size = base_size) +
     theme(
       legend.position = "right",
@@ -276,7 +278,7 @@ Generate stacked bar plot
 diseasesC <- unique(bin_prop$Disease)
 
 # Generate one plot per disease
-plots_by_diseaseC <- map(diseasesC, function(d) {
+Fig1C <- map(diseasesC, function(d) {
   
   dfC <- bin_prop %>% filter(Disease == d)
   
@@ -289,11 +291,11 @@ plots_by_diseaseC <- map(diseasesC, function(d) {
       y = "Proportion of Genes",
       fill = "Expression Level"
     ) +
-    theme_2D()
+    theme_1C()
 })
 
 # Name the plots by disease
-names(plots_by_diseaseC) <- diseasesC
+names(Fig1C) <- diseasesC
 plots_by_diseaseC
 ```
 

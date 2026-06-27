@@ -1,0 +1,365 @@
+---
+title: "Fig1_all"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## Fig1
+
+**Gene and sample variability from RNA-seq libraries prepared from different transcript enrichment methods.**
+
+```{r load libraries}
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
+library(magick)
+library(rsvg)
+library(ggplotify)
+library(grid)
+```
+
+```{r UMAPs}
+Fig1A <- image_read("../../Figures/UMAPs/Compendia_Type.svg") %>% 
+  image_ggplot()
+Fig1B <- image_read("../../Figures/UMAPs/10_Most_Sampled_Diseases.svg") %>% 
+  image_ggplot()
+```
+
+### Fig1C
+
+```{r Fig1C files}
+all_medians_bins_1C <- read_tsv("../../output_data/Fig1C/all_medians_bins.tsv.gz")
+bin_prop_1C <- read_tsv("../../output_data/Fig1C/bin_prop.tsv.gz")
+```
+
+```{r define expr bins}
+expr_bins <- c(0, 1e-10, 0.09, 0.99, 2.99, 4.99, Inf)
+expr_labels <- c("0","0-0.09", "0.1-0.99", "1-2.99", "3-4.99", ">5")
+bin_prop_1C <- bin_prop_1C %>%
+  mutate(ExprBin = factor(ExprBin, levels = c("0", "0-0.09", "0.1-0.99", "1-2.99", "3-4.99", ">5")))
+```
+
+```{r Fig1C custom theme}
+theme_1C <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "right",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16), 
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17), 
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+
+scale_fill_compendia <- function() {
+  scale_fill_manual(values = c(
+    "polyA" = "#0072B2",  # blue
+    "riboD" = "#E69F00"   # yellow
+  ))
+}
+scale_color_compendia <- function() {
+  scale_color_manual(values = c( 
+    "polyA" = "#0072B2",  # blue
+    "riboD" = "#E69F00"   # yellow
+    ))
+  }
+```
+
+```{r Fig1C}
+# Get unique diseases
+diseasesC <- unique(bin_prop_1C$Disease)
+
+# Generate one plot per disease
+Fig1C <- map(diseasesC, function(d) {
+  
+  dfC <- bin_prop_1C %>% filter(Disease == d)
+  
+  ggplot(dfC, aes(x = Compendia, y = Proportion, fill = ExprBin)) +
+    geom_bar(stat = "identity", position = "stack") +
+    scale_fill_viridis_d(option = "D", name = "Expression \nin log2(TPM+1)") +
+    labs(
+      title = paste(d),
+      # x = "Library Prep",
+      y = "Proportion of Genes",
+      fill = "Expression Level"
+    ) +
+    theme_1C()
+})
+
+# Name the plots by disease
+names(Fig1C) <- diseasesC
+Fig1C$SS
+```
+
+### Fig1D
+
+```{r Fig1D files}
+sig_bins_all_1D <- read_tsv("../../output_data/Fig1D/sig_bins_all.tsv.gz")
+combined_counts_1D <- read_tsv("../../output_data/Fig1D/combined_counts.tsv.gz")
+all_stats_1D <- read_tsv("../../output_data/Fig1D/all_stats.tsv.gz")
+```
+
+```{r theme_1D}
+theme_1d <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16),
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17),
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+```
+
+```{r Fig1D specify labels}
+facet_labels <- c(
+  "0" = "x = 0",
+  "0-0.09" = "0 > x > 0.1",
+  "0.1-0.99" = "0.1 > x > 1",
+  "1-2.99" = "1 > x > 3",
+  "3-4.99" = "3 > x > 5",
+  ">5" = "x > 5"
+)
+
+# List of diseases
+diseases <- unique(combined_counts_1D$Disease)
+
+max_y <- max(combined_counts_1D$Count, na.rm = TRUE)
+```
+
+```{r Fig1D}
+Fig1D <- map(diseases, function(d) {
+
+  df <- combined_counts_1D %>% filter(Disease == d)
+
+  # SIGNIFICANCE STARS FOR EACH DISEASE 
+  sig_df <- sig_bins_all_1D %>%
+    filter(Disease == d) %>%
+    select(Bin, stars_adj)
+
+  # y-position for stars
+  y_star <- max(df$Count, na.rm = TRUE) * 1.05
+
+  ggplot(df, aes(x = Compendia, y = Count, fill = Compendia)) +
+    geom_boxplot(outlier.shape = NA, alpha = 0.6,
+                 position = position_dodge(width = 0.8)) +
+    geom_jitter(aes(color = Compendia),
+                position = position_jitter(width = 0.15),
+                size = 1.5, alpha = 0.7) +
+
+    # ---- ADD STARS ABOVE EACH FACET ----
+    geom_text(
+      data = sig_df,
+      aes(x = 1.5, y = y_star, label = stars_adj),   # x = 1.5 centers between polyA/riboD
+      inherit.aes = FALSE,
+      size = 6
+    ) +
+
+    facet_grid(. ~ Bin, labeller = labeller(Bin = facet_labels)) +
+    scale_fill_compendia() +
+    scale_color_compendia() +
+#    coord_cartesian(ylim = c(0, y_star * 1.1)) +
+    labs(
+      title = paste(d),
+      x = "log2(TPM+1) = x",
+      y = "Number of Genes Expressed"
+    ) +
+    theme_minimal() +
+    theme_1d() +
+    theme(
+      strip.background = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      panel.spacing.x = unit(1, "lines")
+    )
+})
+names(Fig1D) <- diseases
+
+Fig1D$SS
+```
+
+### Fig1E
+
+```{r fig1E files}
+median_gene_map <- read_tsv("../../output_data/Fig1E_F/median_gene_map_df.tsv.gz")
+combined_long <- read_tsv("../../output_data/Fig1E_F/combined_long.tsv.gz")
+sig_results <- read_tsv("../../output_data/Fig1E_F/sig_results.tsv.gz")
+
+```
+
+```{r color_theme_1E}
+color_theme_1E <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16), 
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17), 
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+```
+
+```{r Fig1E_SS}
+Fig1E_SS <- map(diseases, function(d) {
+
+  median_gene <- median_gene_map[[d]]
+
+  # HIST1H1B expression
+  df_h1b <- combined_long %>%
+    filter(Disease == d, Gene == "HIST1H1B") %>%
+    mutate(PlotType = "HIST1H1B (PolyA-)")
+
+  # Median-ratio gene expression
+  df_median <- combined_long %>%
+    filter(Disease == d, Gene == median_gene) %>%
+    mutate(PlotType = "Median Ratio Gene (PolyA+)")
+
+  # Combine
+  df_combined <- bind_rows(df_h1b, df_median)
+
+  # SIGNIFICANCE STARS
+  star_df <- tibble(
+    Disease = d,
+    Gene = c("HIST1H1B", median_gene),
+    PlotType = c("HIST1H1B (PolyA-)", "Median Ratio Gene (PolyA+)"),
+    stars_adj = sig_results %>%
+      filter(Disease == d, Gene %in% c("HIST1H1B", median_gene)) %>%
+      arrange(match(Gene, c("HIST1H1B", median_gene))) %>%
+      pull(stars_adj)
+  )
+
+  # y-position for stars (slightly above max)
+  y_star <- max(df_combined$Expression, na.rm = TRUE) * 1.05
+
+  ggplot(df_combined, aes(x = Gene, y = Expression, fill = Compendia)) +
+    geom_boxplot(
+      alpha = 0.7,
+      position = position_dodge(width = 0.8),
+      outlier.shape = NA,
+      linewidth = 0.4
+    ) +
+    geom_jitter(
+      aes(color = Compendia),
+      position = position_jitterdodge(jitter.width = 0.2,
+                                      dodge.width = 0.8),
+      size = 1.2,
+      alpha = 0.6
+    ) +
+    # ADD STARS
+    geom_text(
+      data = star_df,
+      aes(x = Gene, y = y_star, label = stars_adj),
+      inherit.aes = FALSE,
+      size = 12
+    ) +
+    scale_fill_compendia() +
+    scale_color_compendia() +
+    coord_cartesian(ylim = c(0, 10)) +
+    facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
+    labs(
+      title = paste(d),
+      x = NULL,
+      y = "Expression log2(TPM+1)"
+    ) +
+    color_theme_1E() +
+    theme(
+      axis.title.y = element_text(size = 20),
+      axis.text.y = element_text(size = 14),
+      axis.text.x = element_text(size = 20),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2),
+      legend.position = "bottom",
+      legend.text = element_text(size = 16),       # <-- label text size
+      legend.title = element_text(size = 18),      # <-- title text size
+      legend.key.size = unit(1, "cm"), # <-- box/key size
+      legend.margin = margin(t = -2) 
+    ) 
+})
+Fig1E_SS[[1]]
+```
+
+### Fig1F
+
+```{r Fig1F files}
+ss_ratios <- read_tsv("../../output_data/Fig1E_F/ss_ratios.tsv.gz")
+SS_most_average_gene_hugo <- read_tsv("../../output_data/Fig1E_F/SS_most_average_gene_hugo.tsv.gz")
+SS_HIST1H1B <- read_tsv("../../output_data/Fig1E_F/SS_HIST1H1B.tsv.gz")
+```
+
+```{r theme for fig1F}
+theme_Fig1F <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+```
+
+```{r Fig1F}
+# Fig1F - SS standalone
+Fig1F <- ggplot(ss_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = SS_most_average_gene_hugo$SS_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 1) +
+  
+  geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.4, hjust = 0.3, color = "#0072B2", size = 6) +
+  
+  geom_vline(xintercept = SS_HIST1H1B$SS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 1) +
+  
+  geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -5, hjust = 0.2, color = "#E69F00", size = 6) +
+  
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  labs(
+    title = "SS",
+    x = "Median Expression Ratio",
+    y = "Number of Genes"
+  ) +
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 22),
+      axis.title.x = element_text(size = 22),
+      axis.text.y = element_text(size = 18),
+      axis.text.x = element_text(size = 18),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
+
+Fig1F
+```
+
+### Fig1G
