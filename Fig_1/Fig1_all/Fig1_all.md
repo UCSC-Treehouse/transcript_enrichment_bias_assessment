@@ -106,7 +106,7 @@ theme_1C <- function(base_size = 14) {
   theme_minimal(base_size = base_size) +
     theme(
       legend.position = "right",
-      legend.title = element_blank(),
+      legend.title = NULL,
       panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
       panel.grid.minor = element_blank(),
       axis.line = element_line(color = "black", linewidth = 0.4),
@@ -114,7 +114,7 @@ theme_1C <- function(base_size = 14) {
       strip.text = element_text(face = "bold", size = base_size * 0.9),
       plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
       axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16), 
-      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17), 
+      # axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17), 
       axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
       plot.margin = margin(10, 10, 10, 10)
     )
@@ -137,9 +137,9 @@ scale_color_compendia <- function() {
 ``` r
 Fig1C_SS <- ggplot(bin_prop_1C, aes(x = Compendia, y = Proportion, fill = ExprBin)) +
     geom_bar(stat = "identity", position = "stack") +
-    scale_fill_viridis_d(option = "D", name = "Expression \nin log2(TPM+1)") +
+    scale_fill_viridis_d(option = "D", name = "log2(TPM+1)") +
     labs(
-      # x = "Library Prep",
+      x = NULL,
       y = "Proportion of Genes",
       fill = "Expression Level"
     ) +
@@ -257,7 +257,7 @@ Fig1D_SS <- ggplot(combined_counts_1D, aes(x = Compendia, y = Count, fill = Comp
 #    coord_cartesian(ylim = c(0, y_star * 1.1)) +
     labs(
       x = "log2(TPM+1) = x",
-      y = "Number of Genes Expressed"
+      y = "Number of Unique Genes"
     ) +
     theme_minimal() +
     theme_1d() +
@@ -381,7 +381,7 @@ Fig1E_SS <- ggplot(combined_long, aes(x = Gene, y = Expression, fill = Compendia
     # facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
     labs(
       x = NULL,
-      y = "Expression log2(TPM+1)"
+      y = "log2(TPM+1)"
     ) +
     color_theme_1E() +
     theme(
@@ -399,7 +399,7 @@ Fig1E_SS <- ggplot(combined_long, aes(x = Gene, y = Expression, fill = Compendia
 Fig1E_SS
 ```
 
-![](Fig1_all_files/figure-commonmark/Fig1E_SS-1.png)
+![](Fig1_all_files/figure-commonmark/Fig1E-1.png)
 
 ### Fig1F
 
@@ -475,16 +475,15 @@ Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
   
   coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
   labs(
-    title = "SS",
     x = "Median Expression Ratio",
-    y = "Number of Genes"
+    y = "Number of Unique Genes"
   ) +
   theme_Fig1F() +
       theme(
-      axis.title.y = element_text(size = 22),
-      axis.title.x = element_text(size = 22),
-      axis.text.y = element_text(size = 18),
-      axis.text.x = element_text(size = 18),
+      axis.title.y = element_text(size = 20),
+      axis.title.x = element_text(size = 20),
+      axis.text.y = element_text(size = 14),
+      axis.text.x = element_text(size = 14),
       strip.text = element_blank(),
       plot.title = element_text(vjust = -2)
     )
@@ -589,8 +588,8 @@ Fig1G_SS <- ggplot(combined_medians_hugo_res, aes(x = polyA_medians, y = riboD_m
                 linetype = "dashed", color = "gray50") +
 
     labs(
-      x = "Average PolyA Expression (log2(TPM+1))",
-      y = "Average RiboD Expression (log2(TPM+1))",
+      x = "RiboD median log2(TPM+1)",
+      y = "PolyA median log2(TPM+1)",
     ) +
     theme_minimal(base_size = 14) +
     plot_theme()
@@ -640,13 +639,14 @@ Fig1H_SS <- ggplot(combined_medians_drug, aes(x = Gene, y = Expression, color = 
     # 1. vertical lines for each gene 
     geom_vline(aes(xintercept = as.numeric(Gene)), color = "grey85", linewidth = 0.3) + 
     # 2. points that stay centered on those lines 
-    geom_point(size = 1.4, alpha = 0.75) +
+    geom_point(size = 1.6, alpha = 0.75) +
     scale_x_discrete(expand = expansion(mult = c(0.01, 0.01))) +
     scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
     scale_color_compendia() +
     labs(
-      x = "Treehouse Druggable Genes",
-      y = "Expression log2(TPM+1)",
+      # x = "Treehouse Druggable Genes",
+      x = NULL,
+      y = "Median log2(TPM+1)",
       color = "Library Prep"
     ) +
     theme(
@@ -658,7 +658,9 @@ Fig1H_SS <- ggplot(combined_medians_drug, aes(x = Gene, y = Expression, color = 
       axis.text.y = element_text(angle = 0, hjust = 1, size = 12),
       axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
       plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
-      legend.position = "bottom"
+      legend.position = "bottom",
+      legend.text = element_text(size = 16),
+      legend.title = element_text(size = 18)
     )
 Fig1H_SS
 ```
@@ -669,8 +671,8 @@ Fig1H_SS
 
 ``` r
 Fig1_all <- plot_grid(
-  NULL,
-  NULL,
+  Fig1A,
+  Fig1B,
   Fig1C_SS,
   Fig1D_SS,
   Fig1E_SS,
@@ -680,9 +682,9 @@ Fig1_all <- plot_grid(
   ncol = 2,
   label_size = 20,
   labels = "AUTO", 
-  label_x = 0.09,     # Nudges slightly away from the absolute left border
-  # label_y = 0.95,     # Nudges slightly down from the absolute top border
-  hjust = 0,          # Locks alignment to the left edge of the text
+  label_x = c(0.09, 0.09, 0.12, 0.09, 0.11, 0.1, 0.1, 0.1),
+  label_y = c(1,    1,    1,    1,    1.05, 1.05, 1.1, 1.1),
+  hjust = 0,
   vjust = 1
 )
 ```
@@ -700,12 +702,6 @@ Fig1_all <- plot_grid(
 
     Warning: Removed 60497 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
-
-``` r
-Fig1_all
-```
-
-![](Fig1_all_files/figure-commonmark/Fig1_all-1.png)
 
 ``` r
 ggsave("../../Figures/Fig1_all.png", Fig1_all, width = 15, height = 15, dpi = 300)
