@@ -112,6 +112,7 @@ SS_most_average_gene <- SS_gene_medians_filtered %>%
 SS_most_average_gene_hugo <- SS_most_average_gene %>%
   convert_to_hugo()
 SS_most_average_gene_hugo
+write_tsv(SS_most_average_gene_hugo, "../../output_data/Fig1E_F/SS_most_average_gene_hugo.tsv.gz")
 ```
 
 ```{r median expression gene - aRMS}
@@ -640,6 +641,7 @@ combined_long <- bind_rows(
   avg_AML_riboD_long %>%
     mutate(Disease = "AML"),
 )
+write_tsv(combined_long, "../../output_data/Fig1E_F/combined_long.tsv.gz")
 ```
 
 Custom color theme
@@ -686,6 +688,9 @@ median_gene_map <- list(
   ALL     = ALL_most_average_gene_hugo$Gene,
   AML     = AML_most_average_gene_hugo$Gene
 )
+median_gene_map_df <- as.data.frame(median_gene_map)
+
+write_tsv(median_gene_map_df, "../../output_data/Fig1E_F/median_gene_map_df.tsv.gz")
 
 diseases <- unique(combined_long$Disease)
 
@@ -795,6 +800,7 @@ compute_significance_table <- function(df) {
 
 
 sig_results <- compute_significance_table(combined_long)
+write_tsv(sig_results, "../../output_data/Fig1E_F/sig_results.tsv.gz")
 
 sig_results
 ```
@@ -877,7 +883,7 @@ Fig1E_SS <- map(diseases, function(d) {
       legend.margin = margin(t = -2) 
     ) 
 })
-Fig1E_SS
+Fig1E_SS[[1]]
 ```
 
 ```{r save Fig1E}
@@ -999,6 +1005,8 @@ Histogram of median ratio distributions, calculated as the median expression lev
 ss_ratios <- SS_gene_medians %>%
   select(Gene, Ratio = SS_median_ratio) %>%
   mutate(Disease = "SS")
+write_tsv(ss_ratios, "../../output_data/Fig1E_F/ss_ratios.tsv.gz")
+
 
 arms_ratios <- aRMS_gene_medians %>%
   select(Gene = Gene, Ratio = aRMS_median_ratio) %>%
@@ -1045,6 +1053,7 @@ theme_Fig1F <- function(base_size = 14) {
 ```{r finding HIST1H1B expression}
 SS_HIST1H1B <- SS_gene_medians_hugo %>%
   filter(Gene %in% c("HIST1H1B"))
+write_tsv(SS_HIST1H1B, "../../output_data/Fig1E_F/SS_HIST1H1B.tsv.gz")
 
 aRMS_HIST1H1B <- aRMS_gene_median_hugo %>%
   filter(Gene %in% c("HIST1H1B"))

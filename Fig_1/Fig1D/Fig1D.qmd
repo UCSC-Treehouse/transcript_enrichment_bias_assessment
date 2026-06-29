@@ -103,6 +103,7 @@ combined_counts <- bind_rows(
   ALL_polyA_counts, 
   AML_riboD_counts, 
   AML_polyA_counts)
+write_tsv(combined_counts, "../../output_data/Fig1D/combined_counts.tsv.gz")
 ```
 
 Custom theme
@@ -194,6 +195,7 @@ Summarized stats for each disease, bin, and test
 ```{r summarize stats}
 all_stats <- bind_rows(stats_SS, stats_aRMS, stats_WT, stats_NB, stats_ALL, stats_AML)
 print(all_stats)
+write_tsv(all_stats, "../../output_data/Fig1D/all_stats.tsv.gz")
 ```
 
 selecting correct test
@@ -347,6 +349,7 @@ sig_bins_all <- bind_rows(
   sig_bins_AML
 )
 sig_bins_all
+write_tsv(sig_bins_all, "../../output_data/Fig1D/sig_bins_all.tsv.gz")
 ```
 
 ```{r specify labels}

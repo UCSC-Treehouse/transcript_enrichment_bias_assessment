@@ -203,6 +203,7 @@ combined_medians_drug <- bind_rows(
   AML_polyA_medians_drug,
   AML_riboD_medians_drug
 )
+write_tsv(combined_medians_drug, "../../output_data/Fig1H/combined_medians_drug.tsv.gz")
 ```
 
 Define palette
@@ -266,7 +267,7 @@ df <- combined_medians_drug %>%
 names(Fig1H_SS) <- unique(combined_medians_drug$Disease)
 
 # View plots
-Fig1H_SS
+Fig1H_SS$SS
 ```
 
 ```{r save Fig1H}
