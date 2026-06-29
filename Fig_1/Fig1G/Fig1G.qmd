@@ -192,6 +192,7 @@ combined_medians_hugo_res <- combined_medians_hugo_res %>%
     )
   )
 # this creates a dataframe that shows the polyA median expression and riboD median expression with the calculated residual for each disease. The representative polyadenylated genes are colored for their respective disease. HIST1H1B is colored for all diseases as the representative nonpolyadenylated gene.
+write_tsv(combined_medians_hugo_res, "../../output_data/Fig1G/combined_medians_hugo_res.tsv.gz")
 ```
 
 Fig1G
