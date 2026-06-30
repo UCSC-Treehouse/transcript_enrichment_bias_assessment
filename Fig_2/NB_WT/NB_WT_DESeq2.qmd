@@ -1,0 +1,287 @@
+---
+title: "NB_WT_DESeq2"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## NB v WT
+
+This notebook will be analyzing the expression profiles of Wilms tumor (WT) and neuroblastoma (NB) tumors from the v25 riboD and polyA compendia.
+
+The goal is to determine the extent that genes get called as differentially expressed as a result of the transcript enrichment method of the library preparation process.
+
+I’ll be using a subsetted list of tumors for each disease in each library prep method, based on the correlation analysis and custom tumor map analysis I did previously.
+
+The comparisons we’ll be making (WT = Wilms tumor, NB = neuroblastoma):
+
+- NB polyA vs WT polyA
+
+- NB riboD vs WT riboD
+
+- NB polyA vs WT riboD
+
+- NB riboD vs WT polyA
+
+```{r install packages}
+library(tidyverse)
+library(DESeq2)
+```
+
+```{r import data}
+# sample metadata
+# This includes the top 15 samples from WT polyA, WT riboD, NB polyA, NB riboD
+# The top 15 samples came from the correlation analysis, where this tsv file was generated
+filtered_WT_NB_list <- read_tsv("../../input_data/filtered_WT_NB_list.tsv", show_col_types = FALSE)
+
+expression_WT_NB <- read_tsv("../../input_data/expression_WT_NB.tsv.gz", show_col_types = FALSE)
+
+gene_names <- read_tsv("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt", show_col_types = FALSE)
+```
+
+That expression file contains all expression information for all WT and NB samples across the compendia (501 samples). We want only the expression information for the samples we’re interested in.
+
+```{r}
+# selecting only the 15 most correlated samples for each category,
+# based on the metadata file
+interested_expression <- expression_WT_NB %>%
+  select(all_of(c("Gene", filtered_WT_NB_list$term)))
+```
+
+Filter expression file to keep only genes w/ a count greater than 10 in at least 10 samples.
+
+```{r}
+# Explanation:
+# across(where(is.numeric)) is selecting all the numeric columns
+# i.e., all the sample columns. This deselects the Gene column, since that is a character column
+
+# rowSums() counts how many samples meet the threshold for each gene,
+# i.e., have a value of at least 10
+
+# then keeps only the genes that meet that threshold in at least 10 samples
+updated_expression <- interested_expression %>%
+  filter(rowSums(across(where(is.numeric)) >= 10) >= 10)
+```
+
+### NB polyA vs WT polyA
+
+```{r}
+# metadata
+WT_polyA_NB_polyA_meta <- filtered_WT_NB_list %>%
+  filter(disease_and_prep == "WT_polyA" | disease_and_prep == "NB_polyA")
+# the pipe | means we're taking all samples called WT_riboD OR NB_polyA in column disease_and_prep
+
+# expression
+WT_polyA_NB_polyA_updated_expr <- updated_expression %>%
+  select(all_of(c("Gene", WT_polyA_NB_polyA_meta$term)))
+```
+
+```{r}
+# Since "Gene" is a column name, it won't match the row names
+# use values from the first column ("Gene") as row names
+fix_WT_polyA_NB_polyA_updated_expr <- WT_polyA_NB_polyA_updated_expr %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+# use values from first column ("th_dataset_id") as row names for clin_merged
+fix_WT_polyA_NB_polyA_meta <- WT_polyA_NB_polyA_meta %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+```
+
+```{r}
+# check if row names of metadata are same as column names of expression
+all(rownames(fix_WT_polyA_NB_polyA_meta) %in% colnames(fix_WT_polyA_NB_polyA_updated_expr))
+# check if order is the same
+all(rownames(fix_WT_polyA_NB_polyA_meta) == colnames(fix_WT_polyA_NB_polyA_updated_expr))
+```
+
+```{r}
+# format data
+round_WT_polyA_NB_polyA_updated_expr = round(fix_WT_polyA_NB_polyA_updated_expr)
+
+WT_polyA_NB_polyA_updated_expr_matrix <- as.matrix(round_WT_polyA_NB_polyA_updated_expr)
+
+fix_WT_polyA_NB_polyA_meta$disease_and_prep <- as.factor(fix_WT_polyA_NB_polyA_meta$disease_and_prep)
+```
+
+```{r}
+# set reference levels
+# we want to make sure the references are consistent across the comparisons
+levels(fix_WT_polyA_NB_polyA_meta$disease_and_prep)
+```
+
+```{r}
+# set up DESeq function
+dds_WT_polyA_NB_polyA_updated <- DESeqDataSetFromMatrix(countData = WT_polyA_NB_polyA_updated_expr_matrix,
+                              colData = fix_WT_polyA_NB_polyA_meta,
+                              design = ~disease_and_prep)
+dds_WT_polyA_NB_polyA_updated
+```
+
+```{r}
+# create a vector of TRUE and FALSE values where
+# TRUE corresponds to genes with counts of at least 10 
+WT_polyA_NB_polyA_updated_genes_to_keep <- rowSums(counts(dds_WT_polyA_NB_polyA_updated)) >= 10
+
+# use which() to prevent any NAs sneaking through
+dds_WT_pA_NB_pA_updated <- dds_WT_polyA_NB_polyA_updated[which(WT_polyA_NB_polyA_updated_genes_to_keep), ]
+```
+
+```{r}
+# Run DESeq2
+dds_WT_pA_NB_pA_updated_object <- DESeq(dds_WT_pA_NB_pA_updated)
+```
+
+```{r}
+# create results table
+result_dds_WT_pA_NB_pA_updated <- results(dds_WT_pA_NB_pA_updated_object)
+# summarize results table
+summary(result_dds_WT_pA_NB_pA_updated, alpha = 0.05)
+```
+
+```{r}
+# convert results to dataframe
+result_dds_WT_pA_NB_pA_updated_df <- result_dds_WT_pA_NB_pA_updated %>%
+  #convert to a data frame
+  as.data.frame() %>%
+  #the gene ids were stored as row names -- let's them a column
+  tibble::rownames_to_column(var = "Gene")
+```
+
+```{r}
+# how many genes have a Log2 fold change greater or equal to 1 and have an adjusted p-value less than 0.05?
+WT_polyA_NB_polyA_LFC1great_padj <- result_dds_WT_pA_NB_pA_updated_df %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  nrow()
+WT_polyA_NB_polyA_LFC1great_padj
+```
+
+```{r}
+# how many genes have a Log2 fold change less than or equal to -1 and have an adjusted p-value less than 0.05?
+WT_polyA_NB_polyA_LFC1less_padj <- result_dds_WT_pA_NB_pA_updated_df %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  nrow()
+WT_polyA_NB_polyA_LFC1less_padj
+```
+
+```{r}
+# convert EnsemblID to HugoID for gene name readability
+hugo_results_WT_polyA_NB_polyA_updated <- result_dds_WT_pA_NB_pA_updated_df %>%
+  left_join(gene_names, by=c("Gene"="EnsGeneID")) %>%
+  relocate(HugoID) # moving HugoID column to the front
+
+write_tsv(hugo_results_WT_polyA_NB_polyA_updated, path = "../../output_data/NB_WT/hugo_results_WT_polyA_NB_polyA_updated.tsv.gz")
+```
+
+### NB riboD vs WT riboD
+
+```{r}
+# metadata
+WT_riboD_NB_riboD_meta <- filtered_WT_NB_list %>%
+  filter(disease_and_prep == "WT_riboD" | disease_and_prep == "NB_riboD")
+
+# expression
+WT_riboD_NB_riboD_updated_expr <- updated_expression %>%
+  select(all_of(c("Gene", WT_riboD_NB_riboD_meta$term)))
+```
+
+```{r}
+# Since "Gene" is a column name, it won't match the row names
+# use values from the first column ("Gene") as row names
+fix_WT_riboD_NB_riboD_updated_expr <- WT_riboD_NB_riboD_updated_expr %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+# use values from first column ("th_dataset_id")
+fix_WT_riboD_NB_riboD_meta <- WT_riboD_NB_riboD_meta %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+```
+
+```{r}
+# check if row names are same as column names
+all(rownames(fix_WT_riboD_NB_riboD_meta) %in% colnames(fix_WT_riboD_NB_riboD_updated_expr))
+
+# check in order is the same
+all(rownames(fix_WT_riboD_NB_riboD_meta) == colnames(fix_WT_riboD_NB_riboD_updated_expr))
+```
+
+```{r}
+# format data
+round_WT_riboD_NB_riboD_updated_expr = round(fix_WT_riboD_NB_riboD_updated_expr)
+
+WT_riboD_NB_riboD_updated_expr_matrix <- as.matrix(round_WT_riboD_NB_riboD_updated_expr)
+
+fix_WT_riboD_NB_riboD_meta$disease_and_prep <- as.factor(fix_WT_riboD_NB_riboD_meta$disease_and_prep)
+```
+
+```{r}
+# set reference levels
+# we want to make sure the references are consistent across the comparisons
+levels(fix_WT_riboD_NB_riboD_meta$disease_and_prep)
+```
+
+```{r}
+# set up DESeq function
+dds_WT_riboD_NB_riboD_updated <- DESeqDataSetFromMatrix(countData = WT_riboD_NB_riboD_updated_expr_matrix,
+                              colData = fix_WT_riboD_NB_riboD_meta,
+                              design = ~disease_and_prep)
+```
+
+```{r}
+# create a vector of TRUE and FALSE values where
+# TRUE corresponds to genes with counts of at least 10 
+WT_riboD_NB_riboD_updated_genes_to_keep <- rowSums(counts(dds_WT_riboD_NB_riboD_updated)) >= 10
+
+# use which() to prevent any NAs sneaking through
+dds_WT_riboD_NB_riboD_updated <- dds_WT_riboD_NB_riboD_updated[which(WT_riboD_NB_riboD_updated_genes_to_keep), ]
+```
+
+```{r}
+# Run DESeq2
+dds_WT_riboD_NB_riboD_updated_object <- DESeq(dds_WT_riboD_NB_riboD_updated)
+```
+
+```{r}
+# create results table
+res_WT_riboD_NB_riboD_updated <- results(dds_WT_riboD_NB_riboD_updated_object)
+
+# summarize results table
+summary(res_WT_riboD_NB_riboD_updated, alpha = 0.05)
+```
+
+```{r}
+# first we convert to df
+res_WT_riboD_NB_riboD_updated_df <- res_WT_riboD_NB_riboD_updated %>%
+  #convert to a data frame
+  as.data.frame() %>%
+  #the gene ids were stored as row names -- let's them a column
+  tibble::rownames_to_column(var = "Gene")
+```
+
+```{r}
+# how many genes have a Log2 fold change greater or equal to 1 and have an adjusted p-value less than 0.05?
+WT_riboD_NB_riboD_LFC1great_padj <- res_WT_riboD_NB_riboD_updated_df %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  nrow()
+WT_riboD_NB_riboD_LFC1great_padj
+```
+
+```{r}
+# how many genes have a Log2 fold change less than or equal to -1 and have an adjusted p-value less than 0.05?
+WT_riboD_NB_riboD_LFC1less_padj <- res_WT_riboD_NB_riboD_updated_df %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  nrow()
+WT_riboD_NB_riboD_LFC1less_padj
+```
+
+```{r}
+hugo_results_WT_riboD_NB_riboD_updated <- res_WT_riboD_NB_riboD_updated_df %>%
+  left_join(gene_names, by=c("Gene"="EnsGeneID")) %>%
+  relocate(HugoID) # moving HugoID column to the front
+
+write_tsv(hugo_results_WT_riboD_NB_riboD_updated, path = "../../output_data/NB_WT/hugo_results_WT_riboD_NB_riboD_updated.tsv.gz")
+```
