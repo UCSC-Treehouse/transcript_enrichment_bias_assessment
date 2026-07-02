@@ -1,0 +1,771 @@
+---
+title: "aRMS_SS_DESeq2_analysis"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## **aRMS v SS - DESeq2 Results Analysis**
+
+```{r load libraries}
+library(tidyverse)
+library(VennDiagram)
+library(ggplot2)
+```
+
+```{r load in files}
+armsPolyA_ssPolyA <- read_tsv("../../output_data/aRMS_SS/hugo_results_aRMS_polyA_SS_polyA_updated.tsv.gz")
+armsRiboD_ssRiboD <- read_tsv("../../output_data/aRMS_SS/hugo_results_aRMS_riboD_SS_riboD_updated.tsv.gz")
+armsPolyA_ssRiboD <- read_tsv("../../output_data/aRMS_SS/hugo_results_aRMS_polyA_SS_riboD_updated.tsv.gz")
+armsRiboD_ssPolyA <- read_tsv("../../output_data/aRMS_SS/hugo_results_aRMS_riboD_SS_polyA_updated.tsv.gz")
+```
+
+## **L2FC \>/\<= 1 or -1**
+
+Filter for statistically significant DEGs
+
+```{r}
+# Filter for genes with a Log2 fold change greater or equal to 1 and have an adjusted p-value less than 0.05
+
+armsPolyA_ssPolyA_great1 <- armsPolyA_ssPolyA %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "armsPolyA_ssPolyA_great1") %>%
+  relocate(comparison)
+
+armsRiboD_ssRiboD_great1 <- armsRiboD_ssRiboD %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "armsRiboD_ssRiboD_great1") %>%
+  relocate(comparison)
+
+armsPolyA_ssRiboD_great1 <- armsPolyA_ssRiboD %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "armsPolyA_ssRiboD_great1") %>%
+  relocate(comparison)
+
+armsRiboD_ssPolyA_great1 <- armsRiboD_ssPolyA %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "armsRiboD_ssPolyA_great1") %>%
+  relocate(comparison)
+
+# Filter for genes with a Log2 fold change less than or equal to -1 and have an adjusted p-value less than 0.05
+
+armsPolyA_ssPolyA_less1 <- armsPolyA_ssPolyA %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "armsPolyA_ssPolyA_less1") %>%
+  relocate(comparison)
+
+armsRiboD_ssRiboD_less1 <- armsRiboD_ssRiboD %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "armsRiboD_ssRiboD_less1") %>%
+  relocate(comparison)
+
+armsPolyA_ssRiboD_less1 <- armsPolyA_ssRiboD %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "armsPolyA_ssRiboD_less1") %>%
+  relocate(comparison)
+
+armsRiboD_ssPolyA_less1 <- armsRiboD_ssPolyA %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "armsRiboD_ssPolyA_less1") %>%
+  relocate(comparison)
+```
+
+### **PolyA unbiased against biased**
+
+#### **Up DEGs**
+
+```{r aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased}
+aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased <- list(
+  "Up in SS polyA relative to aRMS polyA (polyA unbiased)" = armsPolyA_ssPolyA_great1$Gene,
+  "Up in SS polyA relative to aRMS riboD (polyA biased)" = armsRiboD_ssPolyA_great1$Gene,
+  "Up in SS riboD relative to aRMS polyA (riboD biased)" = armsPolyA_ssRiboD_great1$Gene
+)
+
+write_rds(aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased, "../../output_data/aRMS_SS/aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased.rds")
+```
+
+```{r aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased_VD}
+aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
+  x = aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased,
+  category.names = c(
+    "Up in SS polyA relative to \n aRMS polyA (polyA unbiased)",
+    "Up in SS polyA relative to \n aRMS riboD (polyA biased)",
+    "Up in SS riboD relative to \n aRMS polyA (riboD biased)"
+    ),
+  filename = NULL, # Save as a PNG file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#BB5566", "#0072B2", "#E69F00"),
+#  cat.col = c("#BB5566", "#0072B2", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.65, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes upregulated in SS relative to aRMS (L2FC >= 1 and  p-adj < 0.05)",
+  main.cex = 0.75, # Font size for main title
+  disable.logging = TRUE
+)
+aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased_VD
+```
+
+#### **Down DEGs**
+
+```{r aRMS_SS_down_polyAunbiased_polyAbiased_riboDbiased}
+aRMS_SS_down_polyAunbiased_polyAbiased_riboDbiased <- list(
+  "Down in SS polyA relative to aRMS polyA (polyA unbiased)" = armsPolyA_ssPolyA_less1$Gene,
+  "Down in SS polyA relative to aRMS riboD (polyA biased)" = armsRiboD_ssPolyA_less1$Gene,
+  "Down in SS riboD relative to aRMS polyA (riboD biased)" = armsPolyA_ssRiboD_less1$Gene
+)
+
+write_rds(aRMS_SS_down_polyAunbiased_polyAbiased_riboDbiased, "../../output_data/aRMS_SS/aRMS_SS_down_polyAunbiased_polyAbiased_riboDbiased.rds")
+```
+
+```{r aRMS_SS_down_polyAunbiased_polyAbiased_riboDbiased_VD}
+aRMS_SS_down_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
+  x = aRMS_SS_down_polyAunbiased_polyAbiased_riboDbiased,
+  category.names = c(
+    "Down in SS polyA relative to \n aRMS polyA (polyA unbiased)",
+    "Down in SS polyA relative to \n aRMS riboD (polyA biased)",
+    "Down in SS riboD relative to \n aRMS polyA (riboD biased)"
+    ),
+  filename = NULL, # Save as a PNG file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#BB5566", "#0072B2", "#E69F00"),
+  cat.col = c("#BB5566", "#0072B2", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.65, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes downregulated in SS relative to aRMS (L2FC <= -1 and  p-adj < 0.05)",
+  main.cex = 0.75, # Font size for main title
+  disable.logging = TRUE
+)
+aRMS_SS_down_polyAunbiased_polyAbiased_riboDbiased_VD
+```
+
+### **RiboD unbiased against biased**
+
+#### **Up DEGs**
+
+```{r aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased}
+aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased <- list(
+  "Up in SS riboD relative to aRMS riboD (riboD unbiased)" = armsRiboD_ssRiboD_great1$Gene,
+  "Up in SS polyA relative to aRMS riboD (polyA biased)" = armsRiboD_ssPolyA_great1$Gene,
+  "Up in SS riboD relative to aRMS polyA (riboD biased)" = armsPolyA_ssRiboD_great1$Gene
+)
+
+write_rds(aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased, "../../output_data/aRMS_SS/aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased.rds")
+```
+
+```{r aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased_VD}
+aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
+  x = aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased,
+  category.names = c(
+    "Up in SS riboD relative to \n aRMS riboD (riboD unbiased)",
+    "Up in SS polyA relative to \n aRMS riboD (polyA biased)",
+    "Up in SS riboD relative to \n aRMS polyA (riboD biased)"
+    ),
+  filename = NULL, # Save as a PNG file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#BB5566", "#0072B2", "#E69F00"),
+  cat.col = c("#BB5566", "#0072B2", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.65, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes upregulated in SS relative to aRMS (L2FC >= 1 and  p-adj < 0.05)",
+  main.cex = 0.75, # Font size for main title
+  disable.logging = TRUE
+)
+aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased_VD
+```
+
+#### **Down DEGs**
+
+```{r aRMS_SS_down_riboDunbiased_polyAbiased_riboDbiased}
+aRMS_SS_down_riboDunbiased_polyAbiased_riboDbiased <- list(
+  "Down in SS riboD relative to aRMS riboD (riboD unbiased)" = armsRiboD_ssRiboD_less1$Gene,
+  "Down in SS polyA relative to aRMS riboD (polyA biased)" = armsRiboD_ssPolyA_less1$Gene,
+  "Down in SS riboD relative to aRMS polyA (riboD biased)" = armsPolyA_ssRiboD_less1$Gene
+)
+
+write_rds(aRMS_SS_down_riboDunbiased_polyAbiased_riboDbiased, "../../output_data/aRMS_SS/aRMS_SS_down_riboDunbiased_polyAbiased_riboDbiased.rds")
+```
+
+```{r aRMS_SS_down_riboDunbiased_polyAbiased_riboDbiased_VD}
+aRMS_SS_down_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
+  x = aRMS_SS_down_riboDunbiased_polyAbiased_riboDbiased,
+  category.names = c(
+    "Down in SS riboD relative to \n aRMS riboD (riboD unbiased)",
+    "Down in SS polyA relative to \n aRMS riboD (polyA biased)",
+    "Down in SS riboD relative to \n aRMS polyA (riboD biased)"
+    ),
+  filename = NULL, # Save as a PNG file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#BB5566", "#0072B2", "#E69F00"),
+  cat.col = c("#BB5566", "#0072B2", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.65, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes downregulated in SS relative to aRMS (L2FC <= -1 and  p-adj < 0.05)",
+  main.cex = 0.75, # Font size for main title
+  disable.logging = TRUE
+)
+aRMS_SS_down_riboDunbiased_polyAbiased_riboDbiased_VD
+```
+
+### **Histograms of LFC of genes in intersections**
+
+Starting with upregulated genes in the polyAunbiased:polyAbiased:riboDbiased comparison.
+
+Looking at genes that are unique to polyAbiased
+
+```{r aRMS_SS_up_polyAunbiased_uniquetopolyAbiased}
+aRMS_SS_up_polyAunbiased_uniquetopolyAbiased <- armsRiboD_ssPolyA_great1 %>%
+  anti_join(armsPolyA_ssPolyA_great1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene")
+print(aRMS_SS_up_polyAunbiased_uniquetopolyAbiased %>% nrow())
+```
+
+What is the average LFC?
+
+```{r aRMS_SS_up_polyAunbiased_uniquetopolyAbiased_avgLFC}
+aRMS_SS_up_polyAunbiased_uniquetopolyAbiased_avgLFC <- aRMS_SS_up_polyAunbiased_uniquetopolyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+aRMS_SS_up_polyAunbiased_uniquetopolyAbiased_avgLFC
+```
+
+Histogram of LFC
+
+```{r aRMS_SS_up_polyAunbiased_uniquetopolyAbiased_hist}
+aRMS_SS_up_polyAunbiased_uniquetopolyAbiased_hist <- ggplot(aRMS_SS_up_polyAunbiased_uniquetopolyAbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in SS polyA relative to aRMS riboD",
+       subtitle = "polyAbiased, compared to polyAunbiased. Median LFC = 1.37",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+aRMS_SS_up_polyAunbiased_uniquetopolyAbiased_hist
+```
+
+Looking at genes that are unique to riboDbiased
+
+```{r aRMS_SS_up_polyAunbiased_uniquetoriboDbiased}
+aRMS_SS_up_polyAunbiased_uniquetoriboDbiased <- armsPolyA_ssRiboD_great1 %>%
+  anti_join(armsPolyA_ssPolyA_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene")
+print(aRMS_SS_up_polyAunbiased_uniquetoriboDbiased %>% nrow())
+```
+
+What’s the average LFC?
+
+```{r aRMS_SS_up_polyAunbiased_uniquetoriboDbiased_avgLFC}
+aRMS_SS_up_polyAunbiased_uniquetoriboDbiased_avgLFC <- aRMS_SS_up_polyAunbiased_uniquetoriboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+aRMS_SS_up_polyAunbiased_uniquetoriboDbiased_avgLFC
+```
+
+```{r aRMS_SS_up_polyAunbiased_uniquetoriboDbiased_hist}
+aRMS_SS_up_polyAunbiased_uniquetoriboDbiased_hist <- ggplot(aRMS_SS_up_polyAunbiased_uniquetoriboDbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30,
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800, 1000), limits = c(0,1000)) +
+#    scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in SS riboD relative to aRMS polyA",
+       subtitle = "riboD biased, compared to polyA_unbiased. Median LFC = 2.81",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+aRMS_SS_up_polyAunbiased_uniquetoriboDbiased_hist
+```
+
+Upregulated genes in the riboD unbiased:polyAbiased:riboDbiased comparison
+
+Looking at genes that are unique to the polyA biased
+
+```{r aRMS_SS_up_riboDunbiased_uniquetopolyAbiased}
+aRMS_SS_up_riboDunbiased_uniquetopolyAbiased <- armsRiboD_ssPolyA_great1 %>%
+  anti_join(armsRiboD_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene")
+print(aRMS_SS_up_riboDunbiased_uniquetopolyAbiased %>% nrow())
+```
+
+```{r aRMS_SS_up_riboDunbiased_uniquetopolyAbiased_avgLFC}
+aRMS_SS_up_riboDunbiased_uniquetopolyAbiased_avgLFC <- aRMS_SS_up_riboDunbiased_uniquetopolyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+aRMS_SS_up_riboDunbiased_uniquetopolyAbiased_avgLFC
+```
+
+```{r aRMS_SS_up_riboDunbiased_uniquetopolyAbiased_hist}
+aRMS_SS_up_riboDunbiased_uniquetopolyAbiased_hist <- ggplot(aRMS_SS_up_riboDunbiased_uniquetopolyAbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in SS polyA relative to aRMS riboD",
+       subtitle = "polyA biased, compared to RiboD_unbiased. Median LFC = 1.39",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+aRMS_SS_up_riboDunbiased_uniquetopolyAbiased_hist
+```
+
+Looking at genes that are unique to riboDbiased
+
+```{r aRMS_SS_up_riboDunbiased_uniquetoriboDbiased}
+aRMS_SS_up_riboDunbiased_uniquetoriboDbiased <- armsPolyA_ssRiboD_great1 %>%
+  anti_join(armsRiboD_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene")
+print(aRMS_SS_up_riboDunbiased_uniquetoriboDbiased %>% nrow())
+```
+
+```{r aRMS_SS_up_riboDunbiased_uniquetoriboDbiased_avgLFC}
+aRMS_SS_up_riboDunbiased_uniquetoriboDbiased_avgLFC <- aRMS_SS_up_riboDunbiased_uniquetoriboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+aRMS_SS_up_riboDunbiased_uniquetoriboDbiased_avgLFC
+```
+
+```{r aRMS_SS_up_riboDunbiased_uniquetoriboDbiased_hist}
+aRMS_SS_up_riboDunbiased_uniquetoriboDbiased_hist <- ggplot(aRMS_SS_up_riboDunbiased_uniquetoriboDbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30,
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800, 1000, 1200), limits = c(0,1200)) +
+#    scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in SS riboD relative to aRMS polyA",
+       subtitle = "riboD biased, compared to riboD_unbiased. Median LFC = 2.65",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+aRMS_SS_up_riboDunbiased_uniquetoriboDbiased_hist
+```
+
+Looking at downregulated genes in the polyA unbiased:polyA biased:riboD biased comparison
+
+Looking at genes that are unique to the polyA biased
+
+```{r aRMS_SS_down_polyAunbiased_uniquetopolyAbiased}
+aRMS_SS_down_polyAunbiased_uniquetopolyAbiased <- armsRiboD_ssPolyA_less1 %>%
+  anti_join(armsPolyA_ssPolyA_less1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene")
+print(aRMS_SS_down_polyAunbiased_uniquetopolyAbiased %>% nrow())
+```
+
+```{r aRMS_SS_down_polyAunbiased_uniquetopolyAbiased_avgLFC}
+aRMS_SS_down_polyAunbiased_uniquetopolyAbiased_avgLFC <- aRMS_SS_down_polyAunbiased_uniquetopolyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+aRMS_SS_down_polyAunbiased_uniquetopolyAbiased_avgLFC
+```
+
+```{r aRMS_SS_down_polyAunbiased_uniquetopolyAbiased_hist}
+aRMS_SS_down_polyAunbiased_uniquetopolyAbiased_hist <- ggplot(aRMS_SS_down_polyAunbiased_uniquetopolyAbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(0, -1, -2, -4, -6, -8, -10, -12, -14, -16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in SS polyA relative to aRMS riboD",
+       subtitle = "polyA biased, compared to polyA_unbiased. Median LFC = -3.25",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+aRMS_SS_down_polyAunbiased_uniquetopolyAbiased_hist
+```
+
+Looking at genes that are unique to the riboD biased
+
+```{r aRMS_SS_down_polyAunbiased_uniquetoriboDbiased}
+aRMS_SS_down_polyAunbiased_uniquetoriboDbiased <- armsPolyA_ssRiboD_less1 %>%
+  anti_join(armsPolyA_ssPolyA_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene")
+print(aRMS_SS_down_polyAunbiased_uniquetoriboDbiased %>% nrow())
+```
+
+```{r aRMS_SS_down_polyAunbiased_uniquetoriboDbiased_avgLFC}
+aRMS_SS_down_polyAunbiased_uniquetoriboDbiased_avgLFC <- aRMS_SS_down_polyAunbiased_uniquetoriboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+aRMS_SS_down_polyAunbiased_uniquetoriboDbiased_avgLFC
+```
+
+```{r aRMS_SS_down_polyAunbiased_uniquetoriboDbiased_hist}
+aRMS_SS_down_polyAunbiased_uniquetoriboDbiased_hist <- ggplot(aRMS_SS_down_polyAunbiased_uniquetoriboDbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(0, -2, -4, -6, -8, -10, -12, -14, -16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in SS riboD relative to aRMS polyA",
+       subtitle = "riboD biased, compared to polyA_unbiased. Median LFC = -1.38",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+aRMS_SS_down_polyAunbiased_uniquetoriboDbiased_hist
+```
+
+Looking at downregulated genes in the riboD unbiased:polyA biased:riboD biased comparison
+
+Looking at genes that are unique to the polyA biased
+
+```{r aRMS_SS_down_riboDunbiased_uniquetopolyAbiased}
+aRMS_SS_down_riboDunbiased_uniquetopolyAbiased <- armsRiboD_ssPolyA_less1 %>%
+  anti_join(armsRiboD_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene")
+print(aRMS_SS_down_riboDunbiased_uniquetopolyAbiased %>% nrow())
+```
+
+```{r aRMS_SS_down_riboDunbiased_uniquetopolyAbiased_avgLFC}
+aRMS_SS_down_riboDunbiased_uniquetopolyAbiased_avgLFC <- aRMS_SS_down_riboDunbiased_uniquetopolyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+aRMS_SS_down_riboDunbiased_uniquetopolyAbiased_avgLFC
+```
+
+```{r aRMS_SS_down_riboDunbiased_uniquetopolyAbiased_hist}
+aRMS_SS_down_riboDunbiased_uniquetopolyAbiased_hist <- ggplot(aRMS_SS_down_riboDunbiased_uniquetopolyAbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(0, -1, -2, -4, -6, -8, -10, -12, -14, -16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in SS polyA relative to aRMS riboD",
+       subtitle = "polyA biased, compared to riboD_truth. Median LFC = -2.85",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+aRMS_SS_down_riboDunbiased_uniquetopolyAbiased_hist
+```
+
+Looking at genes that are unique to the riboD biased
+
+```{r aRMS_SS_down_riboDunbiased_uniquetoriboDbiased}
+aRMS_SS_down_riboDunbiased_uniquetoriboDbiased <- armsPolyA_ssRiboD_less1 %>%
+  anti_join(armsRiboD_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene")
+print(aRMS_SS_down_riboDunbiased_uniquetoriboDbiased %>% nrow())
+```
+
+```{r aRMS_SS_down_riboDunbiased_uniquetoriboDbiased_avgLFC}
+aRMS_SS_down_riboDunbiased_uniquetoriboDbiased_avgLFC <- aRMS_SS_down_riboDunbiased_uniquetoriboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+aRMS_SS_down_riboDunbiased_uniquetoriboDbiased_avgLFC
+```
+
+```{r aRMS_SS_down_riboDunbiased_uniquetoriboDbiased_hist}
+aRMS_SS_down_riboDunbiased_uniquetoriboDbiased_hist <- ggplot(aRMS_SS_down_riboDunbiased_uniquetoriboDbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(0, -2, -4, -6, -8, -10, -12, -14, -16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in SS riboD relative to aRMS polyA",
+       subtitle = "riboD biased, compared to riboD_truth. Median LFC = -1.47",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+aRMS_SS_down_riboDunbiased_uniquetoriboDbiased_hist
+```
+
+Genes in common between the polyAunbiased:polyAbiased:riboDbiased venn diagram and the riboDunbiased:polyAbiased:riboDbiased venn diagram
+
+upregulated polyA biased
+
+```{r aRMS_SS_up_polyAbiased}
+aRMS_SS_up_polyAbiased <- inner_join(aRMS_SS_up_polyAunbiased_uniquetopolyAbiased, aRMS_SS_up_riboDunbiased_uniquetopolyAbiased, by = "Gene")
+
+write_rds(aRMS_SS_up_polyAbiased, "../../output_data/aRMS_SS/aRMS_SS_up_polyAbiased.rds")
+
+print(aRMS_SS_up_polyAbiased %>% nrow())
+```
+
+```{r aRMS_SS_up_polyAbiased_avgLFC}
+aRMS_SS_up_polyAbiased_avgLFC <- aRMS_SS_up_polyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange.x),
+    max_value = max(log2FoldChange.x),
+    median_value = median(log2FoldChange.x),
+    mean_value = mean(log2FoldChange.x),
+    stdev = sd(log2FoldChange.x)
+  )
+aRMS_SS_up_polyAbiased_avgLFC
+```
+
+```{r aRMS_SS_up_polyAbiased_hist}
+aRMS_SS_up_polyAbiased_hist <- ggplot(aRMS_SS_up_polyAbiased, aes(x = log2FoldChange.x)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in SS polyA relative to aRMS riboD",
+       subtitle = "polyA biased, Median LFC = 1.32",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+# ggsave(filename = "../../plots/DESeq2_results_analysis/histograms/aRMS_SS_up_polyAbiased_hist.png", plot = aRMS_SS_up_polyAbiased_hist)
+# 
+# ggsave(filename = "../../plots/DESeq2_results_analysis/histograms/aRMS_SS_up_polyAbiased_hist.svg", plot = aRMS_SS_up_polyAbiased_hist)
+# 
+# saveRDS(aRMS_SS_up_polyAbiased_hist, file = "../../plots/DESeq2_results_analysis/histograms/aRMS_SS_up_polyAbiased_hist.rds")
+
+aRMS_SS_up_polyAbiased_hist
+```
+
+upregulated riboD biased
+
+```{r aRMS_SS_up_riboDbiased}
+aRMS_SS_up_riboDbiased <- inner_join(aRMS_SS_up_polyAunbiased_uniquetoriboDbiased, aRMS_SS_up_riboDunbiased_uniquetoriboDbiased, by = "Gene")
+
+write_rds(aRMS_SS_up_riboDbiased, "../../output_data/aRMS_SS/aRMS_SS_up_riboDbiased.rds")
+
+print(aRMS_SS_up_riboDbiased %>% nrow())
+```
+
+```{r aRMS_SS_up_riboDbiased_avgLFC}
+aRMS_SS_up_riboDbiased_avgLFC <- aRMS_SS_up_riboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange.x),
+    max_value = max(log2FoldChange.x),
+    median_value = median(log2FoldChange.x),
+    mean_value = mean(log2FoldChange.x),
+    stdev = sd(log2FoldChange.x)
+  )
+aRMS_SS_up_riboDbiased_avgLFC
+```
+
+```{r aRMS_SS_up_riboDbiased_hist}
+aRMS_SS_up_riboDbiased_hist <- ggplot(aRMS_SS_up_riboDbiased, aes(x = log2FoldChange.x)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in SS riboD relative to aRMS polyA",
+       subtitle = "riboD biased, Median LFC = 2.76",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+# ggsave(filename = "../../plots/DESeq2_results_analysis/histograms/aRMS_SS_up_riboDbiased_hist.png", plot = aRMS_SS_up_riboDbiased_hist)
+# 
+# ggsave(filename = "../../plots/DESeq2_results_analysis/histograms/aRMS_SS_up_riboDbiased_hist.svg", plot = aRMS_SS_up_riboDbiased_hist)
+# 
+# saveRDS(aRMS_SS_up_riboDbiased_hist, file = "../../plots/DESeq2_results_analysis/histograms/aRMS_SS_up_riboDbiased_hist.rds")
+
+aRMS_SS_up_riboDbiased_hist
+```
+
+Genes in common between the polyAunbiased:polyAbiased:riboDbiased venn diagram and the riboDunbiased:polyAbiased:riboDbiased venn diagram
+
+downregulated polyA biased
+
+```{r aRMS_SS_down_polyAbiased}
+aRMS_SS_down_polyAbiased <- inner_join(aRMS_SS_down_polyAunbiased_uniquetopolyAbiased, aRMS_SS_down_riboDunbiased_uniquetopolyAbiased, by = "Gene")
+
+write_rds(aRMS_SS_down_polyAbiased, "../../output_data/aRMS_SS/aRMS_SS_down_polyAbiased.rds")
+
+print(aRMS_SS_down_polyAbiased %>% nrow())
+```
+
+```{r aRMS_SS_down_polyAbiased_avgLFC}
+aRMS_SS_down_polyAbiased_avgLFC <- aRMS_SS_down_polyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange.x),
+    max_value = max(log2FoldChange.x),
+    median_value = median(log2FoldChange.x),
+    mean_value = mean(log2FoldChange.x),
+    stdev = sd(log2FoldChange.x)
+  )
+aRMS_SS_down_polyAbiased_avgLFC
+```
+
+```{r aRMS_SS_down_polyAbiased_hist}
+aRMS_SS_down_polyAbiased_hist <- ggplot(aRMS_SS_down_polyAbiased, aes(x = log2FoldChange.x)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in SS polyA relative to aRMS riboD",
+       subtitle = "polyA biased, Median LFC = -2.90",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+aRMS_SS_down_polyAbiased_hist
+```
+
+downregulated riboD biased
+
+```{r aRMS_SS_down_riboDbiased}
+aRMS_SS_down_riboDbiased <- inner_join(aRMS_SS_down_polyAunbiased_uniquetoriboDbiased, aRMS_SS_down_riboDunbiased_uniquetoriboDbiased, by = "Gene")
+
+write_rds(aRMS_SS_down_riboDbiased, "../../output_data/aRMS_SS/aRMS_SS_down_riboDbiased.rds")
+
+print(aRMS_SS_down_riboDbiased %>% nrow())
+```
+
+```{r aRMS_SS_down_riboDbiased_avgLFC}
+aRMS_SS_down_riboDbiased_avgLFC <- aRMS_SS_down_riboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange.x),
+    max_value = max(log2FoldChange.x),
+    median_value = median(log2FoldChange.x),
+    mean_value = mean(log2FoldChange.x),
+    stdev = sd(log2FoldChange.x)
+  )
+aRMS_SS_down_riboDbiased_avgLFC
+```
+
+```{r aRMS_SS_down_riboDbiased_hist}
+aRMS_SS_down_riboDbiased_hist <- ggplot(aRMS_SS_down_riboDbiased, aes(x = log2FoldChange.x)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in SS riboD relative to aRMS polyA",
+       subtitle = "riboD biased, Median LFC = -1.36",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+            axis.text = element_text(size = 13),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+aRMS_SS_down_riboDbiased_hist
+```
+
+### Session Info
+
+```{r}
+sessioninfo::session_info()
+```
