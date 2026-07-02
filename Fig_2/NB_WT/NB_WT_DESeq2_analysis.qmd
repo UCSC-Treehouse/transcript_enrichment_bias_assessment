@@ -1,0 +1,753 @@
+---
+title: "NB_WT_DESeq2_analysis"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## **NB v WT - DESeq2 Results Analysis**
+
+```{r load libraries}
+library(tidyverse)
+library(VennDiagram)
+library(ggplot2)
+```
+
+```{r load in files}
+WTPolyA_NBPolyA <- read_tsv("../../output_data/NB_WT/hugo_results_WT_polyA_NB_polyA_updated.tsv.gz")
+WTRiboD_NBRiboD <- read_tsv("../../output_data/NB_WT/hugo_results_WT_riboD_NB_riboD_updated.tsv.gz")
+WTPolyA_NBRiboD <- read_tsv("../../output_data/NB_WT/hugo_results_WT_polyA_NB_riboD_updated.tsv.gz")
+WTRiboD_NBPolyA <- read_tsv("../../output_data/NB_WT/hugo_results_WT_riboD_NB_polyA_updated.tsv.gz")
+```
+
+## **L2FC \>/\<= 1 or -1**
+
+Filter for statistically significant DEGs
+
+```{r}
+# Filter for genes with a Log2 fold change greater or equal to 1 and have an adjusted p-value less than 0.05
+
+WTPolyA_NBPolyA_great1 <- WTPolyA_NBPolyA %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "WTPolyA_NBPolyA_great1") %>%
+  relocate(comparison)
+
+WTRiboD_NBRiboD_great1 <- WTRiboD_NBRiboD %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "WTRiboD_NBRiboD_great1") %>%
+  relocate(comparison)
+
+WTPolyA_NBRiboD_great1 <- WTPolyA_NBRiboD %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "WTPolyA_NBRiboD_great1") %>%
+  relocate(comparison)
+
+WTRiboD_NBPolyA_great1 <- WTRiboD_NBPolyA %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "WTRiboD_NBPolyA_great1") %>%
+  relocate(comparison)
+
+# Filter for genes with a Log2 fold change less than or equal to -1 and have an adjusted p-value less than 0.05
+
+WTPolyA_NBPolyA_less1 <- WTPolyA_NBPolyA %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "WTPolyA_NBPolyA_less1") %>%
+  relocate(comparison)
+
+WTRiboD_NBRiboD_less1 <- WTRiboD_NBRiboD %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "WTRiboD_NBRiboD_less1") %>%
+  relocate(comparison)
+
+WTPolyA_NBRiboD_less1 <- WTPolyA_NBRiboD %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "WTPolyA_NBRiboD_less1") %>%
+  relocate(comparison)
+
+WTRiboD_NBPolyA_less1 <- WTRiboD_NBPolyA %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "WTRiboD_NBPolyA_less1") %>%
+  relocate(comparison)
+```
+
+### **PolyA unbiased against biased**
+
+#### **Up DEGs**
+
+```{r WT_NB_up_polyAunbiased_polyAbiased_riboDbiased}
+WT_NB_up_polyAunbiased_polyAbiased_riboDbiased <- list(
+  "Up in WT polyA relative to NB polyA (polyA unbiased)" = WTPolyA_NBPolyA_great1$Gene,
+  "Up in WT polyA relative to NB riboD (polyA biased)" = WTPolyA_NBRiboD_great1$Gene,
+    "Up in WT riboD relative to NB polyA (riboD biased)" = WTRiboD_NBPolyA_great1$Gene
+)
+
+write_rds(WT_NB_up_polyAunbiased_polyAbiased_riboDbiased,
+  "../../output_data/NB_WT/WT_NB_up_polyAunbiased_polyAbiased_riboDbiased.rds")
+```
+
+```{r WT_NB_up_polyAunbiased_polyAbiased_riboDbiased_VD}
+WT_NB_up_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
+  x = WT_NB_up_polyAunbiased_polyAbiased_riboDbiased,
+  category.names = c(
+    "Up in WT polyA relative to \n NB polyA (polyA unbiased)",
+    "Up in WT polyA relative to \n NB riboD (polyA biased)",
+    "Up in WT riboD relative to \n NB polyA (riboD biased)"
+    ),
+  filename = NULL, # Save as a PNG file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#BB5566", "#0072B2", "#E69F00"),
+#  cat.col = c("#BB5566", "#0072B2", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.65, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes upregulated in WT relative to NB (L2FC >= 1 and  p-adj < 0.05)",
+  main.cex = 0.75, # Font size for main title
+  disable.logging = TRUE
+)
+
+WT_NB_up_polyAunbiased_polyAbiased_riboDbiased_VD
+```
+
+#### Down DEGs
+
+```{r WT_NB_down_polyAunbiased_polyAbiased_riboDbiased}
+WT_NB_down_polyAunbiased_polyAbiased_riboDbiased <- list(
+  "Down in WT polyA relative to NB polyA (polyA unbiased)" = WTPolyA_NBPolyA_less1$Gene,
+  "Down in WT polyA relative to NB riboD (polyA biased)" = WTPolyA_NBRiboD_less1$Gene,
+  "Down in WT riboD relative to NB polyA (riboD biased)" = WTRiboD_NBPolyA_less1$Gene
+)
+
+write_rds(
+  WT_NB_down_polyAunbiased_polyAbiased_riboDbiased,
+  "../../output_data/NB_WT/WT_NB_down_polyAunbiased_polyAbiased_riboDbiased.rds")
+```
+
+```{r WT_NB_down_polyAunbiased_polyAbiased_riboDbiased_VD}
+WT_NB_down_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
+  x = WT_NB_down_polyAunbiased_polyAbiased_riboDbiased,
+  category.names = c(
+    "Down in WT polyA relative to \n NB polyA (polyA unbiased)",
+    "Down in WT polyA relative to \n NB riboD (polyA biased)",
+    "Down in WT riboD relative to \n NB polyA (riboD biased)"
+    ),
+  filename = NULL, # Save as a PNG file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#BB5566", "#0072B2", "#E69F00"),
+#  cat.col = c("#BB5566", "#0072B2", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.65, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes downregulated in WT relative to NB (L2FC <= -1 and  p-adj < 0.05)",
+  main.cex = 0.75, # Font size for main title
+  disable.logging = TRUE
+)
+WT_NB_down_polyAunbiased_polyAbiased_riboDbiased_VD
+```
+
+### RiboD unbiased against polyA biased and riboD biased
+
+#### Up DEGs
+
+```{r WT_NB_up_riboDunbiased_polyAbiased_riboDbiased}
+WT_NB_up_riboDunbiased_polyAbiased_riboDbiased <- list(
+  "Up in WT riboD relative to NB riboD (riboD unbiased)" = WTRiboD_NBRiboD_great1$Gene,
+  "Up in WT polyA relative to NB riboD (polyA biased)" = WTPolyA_NBRiboD_great1$Gene,
+    "Up in WT riboD relative to NB polyA (riboD biased)" = WTRiboD_NBPolyA_great1$Gene
+)
+
+write_rds(
+  WT_NB_up_riboDunbiased_polyAbiased_riboDbiased,
+  "../../output_data/NB_WT/WT_NB_up_riboDunbiased_polyAbiased_riboDbiased.rds")
+```
+
+```{r WT_NB_up_riboDunbiased_polyAbiased_riboDbiased_VD}
+WT_NB_up_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
+  x = WT_NB_up_riboDunbiased_polyAbiased_riboDbiased,
+  category.names = c(
+    "Up in WT riboD relative to \n NB riboD (riboD unbiased)",
+    "Up in WT polyA relative to \n NB riboD (polyA biased)",
+    "Up in WT riboD relative to \n NB polyA (riboD biased)"
+    ),
+  filename = NULL, # Save as a PNG file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#BB5566", "#0072B2", "#E69F00"),
+#  cat.col = c("#BB5566", "#0072B2", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.65, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes upregulated in WT relative to NB (L2FC >= 1 and  p-adj < 0.05)",
+  main.cex = 0.75, # Font size for main title
+  disable.logging = TRUE
+)
+WT_NB_up_riboDunbiased_polyAbiased_riboDbiased_VD
+```
+
+### Down DEGs
+
+```{r WT_NB_down_riboDunbiased_polyAbiased_riboDbiased}
+WT_NB_down_riboDunbiased_polyAbiased_riboDbiased <- list(
+  "Down in WT riboD relative to NB riboD (riboD unbiased)" = WTRiboD_NBRiboD_less1$Gene,
+  "Down in WT polyA relative to NB riboD (polyA biased)" = WTPolyA_NBRiboD_less1$Gene,
+   "Down in WT riboD relative to NB polyA (riboD biased)" = WTRiboD_NBPolyA_less1$Gene
+)
+
+write_rds(WT_NB_down_riboDunbiased_polyAbiased_riboDbiased, "../../output_data/NB_WT/WT_NB_down_riboDunbiased_polyAbiased_riboDbiased_upset.rds")
+```
+
+```{r WT_NB_down_riboDunbiased_polyAbiased_riboDbiased_VD}
+WT_NB_down_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
+  x = WT_NB_down_riboDunbiased_polyAbiased_riboDbiased,
+  category.names = c(
+    "Down in WT riboD relative to \n NB riboD (riboD unbiased)",
+    "Down in WT polyA relative to \n NB riboD (polyA biased)",
+    "Down in WT riboD relative to \n NB polyA (riboD biased)"
+    ),
+  filename = NULL, # Save as a PNG file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#BB5566", "#0072B2", "#E69F00"),
+#  cat.col = c("#BB5566", "#0072B2", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.65, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes downregulated in WT relative to NB (L2FC <= -1 and  p-adj < 0.05)",
+  main.cex = 0.75, # Font size for main title
+  disable.logging = TRUE
+)
+WT_NB_down_riboDunbiased_polyAbiased_riboDbiased_VD
+```
+
+### Histograms of LFC of genes in intersections
+
+#### Up PolyA unbiased against polyA biased and riboD biased
+
+Starting with upregulated genes in the polyA unbiased:polyA biased:riboD biased comparison
+
+Looking at genes that are unique to the polyAbiased
+
+```{r WT_NB_up_polyAunbiased_uniquetopolyAbiased}
+WT_NB_up_polyAunbiased_uniquetopolyAbiased <- WTPolyA_NBRiboD_great1 %>%
+  anti_join(WTPolyA_NBPolyA_great1, by = "Gene") %>%
+  anti_join(WTRiboD_NBPolyA_great1, by = "Gene")
+print(WT_NB_up_polyAunbiased_uniquetopolyAbiased %>% nrow())
+```
+
+What is the average LFC?
+
+```{r WT_NB_up_polyAunbiased_uniquetopolyAbiased_avgLFC}
+WT_NB_up_polyAunbiased_uniquetopolyAbiased_avgLFC <- WT_NB_up_polyAunbiased_uniquetopolyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+WT_NB_up_polyAunbiased_uniquetopolyAbiased_avgLFC
+```
+
+```{r WT_NB_up_polyAunbiased_uniquetopolyAbiased_hist}
+WT_NB_up_polyAunbiased_uniquetopolyAbiased_hist <- ggplot(WT_NB_up_polyAunbiased_uniquetopolyAbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+  scale_y_continuous(breaks = c(200, 400, 600, 800, 1000), limits = c(0,NA)) +
+  scale_x_continuous(breaks = seq(2, 30, by = 2)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in WT polyA relative to NB riboD",
+       subtitle = "polyA biased, compared to polyA unbiased, Median LFC = 1.48",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+WT_NB_up_polyAunbiased_uniquetopolyAbiased_hist
+```
+
+Looking at genes that are unique to riboD biased
+
+```{r WT_NB_up_polyAunbiased_uniquetoriboDbiased}
+WT_NB_up_polyAunbiased_uniquetoriboDbiased <- WTRiboD_NBPolyA_great1 %>%
+  anti_join(WTPolyA_NBPolyA_great1, by = "Gene") %>%
+  anti_join(WTPolyA_NBRiboD_great1, by = "Gene")
+print(WT_NB_up_polyAunbiased_uniquetoriboDbiased %>% nrow())
+```
+
+```{r WT_NB_polyAunbiased_uniquetoriboDbiased_avgLFC}
+WT_NB_polyAunbiased_uniquetoriboDbiased_avgLFC <- WT_NB_up_polyAunbiased_uniquetoriboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+WT_NB_polyAunbiased_uniquetoriboDbiased_avgLFC
+```
+
+```{r WT_NB_up_polyAunbiased_uniquetoriboDbiased_hist}
+WT_NB_up_polyAunbiased_uniquetoriboDbiased_hist <- ggplot(WT_NB_up_polyAunbiased_uniquetoriboDbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30,
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+  scale_y_continuous(breaks = c(200, 400, 600, 800, 1000), limits = c(0,NA)) +
+    scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in WT riboD relative to NB polyA",
+       subtitle = "riboD biased, compared to polyA unbiased, Median LFC = 2.69",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+WT_NB_up_polyAunbiased_uniquetoriboDbiased_hist
+```
+
+#### Down PolyA unbiased against polyA biased and riboD biased
+
+Looking at genes that are unique to polyA biased
+
+```{r WT_NB_down_polyAunbiased_uniquetopolyAbiased}
+WT_NB_down_polyAunbiased_uniquetopolyAbiased <- WTPolyA_NBRiboD_less1 %>%
+  anti_join(WTPolyA_NBPolyA_less1, by = "Gene") %>%
+  anti_join(WTRiboD_NBPolyA_less1, by = "Gene")
+print(WT_NB_down_polyAunbiased_uniquetopolyAbiased %>% nrow())
+```
+
+```{r WT_NB_down_polyAunbiased_uniquetopolyAbiased_avgLFC}
+WT_NB_down_polyAunbiased_uniquetopolyAbiased_avgLFC <- WT_NB_down_polyAunbiased_uniquetopolyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+WT_NB_down_polyAunbiased_uniquetopolyAbiased_avgLFC
+```
+
+```{r WT_NB_down_polyAunbiased_uniquetopolyAbiased_hist}
+WT_NB_down_polyAunbiased_uniquetopolyAbiased_hist <- ggplot(WT_NB_down_polyAunbiased_uniquetopolyAbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30,
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+  # scale_y_continuous(breaks = c(200, 400, 600, 800, 1000), limits = c(0,NA)) +
+    # scale_x_continuous(
+    #   breaks = c(0,-1,-2,-4,-6,-8,-10,-12,-14,-16,-18,-20,-22,-24,-26)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in WT PolyA relative to NB RiboD",
+       subtitle = "polyA biased, compared to polyA unbiased, Median LFC = -3.15",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+WT_NB_down_polyAunbiased_uniquetopolyAbiased_hist
+```
+
+Looking at genes that are unique to riboD biased
+
+```{r WT_NB_down_polyAunbiased_uniquetoriboDbiased}
+WT_NB_down_polyAunbiased_uniquetoriboDbiased <- WTRiboD_NBPolyA_less1 %>%
+  anti_join(WTPolyA_NBPolyA_less1, by = "Gene") %>%
+  anti_join(WTPolyA_NBRiboD_less1, by = "Gene")
+print(WT_NB_down_polyAunbiased_uniquetoriboDbiased %>% nrow())
+```
+
+```{r WT_NB_down_polyAunbiased_uniquetoriboDbiased_avgLFC}
+WT_NB_down_polyAunbiased_uniquetoriboDbiased_avgLFC <- WT_NB_down_polyAunbiased_uniquetoriboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+WT_NB_down_polyAunbiased_uniquetoriboDbiased_avgLFC
+```
+
+```{r WT_NB_down_polyAunbiased_uniquetoriboDbiased_hist}
+WT_NB_down_polyAunbiased_uniquetoriboDbiased_hist <- ggplot(WT_NB_down_polyAunbiased_uniquetoriboDbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30,
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+  # scale_y_continuous(breaks = c(200, 400, 600), limits = c(0,800)) +
+  #   scale_x_continuous(breaks = c(0,-1,-2,-4,-6,-8,-10,-12,-14,-16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in WT riboD relative to NB polyA",
+       subtitle = "riboD biased, compared to polyA unbiased, Median LFC = -1.39",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+WT_NB_down_polyAunbiased_uniquetoriboDbiased_hist
+```
+
+#### Up RiboD unbiased against polyA biased and riboD biased
+
+Starting with upregulated genes in the riboD unbiased:polyAbiased:riboDbiased comparison
+
+Looking at genes that are unique to the polyAbiased
+
+```{r WT_NB_up_riboDunbiased_uniquetopolyAbiased}
+WT_NB_up_riboDunbiased_uniquetopolyAbiased <- WTPolyA_NBRiboD_great1 %>%
+  anti_join(WTRiboD_NBRiboD_great1, by = "Gene") %>%
+  anti_join(WTRiboD_NBPolyA_great1, by = "Gene")
+print(WT_NB_up_riboDunbiased_uniquetopolyAbiased %>% nrow())
+```
+
+```{r WT_NB_up_riboDunbiased_uniquetopolyAbiased_avgLFC}
+WT_NB_up_riboDunbiased_uniquetopolyAbiased_avgLFC <- WT_NB_up_riboDunbiased_uniquetopolyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+WT_NB_up_riboDunbiased_uniquetopolyAbiased_avgLFC
+```
+
+```{r WT_NB_up_riboDunbiased_uniquetopolyAbiased_hist}
+WT_NB_up_riboDunbiased_uniquetopolyAbiased_hist <- ggplot(WT_NB_up_riboDunbiased_uniquetopolyAbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+  # scale_y_continuous(breaks = c(200, 400, 600, 800, 1000), limits = c(0,NA)) +
+  # scale_x_continuous(breaks = seq(2, 30, by = 2)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in WT polyA relative to NB riboD",
+       subtitle = "polyA biased, compared to riboD unbiased, Median LFC = 1.51",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+
+WT_NB_up_riboDunbiased_uniquetopolyAbiased_hist
+```
+
+Looking at genes that are unique to riboD biased
+
+```{r WT_NB_up_riboDunbiased_uniquetoriboDbiased}
+WT_NB_up_riboDunbiased_uniquetoriboDbiased <- WTRiboD_NBPolyA_great1 %>%
+  anti_join(WTRiboD_NBRiboD_great1, by = "Gene") %>%
+  anti_join(WTPolyA_NBRiboD_great1, by = "Gene")
+print(WT_NB_up_riboDunbiased_uniquetoriboDbiased %>% nrow())
+```
+
+```{r WT_NB_up_riboDunbiased_uniquetoriboDbiased_avgLFC}
+WT_NB_up_riboDunbiased_uniquetoriboDbiased_avgLFC <- WT_NB_up_riboDunbiased_uniquetoriboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+WT_NB_up_riboDunbiased_uniquetoriboDbiased_avgLFC
+```
+
+```{r WT_NB_up_riboDunbiased_uniquetoriboDbiased_hist}
+WT_NB_up_riboDunbiased_uniquetoriboDbiased_hist <- ggplot(WT_NB_up_riboDunbiased_uniquetoriboDbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30,
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+  # scale_y_continuous(breaks = c(200, 400, 600, 800, 1000), limits = c(0,NA)) +
+  #   scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in WT riboD relative to NB polyA",
+       subtitle = "riboD biased, compared to riboD unbiased, Median LFC = 2.69",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+WT_NB_up_riboDunbiased_uniquetoriboDbiased_hist
+```
+
+#### Down RiboD unbiased against polyA biased and riboD biased
+
+Looking at genes that are unique to polyA biased
+
+```{r WT_NB_down_riboDunbiased_uniquetopolyAbiased}
+WT_NB_down_riboDunbiased_uniquetopolyAbiased <- WTPolyA_NBRiboD_less1 %>%
+  anti_join(WTRiboD_NBRiboD_less1, by = "Gene") %>%
+  anti_join(WTRiboD_NBPolyA_less1, by = "Gene")
+print(WT_NB_down_riboDunbiased_uniquetopolyAbiased %>% nrow())
+```
+
+```{r WT_NB_down_riboDunbiased_uniquetopolyAbiased_avgLFC}
+WT_NB_down_riboDunbiased_uniquetopolyAbiased_avgLFC <- WT_NB_down_riboDunbiased_uniquetopolyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+WT_NB_down_riboDunbiased_uniquetopolyAbiased_avgLFC
+```
+
+```{r WT_NB_down_riboDunbiased_uniquetopolyAbiased_hist}
+WT_NB_down_riboDunbiased_uniquetopolyAbiased_hist <- ggplot(WT_NB_down_riboDunbiased_uniquetopolyAbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30,
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+  # scale_y_continuous(breaks = c(100,200), limits = c(0,NA)) +
+  #   scale_x_continuous(breaks =  seq(0, -30, by = -2)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in WT PolyA relative to NB RiboD",
+       subtitle = "polyA biased compared to riboD unbiased, Median LFC = -2.94",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+WT_NB_down_riboDunbiased_uniquetopolyAbiased_hist
+```
+
+Looking at genes that are unique to riboD biased
+
+```{r WT_NB_down_riboDunbiased_uniquetoriboDbiased}
+WT_NB_down_riboDunbiased_uniquetoriboDbiased <- WTRiboD_NBPolyA_less1 %>%
+  anti_join(WTRiboD_NBRiboD_less1, by = "Gene") %>%
+  anti_join(WTPolyA_NBRiboD_less1, by = "Gene")
+print(WT_NB_down_riboDunbiased_uniquetoriboDbiased %>% nrow())
+```
+
+```{r}
+WT_NB_down_riboDunbiased_uniquetoriboDbiased_avgLFC <- WT_NB_down_riboDunbiased_uniquetoriboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange),
+    max_value = max(log2FoldChange),
+    median_value = median(log2FoldChange),
+    mean_value = mean(log2FoldChange),
+    stdev = sd(log2FoldChange)
+  )
+WT_NB_down_riboDunbiased_uniquetoriboDbiased_avgLFC
+```
+
+```{r WT_NB_down_riboDunbiased_uniquetoriboDbiased_hist}
+WT_NB_down_riboDunbiased_uniquetoriboDbiased_hist <- ggplot(WT_NB_down_riboDunbiased_uniquetoriboDbiased, aes(x = log2FoldChange)) +
+  geom_histogram(
+    bins = 30,
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+  # scale_y_continuous(breaks = c(200, 400, 600, 800, 1000), limits = c(0,1000)) +
+  #   scale_x_continuous(breaks = c(0,-1,-2,-4,-6,-8,-10,-12,-14,-16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in WT riboD relative to NB polyA",
+       subtitle = "riboD biased, compared to riboD unbiased, Median LFC = -1.41",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+WT_NB_down_riboDunbiased_uniquetoriboDbiased_hist
+```
+
+Genes in common between the polyAunbiased:polyAbiased:riboDbiased venn diagram and the riboDunbiased:polyAbiased:riboDbiased venn diagram
+
+upregulated polyA biased
+
+```{r WT_NB_up_polyAbiased}
+WT_NB_up_polyAbiased <- inner_join(WT_NB_up_polyAunbiased_uniquetopolyAbiased, WT_NB_up_riboDunbiased_uniquetopolyAbiased, by = "Gene")
+
+write_rds(WT_NB_up_polyAbiased, "../../output_data/NB_WT/WT_NB_up_polyAbiased.rds")
+
+print(WT_NB_up_polyAbiased %>% nrow())
+```
+
+```{r WT_NB_up_polyAbiased_avgLFC}
+WT_NB_up_polyAbiased_avgLFC <- WT_NB_up_polyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange.x),
+    max_value = max(log2FoldChange.x),
+    median_value = median(log2FoldChange.x),
+    mean_value = mean(log2FoldChange.x),
+    stdev = sd(log2FoldChange.x)
+  )
+WT_NB_up_polyAbiased_avgLFC
+```
+
+```{r WT_NB_up_polyAbiased_hist}
+WT_NB_up_polyAbiased_hist <- ggplot(WT_NB_up_polyAbiased, aes(x = log2FoldChange.x)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in WT polyA relative to NB riboD",
+       subtitle = "polyA biased, Median LFC = 1.44",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+WT_NB_up_polyAbiased_hist
+```
+
+upregulated riboD biased
+
+```{r WT_NB_up_riboDbiased}
+WT_NB_up_riboDbiased <- inner_join(WT_NB_up_polyAunbiased_uniquetoriboDbiased, WT_NB_up_riboDunbiased_uniquetoriboDbiased, by = "Gene")
+
+write_rds(WT_NB_up_riboDbiased, "../../output_data/NB_WT/WT_NB_up_riboDbiased.rds")
+
+print(WT_NB_up_riboDbiased %>% nrow())
+```
+
+```{r WT_NB_up_riboDbiased_avgLFC}
+WT_NB_up_riboDbiased_avgLFC <- WT_NB_up_riboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange.x),
+    max_value = max(log2FoldChange.x),
+    median_value = median(log2FoldChange.x),
+    mean_value = mean(log2FoldChange.x),
+    stdev = sd(log2FoldChange.x)
+  )
+WT_NB_up_riboDbiased_avgLFC
+```
+
+```{r WT_NB_up_riboDbiased_hist}
+WT_NB_up_riboDbiased_hist <- ggplot(WT_NB_up_riboDbiased, aes(x = log2FoldChange.x)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in WT riboD relative to NB polyA",
+       subtitle = "riboD biased, Median LFC = 2.59",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+WT_NB_up_riboDbiased_hist
+```
+
+downregulated polyA biased
+
+```{r WT_NB_down_polyAbiased}
+WT_NB_down_polyAbiased <- inner_join(WT_NB_down_polyAunbiased_uniquetopolyAbiased, WT_NB_down_riboDunbiased_uniquetopolyAbiased, by = "Gene")
+
+write_rds(WT_NB_down_polyAbiased, "../../output_data/NB_WT/WT_NB_down_polyAbiased.rds")
+
+print(WT_NB_down_polyAbiased %>% nrow())
+```
+
+```{r WT_NB_down_polyAbiased_avgLFC}
+WT_NB_down_polyAbiased_avgLFC <- WT_NB_down_polyAbiased %>%
+  summarise(
+    min_value = min(log2FoldChange.x),
+    max_value = max(log2FoldChange.x),
+    median_value = median(log2FoldChange.x),
+    mean_value = mean(log2FoldChange.x),
+    stdev = sd(log2FoldChange.x)
+  )
+WT_NB_down_polyAbiased_avgLFC
+```
+
+```{r WT_NB_down_polyAbiased_hist}
+WT_NB_down_polyAbiased_hist <- ggplot(WT_NB_down_polyAbiased, aes(x = log2FoldChange.x)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in WT polyA relative to NB riboD",
+       subtitle = "polyA biased, Median LFC = -3.06",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+WT_NB_down_polyAbiased_hist
+```
+
+downregulated riboD biased
+
+```{r WT_NB_down_riboDbiased}
+WT_NB_down_riboDbiased <- inner_join(WT_NB_down_polyAunbiased_uniquetoriboDbiased, WT_NB_down_riboDunbiased_uniquetoriboDbiased, by = "Gene")
+
+write_rds(WT_NB_down_riboDbiased, "../../output_data/NB_WT/WT_NB_down_riboDbiased.rds")
+
+print(WT_NB_down_riboDbiased %>% nrow())
+```
+
+```{r WT_NB_down_riboDbiased_avgLFC}
+WT_NB_down_riboDbiased_avgLFC <- WT_NB_down_riboDbiased %>%
+  summarise(
+    min_value = min(log2FoldChange.x),
+    max_value = max(log2FoldChange.x),
+    median_value = median(log2FoldChange.x),
+    mean_value = mean(log2FoldChange.x),
+    stdev = sd(log2FoldChange.x)
+  )
+WT_NB_down_riboDbiased_avgLFC
+```
+
+```{r WT_NB_down_riboDbiased_hist}
+WT_NB_down_riboDbiased_hist <- ggplot(WT_NB_down_riboDbiased, aes(x = log2FoldChange.x)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(title = "Distribution of log2FoldChange values of \n genes uniquely downregulated in WT riboD relative to NB polyA",
+       subtitle = "riboD biased, Median LFC = -1.33",
+       y = "Number of genes") +
+  theme(plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+            axis.text = element_text(size = 10),
+        plot.subtitle = element_text(size = 8, face = "bold"))
+WT_NB_down_riboDbiased_hist
+```
+
+### Save Session Info
+
+```{r}
+sessioninfo::session_info()
+```

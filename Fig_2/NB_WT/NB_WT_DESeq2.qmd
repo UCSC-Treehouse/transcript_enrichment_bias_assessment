@@ -286,7 +286,7 @@ hugo_results_WT_riboD_NB_riboD_updated <- res_WT_riboD_NB_riboD_updated_df %>%
 write_tsv(hugo_results_WT_riboD_NB_riboD_updated, path = "../../output_data/NB_WT/hugo_results_WT_riboD_NB_riboD_updated.tsv.gz")
 ```
 
-### **WT polyA v. NB riboD** 
+### **WT polyA v. NB riboD**
 
 ```{r}
 # metadata
