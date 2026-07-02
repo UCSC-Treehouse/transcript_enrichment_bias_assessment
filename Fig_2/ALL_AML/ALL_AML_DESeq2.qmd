@@ -1,0 +1,516 @@
+---
+title: "ALL_AML_DESeq2"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## ALL v AML
+
+This notebook is analyzing the expression profiles of acute myeloid leukemia (AML) and acute lymphoblastic leukemia (ALL) tumors from the v25 riboD and polyA compendia.
+
+Goal: determine the extent that genes get called as differentially expressed as a result of the transcript enrichment method of the library preparation process.
+
+Use: subsetted list of tumors for each disease in each library prep method (based on correlation analysis and tumor map analysis done before)
+
+The comparisons we’ll be making (ALL = acute lymphoblastic leukemia, AML = acute myeloid leukemia):
+
+- AML polyA vs ALL polyA
+
+- AML riboD vs ALL riboD
+
+- AML polyA vs ALL riboD
+
+- AML riboD vs ALL polyA
+
+```{r load libraries}
+library(tidyverse)
+library(DESeq2)
+```
+
+```{r}
+# sample metadata
+# This includes the top 20 samples from ALL polyA, ALL riboD, AML polyA, AML riboD
+# The top 20 samples came from the correlation analysis, where this tsv file was generated
+filtered_ALL_AML_list <- read_tsv("../../input_data/filtered_ALL_AML_list.tsv", show_col_types = FALSE)
+
+expression_ALL_AML <- read_tsv("../../input_data/expression_ALL_AML.tsv.gz", show_col_types = FALSE)
+
+gene_names <- read_tsv("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt", show_col_types = FALSE)
+```
+
+```{r}
+# selecting only the 20 most correlated samples for each category,
+# based on the metadata file
+interested_expression <- expression_ALL_AML %>%
+  select(all_of(c("Gene", filtered_ALL_AML_list$term)))
+```
+
+Since filtering out genes with a count less than 10 across all samples will filter out relevant genes, we’ll filter out genes with a count less than 10 in 11 or more samples (i.e., we’re keeping genes that have a count greater than 10 in at least 10 samples).
+
+```{r}
+# Explanation:
+# across(where(is.numeric)) is selecting all the numeric columns
+# i.e., all the sample columns. This deselects the Gene column, since that is a character column
+
+# rowSums() counts how many samples meet the threshold for each gene,
+# i.e., have a value of at least 10
+
+# then keeps only the genes that meet that threshold in at least 10 samples
+updated_expression <- interested_expression %>%
+  filter(rowSums(across(where(is.numeric)) >= 10) >= 10)
+```
+
+### **AML polyA vs ALL polyA**
+
+```{r}
+# metadata
+AML_polyA_ALL_polyA_meta <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep == "AML_polyA" | disease_and_prep == "ALL_polyA")
+# the pipe | means we're taking all samples called ALL_riboD OR ALL_polyA in column disease_and_prep
+
+# expression
+AML_polyA_ALL_polyA_updated_expr <- updated_expression %>%
+  select(all_of(c("Gene", AML_polyA_ALL_polyA_meta$term)))
+```
+
+```{r}
+# Since "Gene" is a column name, it won't match the row names
+# use values from the first column ("Gene") as row names
+fix_AML_polyA_ALL_polyA_updated_expr <- AML_polyA_ALL_polyA_updated_expr %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+# use values from first column ("th_dataset_id") as row names for clin_merged_STS
+fix_AML_polyA_ALL_polyA_meta <- AML_polyA_ALL_polyA_meta %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+```
+
+```{r}
+# check if row names are same as column names
+all(rownames(fix_AML_polyA_ALL_polyA_meta) %in% colnames(fix_AML_polyA_ALL_polyA_updated_expr))
+
+# check in order is the same
+all(rownames(fix_AML_polyA_ALL_polyA_meta) == colnames(fix_AML_polyA_ALL_polyA_updated_expr))
+```
+
+```{r}
+# format data
+round_AML_polyA_ALL_polyA_updated_expr = round(fix_AML_polyA_ALL_polyA_updated_expr)
+
+AML_polyA_ALL_polyA_updated_expr_matrix <- as.matrix(round_AML_polyA_ALL_polyA_updated_expr)
+
+fix_AML_polyA_ALL_polyA_meta$disease_and_prep <- as.factor(fix_AML_polyA_ALL_polyA_meta$disease_and_prep)
+```
+
+```{r}
+# set reference levels
+# we want to make sure the references are consistent across the comparisons
+levels(fix_AML_polyA_ALL_polyA_meta$disease_and_prep)
+```
+
+```{r}
+# set up DESeq function
+dds_AML_polyA_ALL_polyA_updated <- DESeqDataSetFromMatrix(countData = AML_polyA_ALL_polyA_updated_expr_matrix,
+                              colData = fix_AML_polyA_ALL_polyA_meta,
+                              design = ~disease_and_prep)
+
+dds_AML_polyA_ALL_polyA_updated
+```
+
+```{r}
+# create a vector of TRUE and FALSE values where
+# TRUE corresponds to genes with counts of at least 10 
+AML_polyA_ALL_polyA_updated_genes_to_keep <- rowSums(counts(dds_AML_polyA_ALL_polyA_updated)) >= 10
+
+# use which() to prevent any NAs sneaking through
+dds_AML_pA_ALL_pA_updated <- dds_AML_polyA_ALL_polyA_updated[which(AML_polyA_ALL_polyA_updated_genes_to_keep), ]
+```
+
+```{r}
+# Run DESeq2
+dds_AML_pA_ALL_pA_updated_object <- DESeq(dds_AML_pA_ALL_pA_updated)
+```
+
+```{r}
+# create results table
+result_dds_AML_pA_ALL_pA_updated <- results(dds_AML_pA_ALL_pA_updated_object)
+# summarize results table
+summary(result_dds_AML_pA_ALL_pA_updated, alpha = 0.05)
+```
+
+```{r}
+# convert results to dataframe
+result_dds_AML_pA_ALL_pA_updated_df <- result_dds_AML_pA_ALL_pA_updated %>%
+  #convert to a data frame
+  as.data.frame() %>%
+  #the gene ids were stored as row names -- let's them a column
+  tibble::rownames_to_column(var = "Gene")
+```
+
+```{r}
+# how many genes have a Log2 fold change greater or equal to 1 and have an adjusted p-value less than 0.05?
+AML_polyA_ALL_polyA_LFC1great_padj <- result_dds_AML_pA_ALL_pA_updated_df %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  nrow()
+AML_polyA_ALL_polyA_LFC1great_padj
+```
+
+```{r}
+# how many genes have a Log2 fold change less than or equal to -1 and have an adjusted p-value less than 0.05?
+AML_polyA_ALL_polyA_LFC1less_padj <- result_dds_AML_pA_ALL_pA_updated_df %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  nrow()
+AML_polyA_ALL_polyA_LFC1less_padj
+```
+
+```{r}
+hugo_results_AML_polyA_ALL_polyA_updated <- result_dds_AML_pA_ALL_pA_updated_df %>%
+  left_join(gene_names, by=c("Gene"="EnsGeneID")) %>%
+  relocate(HugoID) # moving HugoID column to the front
+
+# To check whether we lost any DEGs during the HugoID conversion,
+# I repeated the above chunk to count the DEGs after converting to HugoIDs
+# the numbers were the same
+
+write_tsv(hugo_results_AML_polyA_ALL_polyA_updated, path = "../../output_data/ALL_AML/hugo_results_AML_polyA_ALL_polyA_updated.tsv.gz")
+
+```
+
+### **AML riboD vs ALL riboD**
+
+```{r}
+# metadata
+AML_riboD_ALL_riboD_meta <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep == "AML_riboD" | disease_and_prep == "ALL_riboD")
+
+# expression
+AML_riboD_ALL_riboD_updated_expr <- updated_expression %>%
+  select(all_of(c("Gene", AML_riboD_ALL_riboD_meta$term)))
+```
+
+```{r}
+# Since "Gene" is a column name, it won't match the row names
+# use values from the first column ("Gene") as row names
+fix_AML_riboD_ALL_riboD_updated_expr <- AML_riboD_ALL_riboD_updated_expr %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+# use values from first column ("th_dataset_id") as row names for clin_merged_STS
+fix_AML_riboD_ALL_riboD_meta <- AML_riboD_ALL_riboD_meta %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+```
+
+```{r}
+# check if row names are same as column names
+all(rownames(fix_AML_riboD_ALL_riboD_meta) %in% colnames(fix_AML_riboD_ALL_riboD_updated_expr))
+
+# check in order is the same
+all(rownames(fix_AML_riboD_ALL_riboD_meta) == colnames(fix_AML_riboD_ALL_riboD_updated_expr))
+```
+
+```{r}
+# format data
+round_AML_riboD_ALL_riboD_updated_expr = round(fix_AML_riboD_ALL_riboD_updated_expr)
+
+AML_riboD_ALL_riboD_updated_expr_matrix <- as.matrix(round_AML_riboD_ALL_riboD_updated_expr)
+
+fix_AML_riboD_ALL_riboD_meta$disease_and_prep <- as.factor(fix_AML_riboD_ALL_riboD_meta$disease_and_prep)
+```
+
+```{r}
+# set reference levels
+# we want to make sure the references are consistent across the comparisons
+levels(fix_AML_riboD_ALL_riboD_meta$disease_and_prep)
+```
+
+```{r}
+# set up DESeq function
+dds_AML_riboD_ALL_riboD_updated <- DESeqDataSetFromMatrix(countData = AML_riboD_ALL_riboD_updated_expr_matrix,
+                              colData = fix_AML_riboD_ALL_riboD_meta,
+                              design = ~disease_and_prep)
+```
+
+```{r}
+# create a vector of TRUE and FALSE values where
+# TRUE corresponds to genes with counts of at least 10 
+AML_riboD_ALL_riboD_updated_genes_to_keep <- rowSums(counts(dds_AML_riboD_ALL_riboD_updated)) >= 10
+
+# use which() to prevent any NAs sneaking through
+dds_AML_riboD_ALL_riboD_updated <- dds_AML_riboD_ALL_riboD_updated[which(AML_riboD_ALL_riboD_updated_genes_to_keep), ]
+```
+
+```{r}
+# Run DESeq2
+dds_AML_riboD_ALL_riboD_updated_object <- DESeq(dds_AML_riboD_ALL_riboD_updated)
+```
+
+```{r}
+# create results table
+results_AML_riboD_ALL_riboD_updated <- results(dds_AML_riboD_ALL_riboD_updated_object)
+
+# summarize results table
+summary(results_AML_riboD_ALL_riboD_updated, alpha = 0.05)
+```
+
+```{r}
+# first we convert to df
+results_AML_riboD_ALL_riboD_updated_df <- results_AML_riboD_ALL_riboD_updated %>%
+  #convert to a data frame
+  as.data.frame() %>%
+  #the gene ids were stored as row names -- let's them a column
+  tibble::rownames_to_column(var = "Gene")
+```
+
+```{r}
+# how many genes have a Log2 fold change greater or equal to 1 and have an adjusted p-value less than 0.05?
+AML_riboD_ALL_riboD_LFC1great_padj <- results_AML_riboD_ALL_riboD_updated_df %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  nrow()
+AML_riboD_ALL_riboD_LFC1great_padj
+```
+
+```{r}
+# how many genes have a Log2 fold change less than or equal to -1 and have an adjusted p-value less than 0.05?
+AML_riboD_ALL_riboD_LFC1less_padj <- results_AML_riboD_ALL_riboD_updated_df %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  nrow()
+AML_riboD_ALL_riboD_LFC1less_padj
+```
+
+```{r}
+hugo_results_AML_riboD_ALL_riboD_updated <- results_AML_riboD_ALL_riboD_updated_df %>%
+  left_join(gene_names, by=c("Gene"="EnsGeneID")) %>%
+  relocate(HugoID) # moving HugoID column to the front
+
+write_tsv(hugo_results_AML_riboD_ALL_riboD_updated, path = "../../output_data/ALL_AML/hugo_results_AML_riboD_ALL_riboD_updated.tsv.gz")
+```
+
+### **AML polyA vs ALL riboD**
+
+```{r}
+# metadata
+AML_polyA_ALL_riboD_meta <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep == "AML_polyA" | disease_and_prep == "ALL_riboD")
+# the pipe | means we're taking all samples called ALL_riboD OR ALL_polyA in column disease_and_prep
+
+# expression
+AML_polyA_ALL_riboD_updated_expr <- updated_expression %>%
+  select(all_of(c("Gene", AML_polyA_ALL_riboD_meta$term)))
+```
+
+```{r}
+# Since "Gene" is a column name, it won't match the row names
+# use values from the first column ("Gene") as row names
+fix_AML_polyA_ALL_riboD_updated_expr <- AML_polyA_ALL_riboD_updated_expr %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+# use values from first column ("th_dataset_id") as row names for clin_merged_STS
+fix_AML_polyA_ALL_riboD_meta <- AML_polyA_ALL_riboD_meta %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+```
+
+```{r}
+# check if row names are same as column names
+all(rownames(fix_AML_polyA_ALL_riboD_meta) %in% colnames(fix_AML_polyA_ALL_riboD_updated_expr))
+
+# check in order is the same
+all(rownames(fix_AML_polyA_ALL_riboD_meta) == colnames(fix_AML_polyA_ALL_riboD_updated_expr))
+```
+
+```{r}
+# format data
+round_AML_polyA_ALL_riboD_updated_expr = round(fix_AML_polyA_ALL_riboD_updated_expr)
+
+AML_polyA_ALL_riboD_updated_expr_matrix <- as.matrix(round_AML_polyA_ALL_riboD_updated_expr)
+
+fix_AML_polyA_ALL_riboD_meta$disease_and_prep <- as.factor(fix_AML_polyA_ALL_riboD_meta$disease_and_prep)
+```
+
+```{r}
+# check reference levels
+levels(fix_AML_polyA_ALL_riboD_meta$disease_and_prep)
+```
+
+```{r}
+# set up DESeq function
+dds_AML_polyA_ALL_riboD_updated <- DESeqDataSetFromMatrix(countData = AML_polyA_ALL_riboD_updated_expr_matrix,
+                              colData = fix_AML_polyA_ALL_riboD_meta,
+                              design = ~disease_and_prep)
+dds_AML_polyA_ALL_riboD_updated
+```
+
+```{r}
+# create a vector of TRUE and FALSE values where
+# TRUE corresponds to genes with counts of at least 10 
+AML_polyA_ALL_riboD_updated_genes_to_keep <- rowSums(counts(dds_AML_polyA_ALL_riboD_updated)) >= 10
+
+# use which() to prevent any NAs sneaking through
+dds_AML_polyA_ALL_riboD_updated <- dds_AML_polyA_ALL_riboD_updated[which(AML_polyA_ALL_riboD_updated_genes_to_keep), ]
+```
+
+```{r}
+# Run DESeq2
+dds_AML_polyA_ALL_riboD_updated_object <- DESeq(dds_AML_polyA_ALL_riboD_updated)
+```
+
+```{r}
+# create results table
+results_dds_AML_polyA_ALL_riboD_updated <- results(dds_AML_polyA_ALL_riboD_updated_object)
+# summarize results table
+summary(results_dds_AML_polyA_ALL_riboD_updated, alpha = 0.05)
+```
+
+```{r}
+# convert results to dataframe
+results_dds_AML_polyA_ALL_riboD_updated_df <- results_dds_AML_polyA_ALL_riboD_updated %>%
+  #convert to a data frame
+  as.data.frame() %>%
+  #the gene ids were stored as row names -- let's them a column
+  tibble::rownames_to_column(var = "Gene")
+```
+
+```{r}
+# how many genes have a Log2 fold change greater or equal to 1 and have an adjusted p-value less than 0.05?
+AML_polyA_ALL_riboD_LFC1great_padj <- results_dds_AML_polyA_ALL_riboD_updated_df %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  nrow()
+AML_polyA_ALL_riboD_LFC1great_padj
+```
+
+```{r}
+# how many genes have a Log2 fold change less than or equal to -1 and have an adjusted p-value less than 0.05?
+AML_polyA_ALL_riboD_LFC1less_padj <- results_dds_AML_polyA_ALL_riboD_updated_df %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  nrow()
+AML_polyA_ALL_riboD_LFC1less_padj
+```
+
+```{r}
+hugo_results_AML_polyA_ALL_riboD_updated <- results_dds_AML_polyA_ALL_riboD_updated_df %>%
+  left_join(gene_names, by=c("Gene"="EnsGeneID")) %>%
+  relocate(HugoID) # moving HugoID column to the front
+
+write_tsv(hugo_results_AML_polyA_ALL_riboD_updated, path = "../../output_data/ALL_AML/hugo_results_AML_polyA_ALL_riboD_updated.tsv.gz")
+```
+
+### **AML riboD vs ALL polyA**
+
+```{r}
+# metadata
+AML_riboD_ALL_polyA_meta <- filtered_ALL_AML_list %>%
+  filter(disease_and_prep == "AML_riboD" | disease_and_prep == "ALL_polyA")
+
+# expression
+AML_riboD_ALL_polyA_updated_expr <- updated_expression %>%
+  select(all_of(c("Gene", AML_riboD_ALL_polyA_meta$term)))
+```
+
+```{r}
+# Since "Gene" is a column name, it won't match the row names
+# use values from the first column ("Gene") as row names
+fix_AML_riboD_ALL_polyA_updated_expr <- AML_riboD_ALL_polyA_updated_expr %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+# use values from first column ("th_dataset_id") as row names for clin_merged_STS
+fix_AML_riboD_ALL_polyA_meta <- AML_riboD_ALL_polyA_meta %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+```
+
+```{r}
+# check if row names are same as column names
+all(rownames(fix_AML_riboD_ALL_polyA_meta) %in% colnames(fix_AML_riboD_ALL_polyA_updated_expr))
+
+# check in order is the same
+all(rownames(fix_AML_riboD_ALL_polyA_meta) == colnames(fix_AML_riboD_ALL_polyA_updated_expr))
+```
+
+```{r}
+# format data
+round_AML_riboD_ALL_polyA_updated_expr = round(fix_AML_riboD_ALL_polyA_updated_expr)
+
+AML_riboD_ALL_polyA_updated_expr_matrix <- as.matrix(round_AML_riboD_ALL_polyA_updated_expr)
+
+fix_AML_riboD_ALL_polyA_meta$disease_and_prep <- as.factor(fix_AML_riboD_ALL_polyA_meta$disease_and_prep)
+```
+
+```{r}
+# check reference levels
+levels(fix_AML_riboD_ALL_polyA_meta$disease_and_prep)
+```
+
+```{r}
+# set up DESeq function
+dds_AML_riboD_ALL_polyA_updated <- DESeqDataSetFromMatrix(countData = AML_riboD_ALL_polyA_updated_expr_matrix,
+                              colData = fix_AML_riboD_ALL_polyA_meta,
+                              design = ~disease_and_prep)
+```
+
+```{r}
+# create a vector of TRUE and FALSE values where
+# TRUE corresponds to genes with counts of at least 10 
+AML_riboD_ALL_polyA_updated_genes_to_keep <- rowSums(counts(dds_AML_riboD_ALL_polyA_updated)) >= 10
+
+# use which() to prevent any NAs sneaking through
+dds_AML_riboD_ALL_polyA_updated <- dds_AML_riboD_ALL_polyA_updated[which(AML_riboD_ALL_polyA_updated_genes_to_keep), ]
+```
+
+```{r}
+# Run DESeq2
+dds_AML_riboD_ALL_polyA_updated_object <- DESeq(dds_AML_riboD_ALL_polyA_updated)
+```
+
+```{r}
+# create results table
+results_AML_riboD_ALL_polyA_updated <- results(dds_AML_riboD_ALL_polyA_updated_object)
+
+# summarize results table
+summary(results_AML_riboD_ALL_polyA_updated, alpha = 0.05)
+```
+
+```{r}
+# first we convert to df
+results_AML_riboD_ALL_polyA_updated_df <- results_AML_riboD_ALL_polyA_updated %>%
+  #convert to a data frame
+  as.data.frame() %>%
+  #the gene ids were stored as row names -- let's them a column
+  tibble::rownames_to_column(var = "Gene")
+```
+
+```{r}
+# how many genes have a Log2 fold change greater or equal to 1 and have an adjusted p-value less than 0.05?
+AML_riboD_ALL_polyA_LFC1great_padj <- results_AML_riboD_ALL_polyA_updated_df %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  nrow()
+AML_riboD_ALL_polyA_LFC1great_padj
+```
+
+```{r}
+# how many genes have a Log2 fold change less than or equal to -1 and have an adjusted p-value less than 0.05?
+AML_riboD_ALL_polyA_LFC1less_padj <- results_AML_riboD_ALL_polyA_updated_df %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  nrow()
+AML_riboD_ALL_polyA_LFC1less_padj
+```
+
+```{r}
+hugo_results_AML_riboD_ALL_polyA_updated <- results_AML_riboD_ALL_polyA_updated_df %>%
+  left_join(gene_names, by=c("Gene"="EnsGeneID")) %>%
+  relocate(HugoID) # moving HugoID column to the front
+
+write_tsv(hugo_results_AML_riboD_ALL_polyA_updated, path = "../../output_data/ALL_AML/hugo_results_AML_riboD_ALL_polyA_updated.tsv.gz")
+```
+
+#### Session Info
+
+```{r}
+sessioninfo::session_info()
+```
