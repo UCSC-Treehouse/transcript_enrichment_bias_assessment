@@ -173,56 +173,56 @@ ALL_AML_up_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-04 16:22:11] $x
-    INFO [2026-07-04 16:22:11] ALL_AML_up_polyAunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $category.names
-    INFO [2026-07-04 16:22:11] c("Up in AML polyA relative to \n ALL polyA (polyA unbiased)", 
-    INFO [2026-07-04 16:22:11]     "Up in AML polyA relative to \n ALL riboD (polyA biased)", 
-    INFO [2026-07-04 16:22:11]     "Up in AML riboD relative to \n ALL polyA (riboD biased)")
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $filename
-    INFO [2026-07-04 16:22:11] NULL
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $output
-    INFO [2026-07-04 16:22:11] [1] TRUE
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $print.mode
-    INFO [2026-07-04 16:22:11] c("raw", "percent")
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $fill
-    INFO [2026-07-04 16:22:11] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $cex
-    INFO [2026-07-04 16:22:11] [1] 1
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $cat.cex
-    INFO [2026-07-04 16:22:11] [1] 0.65
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $cat.dist
-    INFO [2026-07-04 16:22:11] c(0.05, 0.05, 0.05)
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $height
-    INFO [2026-07-04 16:22:11] [1] 2000
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $width
-    INFO [2026-07-04 16:22:11] [1] 2000
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $cat.default.pos
-    INFO [2026-07-04 16:22:11] [1] "outer"
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $cat.pos
-    INFO [2026-07-04 16:22:11] c(-12, 12, 175)
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $main
-    INFO [2026-07-04 16:22:11] [1] "Genes upregulated in AML relative to ALL (L2FC >= 1 and  p-adj < 0.05)"
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $main.cex
-    INFO [2026-07-04 16:22:11] [1] 0.75
-    INFO [2026-07-04 16:22:11] 
-    INFO [2026-07-04 16:22:11] $disable.logging
-    INFO [2026-07-04 16:22:11] [1] TRUE
-    INFO [2026-07-04 16:22:11] 
+    INFO [2026-07-04 16:18:52] $x
+    INFO [2026-07-04 16:18:52] ALL_AML_up_polyAunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $category.names
+    INFO [2026-07-04 16:18:52] c("Up in AML polyA relative to \n ALL polyA (polyA unbiased)", 
+    INFO [2026-07-04 16:18:52]     "Up in AML polyA relative to \n ALL riboD (polyA biased)", 
+    INFO [2026-07-04 16:18:52]     "Up in AML riboD relative to \n ALL polyA (riboD biased)")
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $filename
+    INFO [2026-07-04 16:18:52] NULL
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $output
+    INFO [2026-07-04 16:18:52] [1] TRUE
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $print.mode
+    INFO [2026-07-04 16:18:52] c("raw", "percent")
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $fill
+    INFO [2026-07-04 16:18:52] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $cex
+    INFO [2026-07-04 16:18:52] [1] 1
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $cat.cex
+    INFO [2026-07-04 16:18:52] [1] 0.65
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $cat.dist
+    INFO [2026-07-04 16:18:52] c(0.05, 0.05, 0.05)
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $height
+    INFO [2026-07-04 16:18:52] [1] 2000
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $width
+    INFO [2026-07-04 16:18:52] [1] 2000
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $cat.default.pos
+    INFO [2026-07-04 16:18:52] [1] "outer"
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $cat.pos
+    INFO [2026-07-04 16:18:52] c(-12, 12, 175)
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $main
+    INFO [2026-07-04 16:18:52] [1] "Genes upregulated in AML relative to ALL (L2FC >= 1 and  p-adj < 0.05)"
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $main.cex
+    INFO [2026-07-04 16:18:52] [1] 0.75
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $disable.logging
+    INFO [2026-07-04 16:18:52] [1] TRUE
+    INFO [2026-07-04 16:18:52] 
 
 ``` r
 ALL_AML_up_polyAunbiased_polyAbiased_riboDbiased_VD
@@ -268,56 +268,56 @@ ALL_AML_down_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-04 16:22:12] $x
-    INFO [2026-07-04 16:22:12] ALL_AML_down_polyAunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $category.names
-    INFO [2026-07-04 16:22:12] c("Down in AML polyA relative to \n ALL polyA (polyA unbiased)", 
-    INFO [2026-07-04 16:22:12]     "Down in AML polyA relative to \n ALL riboD (polyA biased)", 
-    INFO [2026-07-04 16:22:12]     "Down in AML riboD relative to \n ALL polyA (riboD biased)")
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $filename
-    INFO [2026-07-04 16:22:12] NULL
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $output
-    INFO [2026-07-04 16:22:12] [1] TRUE
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $print.mode
-    INFO [2026-07-04 16:22:12] c("raw", "percent")
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $fill
-    INFO [2026-07-04 16:22:12] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cex
-    INFO [2026-07-04 16:22:12] [1] 1
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.cex
-    INFO [2026-07-04 16:22:12] [1] 0.65
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.dist
-    INFO [2026-07-04 16:22:12] c(0.05, 0.05, 0.05)
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $height
-    INFO [2026-07-04 16:22:12] [1] 2000
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $width
-    INFO [2026-07-04 16:22:12] [1] 2000
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.default.pos
-    INFO [2026-07-04 16:22:12] [1] "outer"
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.pos
-    INFO [2026-07-04 16:22:12] c(-12, 12, 175)
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $main
-    INFO [2026-07-04 16:22:12] [1] "Genes downregulated in AML relative to ALL (L2FC <= -1 and  p-adj < 0.05)"
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $main.cex
-    INFO [2026-07-04 16:22:12] [1] 0.75
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $disable.logging
-    INFO [2026-07-04 16:22:12] [1] TRUE
-    INFO [2026-07-04 16:22:12] 
+    INFO [2026-07-04 16:18:52] $x
+    INFO [2026-07-04 16:18:52] ALL_AML_down_polyAunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $category.names
+    INFO [2026-07-04 16:18:52] c("Down in AML polyA relative to \n ALL polyA (polyA unbiased)", 
+    INFO [2026-07-04 16:18:52]     "Down in AML polyA relative to \n ALL riboD (polyA biased)", 
+    INFO [2026-07-04 16:18:52]     "Down in AML riboD relative to \n ALL polyA (riboD biased)")
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $filename
+    INFO [2026-07-04 16:18:52] NULL
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $output
+    INFO [2026-07-04 16:18:52] [1] TRUE
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $print.mode
+    INFO [2026-07-04 16:18:52] c("raw", "percent")
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $fill
+    INFO [2026-07-04 16:18:52] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $cex
+    INFO [2026-07-04 16:18:52] [1] 1
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $cat.cex
+    INFO [2026-07-04 16:18:52] [1] 0.65
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $cat.dist
+    INFO [2026-07-04 16:18:52] c(0.05, 0.05, 0.05)
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $height
+    INFO [2026-07-04 16:18:52] [1] 2000
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $width
+    INFO [2026-07-04 16:18:52] [1] 2000
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $cat.default.pos
+    INFO [2026-07-04 16:18:52] [1] "outer"
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $cat.pos
+    INFO [2026-07-04 16:18:52] c(-12, 12, 175)
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $main
+    INFO [2026-07-04 16:18:52] [1] "Genes downregulated in AML relative to ALL (L2FC <= -1 and  p-adj < 0.05)"
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $main.cex
+    INFO [2026-07-04 16:18:52] [1] 0.75
+    INFO [2026-07-04 16:18:52] 
+    INFO [2026-07-04 16:18:52] $disable.logging
+    INFO [2026-07-04 16:18:52] [1] TRUE
+    INFO [2026-07-04 16:18:52] 
 
 ``` r
 ALL_AML_down_polyAunbiased_polyAbiased_riboDbiased_VD
@@ -365,56 +365,56 @@ ALL_AML_up_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-04 16:22:12] $x
-    INFO [2026-07-04 16:22:12] ALL_AML_up_riboDunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $category.names
-    INFO [2026-07-04 16:22:12] c("Up in AML riboD relative to \n ALL riboD (riboD unbiased)", 
-    INFO [2026-07-04 16:22:12]     "Up in AML polyA relative to \n ALL riboD (polyA biased)", 
-    INFO [2026-07-04 16:22:12]     "Up in AML riboD relative to \n ALL polyA (riboD biased)")
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $filename
-    INFO [2026-07-04 16:22:12] NULL
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $output
-    INFO [2026-07-04 16:22:12] [1] TRUE
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $print.mode
-    INFO [2026-07-04 16:22:12] c("raw", "percent")
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $fill
-    INFO [2026-07-04 16:22:12] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cex
-    INFO [2026-07-04 16:22:12] [1] 1
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.cex
-    INFO [2026-07-04 16:22:12] [1] 0.65
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.dist
-    INFO [2026-07-04 16:22:12] c(0.05, 0.05, 0.05)
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $height
-    INFO [2026-07-04 16:22:12] [1] 2000
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $width
-    INFO [2026-07-04 16:22:12] [1] 2000
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.default.pos
-    INFO [2026-07-04 16:22:12] [1] "outer"
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.pos
-    INFO [2026-07-04 16:22:12] c(-12, 12, 175)
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $main
-    INFO [2026-07-04 16:22:12] [1] "Genes downregulated in AML relative to ALL (L2FC <= -1 and  p-adj < 0.05)"
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $main.cex
-    INFO [2026-07-04 16:22:12] [1] 0.75
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $disable.logging
-    INFO [2026-07-04 16:22:12] [1] TRUE
-    INFO [2026-07-04 16:22:12] 
+    INFO [2026-07-04 16:18:53] $x
+    INFO [2026-07-04 16:18:53] ALL_AML_up_riboDunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $category.names
+    INFO [2026-07-04 16:18:53] c("Up in AML riboD relative to \n ALL riboD (riboD unbiased)", 
+    INFO [2026-07-04 16:18:53]     "Up in AML polyA relative to \n ALL riboD (polyA biased)", 
+    INFO [2026-07-04 16:18:53]     "Up in AML riboD relative to \n ALL polyA (riboD biased)")
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $filename
+    INFO [2026-07-04 16:18:53] NULL
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $output
+    INFO [2026-07-04 16:18:53] [1] TRUE
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $print.mode
+    INFO [2026-07-04 16:18:53] c("raw", "percent")
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $fill
+    INFO [2026-07-04 16:18:53] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $cex
+    INFO [2026-07-04 16:18:53] [1] 1
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $cat.cex
+    INFO [2026-07-04 16:18:53] [1] 0.65
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $cat.dist
+    INFO [2026-07-04 16:18:53] c(0.05, 0.05, 0.05)
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $height
+    INFO [2026-07-04 16:18:53] [1] 2000
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $width
+    INFO [2026-07-04 16:18:53] [1] 2000
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $cat.default.pos
+    INFO [2026-07-04 16:18:53] [1] "outer"
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $cat.pos
+    INFO [2026-07-04 16:18:53] c(-12, 12, 175)
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $main
+    INFO [2026-07-04 16:18:53] [1] "Genes downregulated in AML relative to ALL (L2FC <= -1 and  p-adj < 0.05)"
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $main.cex
+    INFO [2026-07-04 16:18:53] [1] 0.75
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $disable.logging
+    INFO [2026-07-04 16:18:53] [1] TRUE
+    INFO [2026-07-04 16:18:53] 
 
 ``` r
 ALL_AML_up_riboDunbiased_polyAbiased_riboDbiased_VD
@@ -461,56 +461,56 @@ ALL_AML_down_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-04 16:22:12] $x
-    INFO [2026-07-04 16:22:12] ALL_AML_down_riboDunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $category.names
-    INFO [2026-07-04 16:22:12] c("Down in AML riboD relative to \n ALL riboD (riboD unbiased)", 
-    INFO [2026-07-04 16:22:12]     "Down in AML polyA relative to \n ALL riboD (polyA biased)", 
-    INFO [2026-07-04 16:22:12]     "Down in AML riboD relative to \n ALL polyA (riboD biased)")
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $filename
-    INFO [2026-07-04 16:22:12] NULL
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $output
-    INFO [2026-07-04 16:22:12] [1] TRUE
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $print.mode
-    INFO [2026-07-04 16:22:12] c("raw", "percent")
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $fill
-    INFO [2026-07-04 16:22:12] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cex
-    INFO [2026-07-04 16:22:12] [1] 1
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.cex
-    INFO [2026-07-04 16:22:12] [1] 0.65
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.dist
-    INFO [2026-07-04 16:22:12] c(0.05, 0.05, 0.05)
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $height
-    INFO [2026-07-04 16:22:12] [1] 2000
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $width
-    INFO [2026-07-04 16:22:12] [1] 2000
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.default.pos
-    INFO [2026-07-04 16:22:12] [1] "outer"
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $cat.pos
-    INFO [2026-07-04 16:22:12] c(-12, 12, 175)
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $main
-    INFO [2026-07-04 16:22:12] [1] "Genes downregulated in AML relative to ALL (L2FC <= -1 and  p-adj < 0.05)"
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $main.cex
-    INFO [2026-07-04 16:22:12] [1] 0.75
-    INFO [2026-07-04 16:22:12] 
-    INFO [2026-07-04 16:22:12] $disable.logging
-    INFO [2026-07-04 16:22:12] [1] TRUE
-    INFO [2026-07-04 16:22:12] 
+    INFO [2026-07-04 16:18:53] $x
+    INFO [2026-07-04 16:18:53] ALL_AML_down_riboDunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $category.names
+    INFO [2026-07-04 16:18:53] c("Down in AML riboD relative to \n ALL riboD (riboD unbiased)", 
+    INFO [2026-07-04 16:18:53]     "Down in AML polyA relative to \n ALL riboD (polyA biased)", 
+    INFO [2026-07-04 16:18:53]     "Down in AML riboD relative to \n ALL polyA (riboD biased)")
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $filename
+    INFO [2026-07-04 16:18:53] NULL
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $output
+    INFO [2026-07-04 16:18:53] [1] TRUE
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $print.mode
+    INFO [2026-07-04 16:18:53] c("raw", "percent")
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $fill
+    INFO [2026-07-04 16:18:53] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $cex
+    INFO [2026-07-04 16:18:53] [1] 1
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $cat.cex
+    INFO [2026-07-04 16:18:53] [1] 0.65
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $cat.dist
+    INFO [2026-07-04 16:18:53] c(0.05, 0.05, 0.05)
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $height
+    INFO [2026-07-04 16:18:53] [1] 2000
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $width
+    INFO [2026-07-04 16:18:53] [1] 2000
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $cat.default.pos
+    INFO [2026-07-04 16:18:53] [1] "outer"
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $cat.pos
+    INFO [2026-07-04 16:18:53] c(-12, 12, 175)
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $main
+    INFO [2026-07-04 16:18:53] [1] "Genes downregulated in AML relative to ALL (L2FC <= -1 and  p-adj < 0.05)"
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $main.cex
+    INFO [2026-07-04 16:18:53] [1] 0.75
+    INFO [2026-07-04 16:18:53] 
+    INFO [2026-07-04 16:18:53] $disable.logging
+    INFO [2026-07-04 16:18:53] [1] TRUE
+    INFO [2026-07-04 16:18:53] 
 
 ``` r
 ALL_AML_down_riboDunbiased_polyAbiased_riboDbiased_VD
