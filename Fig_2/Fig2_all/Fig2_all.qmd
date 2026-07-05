@@ -1,0 +1,259 @@
+---
+title: "Fig2_all"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## **Fig2**
+
+**Representative assessment of biases introduced in differential expression analysis when comparing two diseases across transcript enrichment methods**
+
+```{r load libraries}
+library(tidyverse)
+library(ggplot2)
+library(cowplot)
+library(VennDiagram)
+```
+
+```{r load in files}
+aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased <- read_rds("../../output_data/aRMS_SS/aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased.rds") #for fig 2A - venn diagram
+
+aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased <- read_rds("../../output_data/aRMS_SS/aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased.rds") #for fig 2B - venn diagram
+
+aRMS_SS_up_polyAbiased <- read_rds("../../output_data/aRMS_SS/aRMS_SS_up_polyAbiased.rds") #for fig 2C - histogram
+
+aRMS_SS_up_riboDbiased <- read_rds("../../output_data/aRMS_SS/aRMS_SS_up_riboDbiased.rds") #for fig 2D - histogram
+
+up_polyAbiased_all <- read_rds("../../output_data/all_disease_comparisons/up_polyAbiased_all.rds") #for fig 2E - venn diagram
+
+up_riboDbiased_all <- read_rds("../../output_data/all_disease_comparisons/up_riboDbiased_all.rds") #for fig 2E - venn diagram
+```
+
+```{r Fig_2A}
+# for fig 2A
+Fig_2A <- venn.diagram(
+  x = aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased,
+  category.names = c(
+    "PolyA unbiased",
+    "PolyA biased",
+    "RiboD biased"
+    ),
+  filename = NULL, # Save as a PNG file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#BB5566", "#0072B2", "#E69F00"),
+#  cat.col = c("#BB5566", "#0072B2", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.9, # Font size for category names
+  cat.dist = c(0.04, 0.04, 0.04),
+  # height = 1000,
+  # width = 1000,
+  cat.default.pos = "outer",
+  cat.pos = c(-14, 14, 175), 
+  # main = "Upregulated genes in SS relative to aRMS",
+  main.cex = 1.1, # Font size for main title
+  disable.logging = TRUE,
+  sigdigs = 3, 
+  cat.fontfamily = "sans",
+  main.fontfamily = "sans",
+  fontfamily = "sans"
+)
+Fig_2A
+```
+
+```{r Fig_2B}
+# for fig 2B
+Fig_2B <- venn.diagram(
+  x = aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased,
+  category.names = c(
+    "RiboD unbiased",
+    "PolyA biased",
+    "RiboD biased"
+    ),
+  filename = NULL, # Save as a PNG file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#BB5566", "#0072B2", "#E69F00"),
+#  cat.col = c("#BB5566", "#0072B2", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.9, # Font size for category names
+  cat.dist = c(0.04, 0.04, 0.04),
+  # height = 2000,
+  # width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-14, 14, 175), 
+  # main = "Upregulated genes in SS relative to aRMS",
+  main.cex = 1.1, # Font size for main title
+  disable.logging = TRUE,
+  sigdigs = 3, 
+  cat.fontfamily = "sans",
+  main.fontfamily = "sans",
+  fontfamily = "sans"
+)
+Fig_2B
+```
+
+```{r aRMS_SS_up_polyAbiased_median}
+aRMS_SS_up_polyAbiased_median <- aRMS_SS_up_polyAbiased %>%
+  summarise(
+    median_value = median(log2FoldChange.x),
+  )
+aRMS_SS_up_polyAbiased_median
+```
+
+```{r Fig_2C}
+# for fig 2C
+Fig_2C <- ggplot(aRMS_SS_up_polyAbiased, aes(x = log2FoldChange.x)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#0072B2",
+    color = "#0072B2",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(
+#    title = "Unique to PolyA Biased",
+#    subtitle = "polyA biased, Median LFC = 1.32",
+    y = "Number of genes unique to PolyA biased",
+    x = "log2 Fold Change"
+) +
+  theme(plot.title = element_text(hjust = 0.5, size = 12),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 12)
+        ) +
+  geom_vline(aes(xintercept = aRMS_SS_up_polyAbiased_median$median_value), color = "#004166", linetype = "dashed", linewidth = 0.5) +
+  annotate("text", x=3.7, y=580, label= "Median = 1.32")
+
+Fig_2C
+```
+
+```{r aRMS_SS_up_riboDbiased_median}
+aRMS_SS_up_riboDbiased_median <- aRMS_SS_up_riboDbiased %>%
+  summarise(
+    median_value = median(log2FoldChange.x),
+  )
+aRMS_SS_up_riboDbiased_median
+```
+
+```{r Fig_2D}
+# for fig 2D
+Fig_2D <- ggplot(aRMS_SS_up_riboDbiased, aes(x = log2FoldChange.x)) +
+  geom_histogram(
+    bins = 30, # 30 is default
+    fill = "#E69F00",
+    color = "#E69F00",
+    alpha = 0.7
+    ) +
+#  scale_y_continuous(breaks = c(200, 400, 600, 800), limits = c(0,1000)) +
+#  scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14, 16)) +
+  labs(
+#    title = "Unique to RiboD Biased",
+    # title = "Distribution of log2FoldChange values of \n genes uniquely upregulated in SS riboD relative to aRMS polyA",
+    # subtitle = "riboD biased, Median LFC = 2.76",
+    y = "Number of genes unique to RiboD biased",
+    x = "log2 Fold Change") +
+  theme(plot.title = element_text(hjust = 0.5, size = 12),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 12)
+        ) +
+  geom_vline(aes(xintercept = aRMS_SS_up_riboDbiased_median$median_value), color = "#9a6a00", linetype = "dashed", linewidth = 0.5) +
+  annotate("text", x=7, y=1200, label= "Median = 2.76")
+
+Fig_2D 
+```
+
+```{r Fig_2E}
+# for fig2E
+Fig_2E <- venn.diagram(
+  x = up_polyAbiased_all,
+  category.names = c(
+    "SS to aRMS",
+    "WT to NB",
+    "AML to ALL"
+    ),
+  filename = NULL, # Save as a rds file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  sigdigs = 3, # the amount of significant digits in percent
+  # Customize appearance (optional)
+  fill = c("#0072B2", "#0098ed", "#87CEEB"),
+#  cat.col = c("#0072B2", "#0072B2", "#0072B2"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.9, # Font size for category names
+  cat.dist = c(0.04, 0.04, 0.04),
+  # height = 2000,
+  # width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-14, 14, 175), 
+    cat.fontfamily = "sans",
+    fontfamily = "sans",
+  main = "PolyA Biased",
+  main.fontfamily = "sans",
+  main.cex = 1.1, # Font size for main title
+  disable.logging = TRUE
+)
+Fig_2E
+```
+
+```{r Fig_2F}
+# for fig2F
+Fig_2F <- venn.diagram(
+  x = up_riboDbiased_all,
+  category.names = c(
+    "SS to aRMS",
+    "WT to NB",
+    "AML to ALL"
+    ),
+  filename = NULL, # Save as a rds file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  sigdigs = 3, # the amount of significant digits in percent
+  # Customize appearance (optional)
+  fill = c("#E69F00", "#ff9b00", "#e6b200"),
+#  cat.col = c("#E69F00", "#E69F00", "#E69F00"),
+  cex = 1.1, # Font size for counts
+  cat.cex = 0.9, # Font size for category names
+  cat.dist = c(0.04, 0.04, 0.04), # distance of category name to VD
+  # height = 2000,
+  # width = 2000,
+  cat.default.pos = "outer", # location of category names
+  cat.pos = c(-14, 14, 175), # position of category names
+  main = "RiboD Biased",
+    fontfamily = "sans",
+  main.fontfamily = "sans",
+    cat.fontfamily = "sans",
+  main.cex = 1.1, # Font size for main title
+  disable.logging = TRUE
+)
+Fig_2F
+```
+
+```{r Fig_2}
+Fig_2 <- plot_grid(
+  Fig_2A,
+  Fig_2B,
+  Fig_2C,
+  Fig_2D,
+  Fig_2E,
+  Fig_2F,
+  ncol = 2,
+  labels = c('A', 'B', 'C', 'D', 'E', 'F'),
+  label_size = 15)
+
+ggsave("../../Figures/Fig_2.png", Fig_2, width = 8, height = 12, dpi = 300)
+ggsave("../../Figures/Fig_2.tif", Fig_2, width = 8, height = 12, dpi = 300)
+
+Fig_2
+```
+
+Session Info
+
+```{r}
+sessioninfo::session_info()
+```
