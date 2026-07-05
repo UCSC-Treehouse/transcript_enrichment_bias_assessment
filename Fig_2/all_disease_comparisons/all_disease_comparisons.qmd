@@ -1,0 +1,1141 @@
+---
+title: "all_disease_comparisons"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## **Analysis of DESeq2 results across all disease comparisons**
+
+This project is going to be analyzing the results from the differential expression analysis of the following disease comparisons, each with riboD and polyA samples:
+
+SS versus aRMS
+
+WT versus NB
+
+ALL versus AML
+
+The goal is to find common patterns of genes that are artifactually differentially expressed when comparing samples prepared by different transcript enrichment types.
+
+```{r load packages}
+library(tidyverse)
+library(VennDiagram)
+```
+
+```{r load in files}
+# load in results files from the SS:aRMS comparisons (aRMS is the reference)
+armsPolyA_ssPolyA <- read_tsv("../../output_data/aRMS_SS/hugo_results_aRMS_polyA_SS_polyA_updated.tsv.gz")
+armsRiboD_ssRiboD <- read_tsv("../../output_data/aRMS_SS/hugo_results_aRMS_riboD_SS_riboD_updated.tsv.gz")
+armsPolyA_ssRiboD <- read_tsv("../../output_data/aRMS_SS/hugo_results_aRMS_polyA_SS_riboD_updated.tsv.gz")
+armsRiboD_ssPolyA <- read_tsv("../../output_data/aRMS_SS/hugo_results_aRMS_riboD_SS_polyA_updated.tsv.gz")
+
+# load in results from the WT:NB comparisons (NB is the reference)
+nbPolyA_wtPolyA <- read_tsv("../../output_data/NB_WT/hugo_results_WT_polyA_NB_polyA_updated.tsv.gz") 
+nbRiboD_wtRiboD <- read_tsv("../../output_data/NB_WT/hugo_results_WT_riboD_NB_riboD_updated.tsv.gz") 
+nbPolyA_wtRiboD <- read_tsv("../../output_data/NB_WT/hugo_results_WT_riboD_NB_polyA_updated.tsv.gz")
+nbRiboD_wtPolyA <- read_tsv("../../output_data/NB_WT/hugo_results_WT_polyA_NB_riboD_updated.tsv.gz")
+
+# load in results from the ALL:AML comparisons (ALL is the reference)
+allPolyA_amlPolyA <- read_tsv("../../output_data/ALL_AML/hugo_results_AML_polyA_ALL_polyA_updated.tsv.gz")
+allRiboD_amlRiboD <- read_tsv("../../output_data/ALL_AML/hugo_results_AML_riboD_ALL_riboD_updated.tsv.gz")
+allPolyA_amlRiboD <- read_tsv("../../output_data/ALL_AML/hugo_results_AML_riboD_ALL_polyA_updated.tsv.gz")
+allRiboD_amlPolyA <- read_tsv("../../output_data/ALL_AML/hugo_results_AML_polyA_ALL_riboD_updated.tsv.gz")
+```
+
+### **Get significant up genes**
+
+```{r SS aRMS up genes}
+# for SS and aRMS
+# Filter for genes with a Log2 fold change greater or equal to 1 and have an adjusted p-value less than 0.05
+armsPolyA_ssPolyA_great1 <- armsPolyA_ssPolyA %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "armsPolyA_ssPolyA_great1") %>%
+  relocate(comparison)
+
+armsRiboD_ssRiboD_great1 <- armsRiboD_ssRiboD %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "ARMSriboD_SSriboD_great1") %>%
+  relocate(comparison)
+
+armsRiboD_ssPolyA_great1 <- armsRiboD_ssPolyA %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "ARMSriboD_SSpolyA_great1") %>%
+  relocate(comparison)
+
+armsPolyA_ssRiboD_great1 <- armsPolyA_ssRiboD %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "ARMSpolyA_SSriboD_great1") %>%
+  relocate(comparison)
+```
+
+```{r NB WT up genes}
+# for WT and NB
+# Filter for genes with a Log2 fold change greater or equal to 1 and have an adjusted p-value less than 0.05
+
+nbPolyA_wtPolyA_great1 <- nbPolyA_wtPolyA %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "NBpolyA_WTpolyA_great1") %>%
+  relocate(comparison)
+
+nbRiboD_wtRiboD_great1 <- nbRiboD_wtRiboD %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "NBriboD_WTriboD_great1") %>%
+  relocate(comparison)
+ 
+nbRiboD_wtPolyA_great1 <- nbRiboD_wtPolyA %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "NBriboD_WTpolyA_great1") %>%
+  relocate(comparison)
+
+nbPolyA_wtRiboD_great1 <- nbPolyA_wtRiboD %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "NBpolyA_WTriboD_great1") %>%
+  relocate(comparison)
+```
+
+```{r ALL AML up genes}
+# for ALL and AML
+# Filter for genes with a Log2 fold change greater or equal to 1 and have an adjusted p-value less than 0.05
+
+allPolyA_amlPolyA_great1 <- allPolyA_amlPolyA %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "ALLpolyA_AMLpolyA_great1") %>%
+  relocate(comparison)
+
+allRiboD_amlRiboD_great1 <- allRiboD_amlRiboD %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "ALLriboD_AMLriboD_great1") %>%
+  relocate(comparison)
+
+allRiboD_amlPolyA_great1 <- allRiboD_amlPolyA %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "ALLriboD_AMLpolyA_great1") %>%
+  relocate(comparison)
+
+allPolyA_amlRiboD_great1 <- allPolyA_amlRiboD %>%
+  filter(log2FoldChange >= 1 & padj < 0.05) %>%
+  mutate(comparison = "ALLpolyA_AMLriboD_great1") %>%
+  relocate(comparison)
+```
+
+### **Unique gene lists - upregulated**
+
+PolyA biased (in common between the polyAtruth and riboDtruth comparisons) and RiboD biased (in common between the polyAtruth and riboDtruth comparisons)
+
+#### up in SS relative to aRMS
+
+```{r armsRiboD_ssPolyA_great1}
+# polyA biased for SS and aRMS comparison
+# genes that are uniquely upregulated in ssPolyA relative to armsRiboD (polyA biased)
+print(paste("total number of up genes in SS polyA relative to aRMS riboD (polyA biased) is", nrow(armsRiboD_ssPolyA_great1)))
+
+up_arms_ss_PolyAunbiased_uniquetoPolyAbiased <- armsRiboD_ssPolyA_great1 %>%
+  anti_join(armsPolyA_ssPolyA_great1, by = "Gene") %>% # not in polyA unbiased
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") # not in riboD biased
+print(paste("number of genes unique to polyA biased wrt polyAunbiased and riboD biased is", nrow(up_arms_ss_PolyAunbiased_uniquetoPolyAbiased)))
+
+up_arms_ss_RiboDunbiased_uniquetoPolyAbiased <- armsRiboD_ssPolyA_great1 %>%
+  anti_join(armsRiboD_ssRiboD_great1, by = "Gene") %>% # not in riboD unbiased
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") # not in riboD biased
+print(paste("number of genes unique to polyA biased wrt riboDunbiased and riboDbiased is", nrow(up_arms_ss_RiboDunbiased_uniquetoPolyAbiased)))
+```
+
+```{r up_arms_ss_polyAbiased}
+# need to combine these to get the genes in common between the two venn diagram polyA biased sections
+up_arms_ss_polyAbiased <- inner_join(up_arms_ss_PolyAunbiased_uniquetoPolyAbiased, up_arms_ss_RiboDunbiased_uniquetoPolyAbiased, by = "Gene")
+print(paste("number of genes in common as unique to polyA biased is", nrow(up_arms_ss_polyAbiased)))
+
+write_tsv(up_arms_ss_polyAbiased, "../../output_data/all_disease_comparisons/up_arms_ss_polyAbiased.tsv.gz")
+```
+
+```{r armsPolyA_ssRiboD_great1}
+# riboD biased for SS and aRMS comparison
+# genes that are uniquely upregulated in ssRiboD relative to armsPolyA (riboD biased)
+print(paste("total number of genes in riboD_biased is", nrow(armsPolyA_ssRiboD_great1)))
+
+up_arms_ss_polyAunbiased_uniquetoRiboDbiased <- armsPolyA_ssRiboD_great1 %>%
+  anti_join(armsPolyA_ssPolyA_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt polyAunbiased is", nrow(up_arms_ss_polyAunbiased_uniquetoRiboDbiased)))
+
+up_arms_ss_riboDunbiased_uniquetoRiboDbiased <- armsPolyA_ssRiboD_great1 %>%
+  anti_join(armsRiboD_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt riboDunbiased is", nrow(up_arms_ss_riboDunbiased_uniquetoRiboDbiased)))
+```
+
+```{r up_arms_ss_riboDbiased}
+# need to combine these to get the ones in common between the two venn diagram riboD biased sections
+up_arms_ss_riboDbiased <- inner_join(up_arms_ss_polyAunbiased_uniquetoRiboDbiased, up_arms_ss_riboDunbiased_uniquetoRiboDbiased, by = "Gene")
+
+print(paste("number of genes unique to riboD biased is", nrow(up_arms_ss_riboDbiased)))
+
+write_tsv(up_arms_ss_riboDbiased, "../../output_data/all_disease_comparisons/up_arms_ss_riboDbiased.tsv.gz")
+```
+
+#### up in WT relative to NB
+
+```{r nbRiboD_wtPolyA_great1}
+# first false for WT and NB comparison
+# genes that are uniquely upregulated in wtPolyA relative to nbRiboD (polyA biased)
+print(paste("total number of genes in polyA biased is", nrow(nbRiboD_wtPolyA_great1)))
+
+up_nb_wt_PolyAunbiased_uniquetoPolyAbiased <- nbRiboD_wtPolyA_great1 %>%
+  anti_join(nbPolyA_wtPolyA_great1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_great1, by = "Gene")
+print(paste("number of genes unique to polyAbiased wrt polyAunbiased is", nrow(up_nb_wt_PolyAunbiased_uniquetoPolyAbiased)))
+
+up_nb_wt_RiboDunbiased_uniquetoPolyAbiased <- nbRiboD_wtPolyA_great1 %>%
+  anti_join(nbRiboD_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_great1, by = "Gene")
+print(paste("number of genes unique to polyAbiased wrt riboDunbiased is", nrow(up_nb_wt_RiboDunbiased_uniquetoPolyAbiased)))
+```
+
+```{r up_nb_wt_polyAbiased}
+# need to combine these to get the ones in common between the two venn diagram first false sections
+up_nb_wt_polyAbiased <- inner_join(up_nb_wt_PolyAunbiased_uniquetoPolyAbiased, up_nb_wt_RiboDunbiased_uniquetoPolyAbiased, by = "Gene")
+
+print(paste("number of genes unique to polyAbiased is", nrow(up_nb_wt_polyAbiased)))
+
+write_tsv(up_nb_wt_polyAbiased, "../../output_data/all_disease_comparisons/up_nb_wt_polyAbiased.tsv.gz")
+```
+
+```{r nbPolyA_wtRiboD_great1}
+# riboD biased for WT and NB comparison
+# genes that are uniquely upregulated in wtRiboD relative to nbPolyA (riboD biased)
+print(paste("total number of genes in riboD biased is", nrow(nbPolyA_wtRiboD_great1)))
+
+up_nb_wt_polyAunbiased_uniquetoRiboDbiased <- nbPolyA_wtRiboD_great1 %>%
+  anti_join(nbPolyA_wtPolyA_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_great1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt polyAunbiased is", nrow(up_nb_wt_polyAunbiased_uniquetoRiboDbiased)))
+
+up_nb_wt_riboDunbiased_uniquetoRiboDbiased <- nbPolyA_wtRiboD_great1 %>%
+  anti_join(nbRiboD_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_great1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt riboDunbiased is", nrow(up_nb_wt_riboDunbiased_uniquetoRiboDbiased)))
+```
+
+```{r up_nb_wt_riboDbiased}
+# need to combine these to get the ones in common between the two venn diagram riboD biased sections
+up_nb_wt_riboDbiased <- inner_join(up_nb_wt_polyAunbiased_uniquetoRiboDbiased, up_nb_wt_riboDunbiased_uniquetoRiboDbiased, by = "Gene")
+
+print(paste("number of genes unique to riboD biased is", nrow(up_nb_wt_riboDbiased)))
+
+write_tsv(up_nb_wt_riboDbiased, "../../output_data/all_disease_comparisons/up_nb_wt_riboDbiased.tsv.gz")
+```
+
+#### up in AML relative to ALL
+
+```{r allRiboD_amlPolyA_great1}
+# polyA biased for ALL and AML comparison
+# genes that are uniquely upregulated in amlPolyA relative to allRiboD (polyA biased)
+print(paste("total number of genes in polyA biased is", nrow(allRiboD_amlPolyA_great1)))
+
+up_all_aml_PolyAunbiased_uniquetoPolyAbiased <- allRiboD_amlPolyA_great1 %>%
+  anti_join(allPolyA_amlPolyA_great1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_great1, by = "Gene")
+print(paste("number of genes unique to polyA biased wrt polyAunbiased is", nrow(up_all_aml_PolyAunbiased_uniquetoPolyAbiased)))
+
+up_all_aml_RiboDunbiased_uniquetoPolyAbiased <- allRiboD_amlPolyA_great1 %>%
+  anti_join(allRiboD_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_great1, by = "Gene")
+print(paste("number of genes unique to polyA biased wrt riboDunbiased is", nrow(up_all_aml_RiboDunbiased_uniquetoPolyAbiased)))
+```
+
+```{r up_all_aml_polyAbiased}
+# need to combine these to get the ones in common between the two venn diagram first false sections
+up_all_aml_polyAbiased <- inner_join(up_all_aml_PolyAunbiased_uniquetoPolyAbiased, up_all_aml_RiboDunbiased_uniquetoPolyAbiased, by = "Gene")
+
+print(paste("number of genes unique to polyA biased is", nrow(up_all_aml_polyAbiased)))
+
+write_tsv(up_all_aml_polyAbiased, "../../output_data/all_disease_comparisons/up_all_aml_polyAbiased.tsv.gz")
+```
+
+```{r allPolyA_amlRiboD_great1}
+# riboD biased for ALL and AML comparison
+# genes that are uniquely upregulated in amlRiboD relative to allPolyA (riboD biased)
+print(paste("total number of genes in riboD biased is", nrow(allPolyA_amlRiboD_great1)))
+
+up_all_aml_polyAunbiased_uniquetoRiboDbiased <- allPolyA_amlRiboD_great1 %>%
+  anti_join(allPolyA_amlPolyA_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_great1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt polyAunbiased is", nrow(up_all_aml_polyAunbiased_uniquetoRiboDbiased)))
+
+up_all_aml_riboDunbiased_uniquetoRiboDbiased <- allPolyA_amlRiboD_great1 %>%
+  anti_join(allRiboD_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_great1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt riboDunbiased is", nrow(up_all_aml_riboDunbiased_uniquetoRiboDbiased)))
+```
+
+```{r up_all_aml_riboDbiased}
+# need to combine these to get the ones in common between the two venn diagram second false sections
+up_all_aml_riboDbiased <- inner_join(up_all_aml_polyAunbiased_uniquetoRiboDbiased, up_all_aml_riboDunbiased_uniquetoRiboDbiased, by = "Gene")
+
+print(paste("number of genes unique to riboD biased is", nrow(up_all_aml_riboDbiased)))
+
+write_tsv(up_all_aml_riboDbiased, "../../output_data/all_disease_comparisons/up_all_aml_riboDbiased.tsv.gz")
+```
+
+### Venn Diagrams
+
+```{r up_polyAbiased_all_VD}
+# up genes in the polyAbiased category of ss:arms, wt:nb, aml:all
+up_polyAbiased_all <- list(
+  "Up in SS polyA relative to aRMS riboD (polyA biased)" = up_arms_ss_polyAbiased$Gene,
+  "Up in WT polyA relative to NB riboD (polyA biased)" = up_nb_wt_polyAbiased$Gene,
+  "Up in AML polyA relative to ALL riboD (polyA biased)" = up_all_aml_polyAbiased$Gene
+)
+
+write_rds(up_polyAbiased_all, "../../output_data/all_disease_comparisons/up_polyAbiased_all.rds")
+
+up_polyAbiased_all_VD <- venn.diagram(
+  x = up_polyAbiased_all,
+  category.names = c(
+    "Up in SS polyA relative to \n aRMS riboD (polyAbiased)",
+    "Up in WT polyA relative to \n NB riboD (polyAbiased)",
+    "Up in AML polyA relative to \n ALL riboD (polyAbiased)"
+    ),
+  filename = NULL, # Save as a rds file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#0072B2", "#0098ed", "#87CEEB"),
+  # cat.col = c("#0072B2", "#0072B2", "#0072B2"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.65, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes upregulated in PolyA disease relative to \n reference RiboD disease (L2FC >= 1 and  p-adj < 0.05)",
+  main.cex = 0.70, # Font size for main title
+  disable.logging = TRUE
+)
+up_polyAbiased_all_VD
+```
+
+```{r up_riboDbiased_all_VD}
+# up genes in the riboD biased category of ss:arms, wt:nb, aml:all
+up_riboDbiased_all <- list(
+  "Up in SS riboD relative to aRMS polyA (riboD biased)" = up_arms_ss_riboDbiased$Gene,
+  "Up in WT riboD relative to NB polyA (riboD biased)" = up_nb_wt_riboDbiased$Gene,
+  "Up in AML riboD relative to ALL polyA (riboD biased)" = up_all_aml_riboDbiased$Gene
+)
+
+write_rds(up_riboDbiased_all, "../../output_data/all_disease_comparisons/up_riboDbiased_all.rds")
+
+up_riboDbiased_all_VD <- venn.diagram(
+  x = up_riboDbiased_all,
+  category.names = c(
+    "Up in SS riboD relative to \n aRMS polyA (riboD biased)",
+    "Up in WT riboD relative to \n NB polyA (riboD biased)",
+    "Up in AML riboD relative to \n ALL polyA (riboD biased)"
+    ),
+  filename = NULL, # Save as a rds file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#E69F00", "#ff9b00", "#e6b200"),
+  # cat.col = c("#E69F00", "#E69F00", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.60, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes upregulated in RiboD disease relative to \n reference PolyA disease (L2FC >= 1 and  p-adj < 0.05)",
+  main.cex = 0.70, # Font size for main title
+  disable.logging = TRUE
+)
+up_riboDbiased_all_VD
+```
+
+```{r up in common}
+# gene list for the genes in common between all three polyA_biased comparisons
+up_polyAbiased_common <- up_arms_ss_polyAbiased %>%
+  inner_join(up_nb_wt_polyAbiased, by = "Gene") %>%
+  inner_join(up_all_aml_polyAbiased, by = "Gene")
+print(nrow(up_polyAbiased_common))
+
+# gene list for the genes in common between all three riboD_biased comparisons
+up_riboDbiased_common <- up_arms_ss_riboDbiased %>%
+  inner_join(up_nb_wt_riboDbiased, by = "Gene") %>%
+  inner_join(up_all_aml_riboDbiased, by = "Gene")
+print(nrow(up_riboDbiased_common))
+```
+
+### Get significant down genes
+
+```{r aRMS SS down genes}
+# for SS and aRMS
+# Filter for genes with a Log2 fold change less than or equal to -1 and have an adjusted p-value less than 0.05
+armsPolyA_ssPolyA_less1 <- armsPolyA_ssPolyA %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "armsPolyA_ssPolyA_less1") %>%
+  relocate(comparison)
+
+armsRiboD_ssRiboD_less1 <- armsRiboD_ssRiboD %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "ARMSriboD_SSriboD_less1") %>%
+  relocate(comparison)
+
+armsRiboD_ssPolyA_less1 <- armsRiboD_ssPolyA %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "ARMSriboD_SSpolyA_less1") %>%
+  relocate(comparison)
+
+armsPolyA_ssRiboD_less1 <- armsPolyA_ssRiboD %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "ARMSpolyA_SSriboD_less1") %>%
+  relocate(comparison)
+```
+
+```{r NB WT down genes}
+# for WT and NB
+# Filter for genes with a Log2 fold change less than or equal to -1 and have an adjusted p-value less than 0.05
+
+nbPolyA_wtPolyA_less1 <- nbPolyA_wtPolyA %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "NBpolyA_WTpolyA_less1") %>%
+  relocate(comparison)
+
+nbRiboD_wtRiboD_less1 <- nbRiboD_wtRiboD %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "NBriboD_WTriboD_less1") %>%
+  relocate(comparison)
+ 
+nbRiboD_wtPolyA_less1 <- nbRiboD_wtPolyA %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "NBriboD_WTpolyA_less1") %>%
+  relocate(comparison)
+
+nbPolyA_wtRiboD_less1 <- nbPolyA_wtRiboD %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "NBpolyA_WTriboD_less1") %>%
+  relocate(comparison)
+```
+
+```{r ALL AML down genes}
+# for ALL and AML
+# Filter for genes with a Log2 fold change less than or equal to 1 and have an adjusted p-value less than 0.05
+
+allPolyA_amlPolyA_less1 <- allPolyA_amlPolyA %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "ALLpolyA_AMLpolyA_less1") %>%
+  relocate(comparison)
+
+allRiboD_amlRiboD_less1 <- allRiboD_amlRiboD %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "ALLriboD_AMLriboD_less1") %>%
+  relocate(comparison)
+
+allRiboD_amlPolyA_less1 <- allRiboD_amlPolyA %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "ALLriboD_AMLpolyA_less1") %>%
+  relocate(comparison)
+
+allPolyA_amlRiboD_less1 <- allPolyA_amlRiboD %>%
+  filter(log2FoldChange <= -1 & padj < 0.05) %>%
+  mutate(comparison = "ALLpolyA_AMLriboD_less1") %>%
+  relocate(comparison)
+```
+
+### **Unique gene lists - downregulated**
+
+PolyA biased (in common between the polyAtruth and riboDtruth comparisons) and RiboD biased (in common between the polyAtruth and riboDtruth comparisons)
+
+#### **Down in SS relative to aRMS**
+
+```{r armsRiboD_ssPolyA_less1}
+# polyA biased for SS and aRMS comparison
+# genes that are uniquely downregulated in ssPolyA relative to armsRiboD (first false)
+
+print(paste("total number of downregulated genes in SS polyA relative to aRMS riboD (polyA biased) is", nrow(armsRiboD_ssPolyA_less1)))
+
+down_arms_ss_PolyAunbiased_uniquetoPolyAbiased <- armsRiboD_ssPolyA_less1 %>%
+  anti_join(armsPolyA_ssPolyA_less1, by = "Gene") %>% # not in polyA unbiased
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") # not in riboD biased
+print(paste("number of genes unique to polyAbiased wrt polyAunbiased and riboDbiased is", nrow(down_arms_ss_PolyAunbiased_uniquetoPolyAbiased)))
+
+down_arms_ss_RiboDunbiased_uniquetoPolyAbiased <- armsRiboD_ssPolyA_less1 %>%
+  anti_join(armsRiboD_ssRiboD_less1, by = "Gene") %>% # not in riboD unbiased
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") # not in riboD biased
+print(paste("number of genes unique to polyAbiased wrt riboDunbiased and riboDbiased is", nrow(down_arms_ss_RiboDunbiased_uniquetoPolyAbiased)))
+```
+
+```{r}
+# need to combine these to get the ones in common between the two venn diagram polyA biased sections
+down_arms_ss_polyAbiased <- inner_join(down_arms_ss_PolyAunbiased_uniquetoPolyAbiased, down_arms_ss_RiboDunbiased_uniquetoPolyAbiased, by = "Gene")
+print(paste("number of genes in common as unique to first false is", nrow(down_arms_ss_polyAbiased)))
+
+write_tsv(down_arms_ss_polyAbiased, "../../output_data/all_disease_comparisons/down_arms_ss_polyAbiased.tsv.gz")
+```
+
+```{r armsPolyA_ssRiboD_less1}
+# riboDbiased for SS and aRMS comparison
+# genes that are uniquely downregulated in ssRiboD relative to armsPolyA (riboDbiased)
+print(paste("total number of genes in riboD biased is", nrow(armsPolyA_ssRiboD_less1)))
+
+down_arms_ss_polyAunbiased_uniquetoRiboDbiased <- armsPolyA_ssRiboD_less1 %>%
+  anti_join(armsPolyA_ssPolyA_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt polyAunbiased is", nrow(down_arms_ss_polyAunbiased_uniquetoRiboDbiased)))
+
+down_arms_ss_riboDunbiased_uniquetoRiboDbiased <- armsPolyA_ssRiboD_less1 %>%
+  anti_join(armsRiboD_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt riboDunbiased is", nrow(down_arms_ss_riboDunbiased_uniquetoRiboDbiased)))
+```
+
+```{r down_arms_ss_riboDbiased}
+# need to combine these to get the ones in common between the two venn diagram second false sections
+down_arms_ss_riboDbiased <- inner_join(down_arms_ss_polyAunbiased_uniquetoRiboDbiased, down_arms_ss_riboDunbiased_uniquetoRiboDbiased, by = "Gene")
+print(paste("number of genes unique to riboD biased is", nrow(down_arms_ss_riboDbiased)))
+
+write_tsv(down_arms_ss_riboDbiased, "../../output_data/all_disease_comparisons/down_arms_ss_riboDbiased.tsv.gz")
+```
+
+#### **Down in WT relative to NB**
+
+```{r nbRiboD_wtPolyA_less1}
+# polyA biased for WT and NB comparison
+# genes that are uniquely downregulated in wtPolyA relative to nbRiboD
+print(paste("total number of genes in polyA biased is", nrow(nbRiboD_wtPolyA_less1)))
+
+down_nb_wt_PolyAunbiased_uniquetoPolyAbiased <- nbRiboD_wtPolyA_less1 %>%
+  anti_join(nbPolyA_wtPolyA_less1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_less1, by = "Gene")
+print(paste("number of genes unique to polyA biased wrt polyA unbiased is", nrow(down_nb_wt_PolyAunbiased_uniquetoPolyAbiased)))
+
+down_nb_wt_RiboDunbiased_uniquetoPolyAbiased <- nbRiboD_wtPolyA_less1 %>%
+  anti_join(nbRiboD_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_less1, by = "Gene")
+print(paste("number of genes unique to polyA biased wrt riboD unbiased is", nrow(down_nb_wt_RiboDunbiased_uniquetoPolyAbiased)))
+```
+
+```{r down_nb_wt_polyAbiased}
+# need to combine these to get the ones in common between the two venn diagram polyA biased sections
+down_nb_wt_polyAbiased <- inner_join(down_nb_wt_PolyAunbiased_uniquetoPolyAbiased, down_nb_wt_RiboDunbiased_uniquetoPolyAbiased, by = "Gene")
+
+print(paste("number of genes unique to polyA biased is", nrow(down_nb_wt_polyAbiased)))
+
+write_tsv(down_nb_wt_polyAbiased, "../../output_data/all_disease_comparisons/down_nb_wt_polyAbiased.tsv.gz")
+```
+
+```{r nbPolyA_wtRiboD_less1}
+# riboD biased for WT and NB comparison
+# genes that are uniquely downregulated in wtRiboD relative to nbPolyA (riboD biased)
+print(paste("total number of genes in riboD biased is", nrow(nbPolyA_wtRiboD_less1)))
+
+down_nb_wt_polyAunbiased_uniquetoRiboDbiased <- nbPolyA_wtRiboD_less1 %>%
+  anti_join(nbPolyA_wtPolyA_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_less1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt polyAunbiased is", nrow(down_nb_wt_polyAunbiased_uniquetoRiboDbiased)))
+
+down_nb_wt_riboDunbiased_uniquetoRiboDbiased <- nbPolyA_wtRiboD_less1 %>%
+  anti_join(nbRiboD_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_less1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt riboDunbiased is", nrow(down_nb_wt_riboDunbiased_uniquetoRiboDbiased)))
+```
+
+```{r down_nb_wt_riboDbiased}
+# need to combine these to get the ones in common between the two venn diagram second false sections
+down_nb_wt_riboDbiased <- inner_join(down_nb_wt_polyAunbiased_uniquetoRiboDbiased, down_nb_wt_riboDunbiased_uniquetoRiboDbiased, by = "Gene")
+
+print(paste("number of genes unique to riboD biased is", nrow(down_nb_wt_riboDbiased)))
+
+write_tsv(down_nb_wt_riboDbiased, "../../output_data/all_disease_comparisons/down_nb_wt_riboDbiased.tsv.gz")
+```
+
+#### **Down in AML relative to ALL**
+
+```{r allRiboD_amlPolyA_less1}
+# polyA biased for ALL and AML comparison
+# genes that are uniquely downregulated in amlPolyA relative to allRiboD (first false)
+print(paste("total number of genes in polyA biased is", nrow(allRiboD_amlPolyA_less1)))
+
+down_all_aml_PolyAunbiased_uniquetoPolyAbiased <- allRiboD_amlPolyA_less1 %>%
+  anti_join(allPolyA_amlPolyA_less1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_less1, by = "Gene")
+print(paste("number of genes unique to polyA biased wrt polyAunbiased is", nrow(down_all_aml_PolyAunbiased_uniquetoPolyAbiased)))
+
+down_all_aml_RiboDunbiased_uniquetoPolyAbiased <- allRiboD_amlPolyA_less1 %>%
+  anti_join(allRiboD_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_less1, by = "Gene")
+print(paste("number of genes unique to polyA biased wrt riboDunbiased is", nrow(down_all_aml_RiboDunbiased_uniquetoPolyAbiased)))
+```
+
+```{r down_all_aml_polyAbiased}
+# need to combine these to get the ones in common between the two venn diagram first false sections
+down_all_aml_polyAbiased <- inner_join(down_all_aml_PolyAunbiased_uniquetoPolyAbiased, down_all_aml_RiboDunbiased_uniquetoPolyAbiased, by = "Gene")
+
+print(paste("number of genes unique to polyA biased is", nrow(down_all_aml_polyAbiased)))
+
+write_tsv(down_all_aml_polyAbiased, "../../output_data/all_disease_comparisons/down_all_aml_polyAbiased.tsv.gz")
+```
+
+```{r allPolyA_amlRiboD_less1}
+# riboD biased for ALL and AML comparison
+# genes that are uniquely downregulated in amlRiboD relative to allPolyA
+print(paste("total number of genes in riboD biased is", nrow(allPolyA_amlRiboD_less1)))
+
+down_all_aml_polyAunbiased_uniquetoRiboDbiased <- allPolyA_amlRiboD_less1 %>%
+  anti_join(allPolyA_amlPolyA_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_less1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt polyAunbiased is", nrow(down_all_aml_polyAunbiased_uniquetoRiboDbiased)))
+
+down_all_aml_riboDunbiased_uniquetoRiboDbiased <- allPolyA_amlRiboD_less1 %>%
+  anti_join(allRiboD_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_less1, by = "Gene")
+print(paste("number of genes unique to riboD biased wrt riboDunbiased is", nrow(down_all_aml_riboDunbiased_uniquetoRiboDbiased)))
+```
+
+```{r down_all_aml_riboDbiased}
+# need to combine these to get the ones in common between the two venn diagram second false sections
+down_all_aml_riboDbiased <- inner_join(down_all_aml_polyAunbiased_uniquetoRiboDbiased, down_all_aml_riboDunbiased_uniquetoRiboDbiased, by = "Gene")
+
+print(paste("number of genes unique to riboD biased is", nrow(down_all_aml_riboDbiased)))
+
+write_tsv(down_all_aml_riboDbiased, "../../output_data/all_disease_comparisons/down_all_aml_riboDbiased.tsv.gz")
+```
+
+### Venn diagrams
+
+```{r down_polyAbiased_all_VD}
+# down genes in the first false category of ss:arms, wt:nb, aml:all
+down_polyAbiased_all <- list(
+  "Down SS polyA relative to aRMS riboD (polyA biased)" = down_arms_ss_polyAbiased$Gene,
+  "Down in WT polyA relative to NB riboD (polyA biased)" = down_nb_wt_polyAbiased$Gene,
+  "Down in AML polyA relative to ALL riboD (polyA biased)" = down_all_aml_polyAbiased$Gene
+)
+
+write_rds(down_polyAbiased_all, "../../output_data/all_disease_comparisons/down_polyAbiased_all.rds")
+
+
+down_polyAbiased_all_VD <- venn.diagram(
+  x = down_polyAbiased_all,
+  category.names = c(
+    "Down in SS polyA relative to \n aRMS riboD (polyA biased)",
+    "Down in WT polyA relative to \n NB riboD (polyA biased)",
+    "Down in AML polyA relative to \n ALL riboD (polyA biased)"
+    ),
+  filename = NULL, # Save as a rds file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#0072B2", "#0098ed", "#87CEEB"),
+  # cat.col = c("#0072B2", "#0072B2", "#0072B2"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.65, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes downregulated in PolyA disease relative to \n reference RiboD disease (L2FC <= -1 and  p-adj < 0.05)",
+  main.cex = 0.70, # Font size for main title
+  disable.logging = TRUE
+)
+down_polyAbiased_all_VD
+```
+
+```{r down_riboDbiased_all_VD}
+# down genes in the second false category of ss:arms, wt:nb, aml:all
+down_riboDbiased_all <- list(
+  "Down in SS riboD relative to aRMS polyA (second false)" = down_arms_ss_riboDbiased$Gene,
+  "Down in WT riboD relative to NB polyA (second false)" = down_nb_wt_riboDbiased$Gene,
+  "Down in AML riboD relative to ALL polyA (second false)" = down_all_aml_riboDbiased$Gene
+)
+
+write_rds(down_riboDbiased_all, "../../output_data/all_disease_comparisons/down_riboDbiased_all.rds")
+
+
+down_riboDbiased_all_VD <- venn.diagram(
+  x = down_riboDbiased_all,
+  category.names = c(
+    "Down in SS riboD relative to \n aRMS polyA (riboD biased)",
+    "Down in WT riboD relative to \n NB polyA (riboD biased)",
+    "Down in AML riboD relative to \n ALL polyA (riboD biased)"
+    ),
+  filename = NULL, # Save as a rds file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  # Customize appearance (optional)
+  fill = c("#E69F00", "#ff9b00", "#e6b200"),
+  # cat.col = c("#E69F00", "#E69F00", "#E69F00"),
+  cex = 1, # Font size for counts
+  cat.cex = 0.60, # Font size for category names
+  cat.dist = c(0.05, 0.05, 0.05),
+  height = 2000,
+  width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-12, 12, 175), 
+  main = "Genes downregulated in RiboD disease relative to \n reference PolyA disease (L2FC <= -1 and  p-adj < 0.05)",
+  main.cex = 0.70, # Font size for main title
+  disable.logging = TRUE
+)
+down_riboDbiased_all_VD
+```
+
+```{r down genes in common}
+# gene list for the genes in common between all three polyA biased comparisons
+down_polyAbiased_common <- down_arms_ss_polyAbiased %>%
+  inner_join(down_nb_wt_polyAbiased, by = "Gene") %>%
+  inner_join(down_all_aml_polyAbiased, by = "Gene")
+print(nrow(down_polyAbiased_common))
+
+# gene list for the genes in common between all three riboD biased comparisons
+down_riboDbiased_common <- down_arms_ss_riboDbiased %>%
+  inner_join(down_nb_wt_riboDbiased, by = "Gene") %>%
+  inner_join(down_all_aml_riboDbiased, by = "Gene")
+print(nrow(down_riboDbiased_common))
+```
+
+## **Visualizing venn diagram similarities**
+
+### **Up genes in PolyAunbiased v biases**
+
+Taking the venn diagram numbers (proportions of genes in each region) from DESeq2_results_analysis for each disease comparisons (SS:aRMS, WT:NB, ALL:AML), visualizing how the regions of the VDs are similar/different (upregulated genes)
+
+```{r up_polyAunbiased_vs_biases}
+up_polyAunbiased_vs_biases <- data.frame(
+  region  = rep(c("polyA unbiased only", 
+                  "polyA biased only", 
+                  "riboD biased only",
+                  "polyA unbiased & polyA biased",  
+                  "polyA unbiased & riboD biased",  
+                  "polyA biased & riboD biased",  
+                  "polyA unbiased, polyA biased, riboD biased"), times = 3),
+  disease_comparison = rep(c("up in SS relative to aRMS", "up in WT relative to NB", "up in AML relative to ALL"), each = 7),
+  percentage   = c(
+    # up in SS relative to aRMS
+    1.37, 15.8, 45.1, 7.63, 12.4, 0.286, 17.4,
+    # up in WT relative to NB
+    1.6, 19.3, 39.9, 8.72, 15.8, 0.535, 14.1,
+    # up in AML relative to ALL
+    #5.17,  21.6, 28.7, 11.5, 9.5, 1.56, 22 # these were numbers from Anusha's old samples?
+    2.52, 20.1, 24.6, 7.52, 25.1, 0.581, 19.5
+  )
+)
+```
+
+```{r fix region polyAunbiased}
+# Fix region order for the x-axis
+up_polyAunbiased_vs_biases$region <- factor(up_polyAunbiased_vs_biases$region,
+                      levels = c("polyA unbiased only", 
+                                 "polyA biased only", 
+                                 "riboD biased only", 
+                                 "polyA unbiased & polyA biased",  
+                                 "polyA unbiased & riboD biased",  
+                                 "polyA biased & riboD biased", 
+                                 "polyA unbiased, polyA biased, riboD biased"))
+```
+
+```{r up_polyAunbiased_vs_biases_plot}
+up_polyAunbiased_vs_biases_plot <- ggplot(up_polyAunbiased_vs_biases, aes(x = region, y = percentage, fill = disease_comparison)) +
+  geom_col(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_text(aes(label = percentage),
+            position = position_dodge(width = 0.75),
+#            vjust = -0.4, 
+            size = 2.8, 
+            angle = 90,
+            color = "grey30") +
+  scale_fill_manual(values = c(
+    "up in SS relative to aRMS" = "#f0eca3",
+    "up in WT relative to NB" = "#cda5e6",
+    "up in AML relative to ALL" = "#a1d6a1"
+  )) +
+  labs(
+    title    = "Venn Diagram Region Percentages  - upregulated polyA unbiased vs biases",
+    subtitle = "Each group of bars shows one intersection region across the three disease contexts",
+    x        = "Venn Diagram Region",
+    y        = "Percentage",
+    fill     = "Disease comparison"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(face = "bold", size = 15, margin = margin(b = 4)),
+    plot.subtitle    = element_text(color = "grey45", size = 11, margin = margin(b = 12)),
+    axis.text.x      = element_text(angle = 50, hjust = 1),
+    panel.grid.major.x = element_blank(), #removes the major vertical grid lines from the plot panel
+    legend.position  = "right",
+    legend.title     = element_text(face = "bold")
+  )
+
+up_polyAunbiased_vs_biases_plot
+```
+
+```{r up_polyAunbiased_vs_biases_plot_bydisease}
+up_polyAunbiased_vs_biases_plot_bydisease <- ggplot(up_polyAunbiased_vs_biases, aes(x = disease_comparison, y = percentage, fill = region)) +
+  geom_col(position = position_stack(), width = 0.7) +
+  geom_text(aes(label = percentage),
+            position = position_stack(vjust = 0.5),
+#            vjust = -0.4,
+            size = 2.8,
+            color = "black") +
+  scale_fill_manual(values = c(
+    "polyA unbiased only" = "#BB5566",
+    "polyA biased only" = "#0072B2",
+    "riboD biased only" = "#E69F00",
+    "polyA unbiased & polyA biased" = "#8391b5",
+    "polyA unbiased & riboD biased" = "#e2a86c",
+    "polyA biased & riboD biased" = "#bfad80",
+    "polyA unbiased, polyA biased, riboD biased" = "#b7986a"
+  )) +
+  labs(
+    title    = "Percentage of upregulated genes in each region - polyA unbiased vs biases",
+    subtitle = "Each bar shows the percentage of genes in each \nvenn diagram region for a given disease comparison",
+    x        = "Disease comparison",
+    y        = "Percentage",
+    fill     = "Venn diagram region"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(face = "bold", 
+                                    size = 15,
+                                    margin = margin(b = 4)),
+    plot.subtitle    = element_text(color = "grey45", size = 11, margin = margin(b = 12)),
+    axis.text.x      = element_text(angle = 50, hjust = 1),
+    panel.grid.major.x = element_blank(), #removes the major vertical grid lines from the plot panel
+    legend.position  = "right",
+    legend.title     = element_text(face = "bold")
+  )
+
+up_polyAunbiased_vs_biases_plot_bydisease
+```
+
+### **Up genes in riboD unbiased v biases**
+
+```{r up_riboDunbiased_vs_biases}
+up_riboDunbiased_vs_biases <- data.frame(
+  region  = rep(c("riboD unbiased only", 
+                  "polyA biased only", 
+                  "riboD biased only",
+                  "riboD unbiased & polyA biased",
+                  "riboD unbiased & riboD biased",  
+                  "polyA biased & riboD biased",  
+                  "riboD unbiased, polyA biased, riboD biased"), times = 3),
+  disease_comparison = rep(c("up in SS relative to aRMS", "up in WT relative to NB", "up in AML relative to ALL"), each = 7),
+  percentage   = c(
+    # up in SS relative to aRMS
+    0.962, 17.2, 48.4, 6.31, 9.32, 1.29, 16.5,
+    # up in WT relative to NB
+    1.2, 21.8, 46.6, 6.33, 9.33, 1.49, 13.2,
+    # up in AML relative to ALL
+    #4.53, 24.3, 29.5, 9.02, 8.95, 1.84, 21.8 - according to Anusha's old samples?
+    1.25, 19, 44.4, 8.97, 5.99, 3.06, 17.3
+  )
+)
+```
+
+```{r}
+# Fix region order for the x-axis
+up_riboDunbiased_vs_biases$region <- factor(up_riboDunbiased_vs_biases$region,
+                      levels = c("riboD unbiased only", 
+                                 "polyA biased only", 
+                                 "riboD biased only", 
+                                 "riboD unbiased & polyA biased",  
+                                 "riboD unbiased & riboD biased",  
+                                 "polyA biased & riboD biased", 
+                                 "riboD unbiased, polyA biased, riboD biased"))
+```
+
+```{r up_riboDunbiased_vs_biases_plot}
+up_riboDunbiased_vs_biases_plot <- ggplot(up_riboDunbiased_vs_biases, aes(x = region, y = percentage, fill = disease_comparison)) +
+  geom_col(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_text(aes(label = percentage),
+            position = position_dodge(width = 0.75),
+#            vjust = -0.4, 
+            size = 2.8, 
+            angle = 90,
+            color = "grey30") +
+  scale_fill_manual(values = c(
+    "up in SS relative to aRMS" = "#f0eca3",
+    "up in WT relative to NB" = "#cda5e6",
+    "up in AML relative to ALL" = "#a1d6a1"
+  )) +
+  labs(
+    title    = "Venn Diagram Region Percentages - upregulated riboD unbiased vs biases",
+    subtitle = "Each group of bars shows one intersection region across the three disease contexts",
+    x        = "Venn Diagram Region",
+    y        = "Percentage",
+    fill     = "Disease comparison"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(face = "bold", size = 15, margin = margin(b = 4)),
+    plot.subtitle    = element_text(color = "grey45", size = 11, margin = margin(b = 12)),
+    axis.text.x      = element_text(angle = 50, hjust = 1),
+    panel.grid.major.x = element_blank(), #removes the major vertical grid lines from the plot panel
+    legend.position  = "right",
+    legend.title     = element_text(face = "bold")
+  )
+
+up_riboDunbiased_vs_biases_plot
+```
+
+```{r up_riboDunbiased_vs_biases_plot_bydisease}
+up_riboDunbiased_vs_biases_plot_bydisease <- ggplot(up_riboDunbiased_vs_biases, aes(x = disease_comparison, y = percentage, fill = region)) +
+  geom_col(position = position_stack(), width = 0.7) +
+  geom_text(aes(label = percentage),
+            position = position_stack(vjust = 0.5),
+#            vjust = -0.4,
+            size = 2.8,
+            color = "black") +
+  scale_fill_manual(values = c(
+    "riboD unbiased only" = "#BB5566",
+    "polyA biased only" = "#0072B2",
+    "riboD biased only" = "#E69F00",
+    "riboD unbiased & polyA biased" = "#8391b5",
+    "riboD unbiased & riboD biased" = "#e2a86c",
+    "polyA biased & riboD biased" = "#bfad80",
+    "riboD unbiased, polyA biased, riboD biased" = "#b7986a"
+  )) +
+  labs(
+    title    = "Percentage of upregulated genes in each region - riboD unbiased vs biases",
+    subtitle = "Each bar shows the percentage of genes in each \nvenn diagram region for a given disease comparison",
+    x        = "Disease comparison",
+    y        = "Percentage",
+    fill     = "Venn diagram region"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(face = "bold", 
+                                    size = 15,
+                                    margin = margin(b = 4)),
+    plot.subtitle    = element_text(color = "grey45", size = 11, margin = margin(b = 12)),
+    axis.text.x      = element_text(angle = 50, hjust = 1),
+    panel.grid.major.x = element_blank(), #removes the major vertical grid lines from the plot panel
+    legend.position  = "right",
+    legend.title     = element_text(face = "bold")
+  )
+
+up_riboDunbiased_vs_biases_plot_bydisease
+```
+
+### **Down genes in PolyAunbiased v biases**
+
+Taking the venn diagram numbers (proportions of genes in each region) from DESeq2_results_analysis for each disease comparisons (SS:aRMS, WT:NB, ALL:AML), visualizing how the regions of the VDs are similar/different (upregulated genes)
+
+```{r down_polyAunbiased_vs_biases}
+down_polyAunbiased_vs_biases <- data.frame(
+  region  = rep(c("polyA unbiased only", 
+                  "polyA biased only", 
+                  "riboD biased only",
+                  "polyA unbiased & polyA biased",  
+                  "polyA unbiased & riboD biased",  
+                  "polyA biased & riboD biased",  
+                  "polyA unbiased, polyA biased, riboD biased"), times = 3),
+  disease_comparison = rep(c("up in SS relative to aRMS", "up in WT relative to NB", "up in AML relative to ALL"), each = 7),
+  percentage   = c(
+    # down in SS relative to aRMS
+    1.72, 36.2, 13.7, 20.1, 7.92, 0.448, 19.9,
+    # down in WT relative to NB
+    2.84, 35.2, 11.6, 20, 7.69, 0.472, 22.2,
+    # down in AML relative to ALL
+    3.17, 40.9, 15.3, 11.3, 11, 0.603, 17.7
+  )
+)
+```
+
+```{r}
+# Fix region order for the x-axis
+down_polyAunbiased_vs_biases$region <- factor(down_polyAunbiased_vs_biases$region,
+                      levels = c("polyA unbiased only", 
+                                 "polyA biased only", 
+                                 "riboD biased only", 
+                                 "polyA unbiased & polyA biased",  
+                                 "polyA unbiased & riboD biased",  
+                                 "polyA biased & riboD biased", 
+                                 "polyA unbiased, polyA biased, riboD biased"))
+```
+
+```{r down_polyAunbiased_vs_biases_plot}
+down_polyAunbiased_vs_biases_plot <- ggplot(down_polyAunbiased_vs_biases, aes(x = region, y = percentage, fill = disease_comparison)) +
+  geom_col(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_text(aes(label = percentage),
+            position = position_dodge(width = 0.75),
+#            vjust = -0.4, 
+            size = 2.8, 
+            angle = 90,
+            color = "grey30") +
+  scale_fill_manual(values = c(
+    "up in SS relative to aRMS" = "#f0eca3",
+    "up in WT relative to NB" = "#cda5e6",
+    "up in AML relative to ALL" = "#a1d6a1"
+  )) +
+  labs(
+    title    = "Venn Diagram Region Percentages  - downregulated polyA unbiased vs biases",
+    subtitle = "Each group of bars shows one intersection region across the three disease contexts",
+    x        = "Venn Diagram Region",
+    y        = "Percentage",
+    fill     = "Disease comparison"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(face = "bold", size = 15, margin = margin(b = 4)),
+    plot.subtitle    = element_text(color = "grey45", size = 11, margin = margin(b = 12)),
+    axis.text.x      = element_text(angle = 50, hjust = 1),
+    panel.grid.major.x = element_blank(), #removes the major vertical grid lines from the plot panel
+    legend.position  = "right",
+    legend.title     = element_text(face = "bold")
+  )
+down_polyAunbiased_vs_biases_plot
+```
+
+```{r down_polyAunbiased_vs_biases_plot_bydisease}
+down_polyAunbiased_vs_biases_plot_bydisease <- ggplot(down_polyAunbiased_vs_biases, aes(x = disease_comparison, y = percentage, fill = region)) +
+  geom_col(position = position_stack(), width = 0.7) +
+  geom_text(aes(label = percentage),
+            position = position_stack(vjust = 0.5),
+#            vjust = -0.4,
+            size = 2.8,
+            color = "black") +
+  scale_fill_manual(values = c(
+    "polyA unbiased only" = "#BB5566",
+    "polyA biased only" = "#0072B2",
+    "riboD biased only" = "#E69F00",
+    "polyA unbiased & polyA biased" = "#8391b5",
+    "polyA unbiased & riboD biased" = "#e2a86c",
+    "polyA biased & riboD biased" = "#bfad80",
+    "polyA unbiased, polyA biased, riboD biased" = "#b7986a"
+  )) +
+  labs(
+    title    = "Percentage of downregulated genes in each region - polyA unbiased vs biases",
+    subtitle = "Each bar shows the percentage of genes in each \nvenn diagram region for a given disease comparison",
+    x        = "Disease comparison",
+    y        = "Percentage",
+    fill     = "Venn diagram region"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(face = "bold", 
+                                    size = 15,
+                                    margin = margin(b = 4)),
+    plot.subtitle    = element_text(color = "grey45", size = 11, margin = margin(b = 12)),
+    axis.text.x      = element_text(angle = 50, hjust = 1),
+    panel.grid.major.x = element_blank(), #removes the major vertical grid lines from the plot panel
+    legend.position  = "right",
+    legend.title     = element_text(face = "bold")
+  )
+
+down_polyAunbiased_vs_biases_plot_bydisease
+```
+
+### **Down genes in riboD unbiased v biases**
+
+```{r down_riboDunbiased_vs_biases}
+down_riboDunbiased_vs_biases <- data.frame(
+  region  = rep(c("riboD unbiased only", 
+                  "polyA biased only", 
+                  "riboD biased only",
+                  "riboD unbiased & polyA biased",
+                  "riboD unbiased & riboD biased",  
+                  "polyA biased & riboD biased",  
+                  "riboD unbiased, polyA biased, riboD biased"), times = 3),
+  disease_comparison = rep(c("up in SS relative to aRMS", "up in WT relative to NB", "up in AML relative to ALL"), each = 7),
+  percentage   = c(
+    # down in SS relative to aRMS
+    0.498, 42, 18.6, 15, 3.25, 2.3, 18.3,
+    # down in WT relative to NB
+    1.02, 42.5, 14.9, 13.7, 4.76, 2.44, 20.6,
+    # down in AML relative to ALL
+    1.78, 40.5, 23.2, 12.5, 3.46, 1.55, 17.1
+  )
+)
+```
+
+```{r}
+# Fix region order for the x-axis
+down_riboDunbiased_vs_biases$region <- factor(down_riboDunbiased_vs_biases$region,
+                      levels = c("riboD unbiased only", 
+                                 "polyA biased only", 
+                                 "riboD biased only", 
+                                 "riboD unbiased & polyA biased",  
+                                 "riboD unbiased & riboD biased",  
+                                 "polyA biased & riboD biased", 
+                                 "riboD unbiased, polyA biased, riboD biased"))
+```
+
+```{r down_riboDunbiased_vs_biases_plot}
+down_riboDunbiased_vs_biases_plot <- ggplot(down_riboDunbiased_vs_biases, aes(x = region, y = percentage, fill = disease_comparison)) +
+  geom_col(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_text(aes(label = percentage),
+            position = position_dodge(width = 0.75),
+#            vjust = -0.4, 
+            size = 2.8, 
+            angle = 90,
+            color = "grey30") +
+  scale_fill_manual(values = c(
+    "up in SS relative to aRMS" = "#f0eca3",
+    "up in WT relative to NB" = "#cda5e6",
+    "up in AML relative to ALL" = "#a1d6a1"
+  )) +
+  labs(
+    title    = "Venn Diagram Region Percentages - downregulated riboD unbiased vs biases",
+    subtitle = "Each group of bars shows one intersection region across the three disease contexts",
+    x        = "Venn Diagram Region",
+    y        = "Percentage",
+    fill     = "Disease comparison"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(face = "bold", size = 15, margin = margin(b = 4)),
+    plot.subtitle    = element_text(color = "grey45", size = 11, margin = margin(b = 12)),
+    axis.text.x      = element_text(angle = 50, hjust = 1),
+    panel.grid.major.x = element_blank(), #removes the major vertical grid lines from the plot panel
+    legend.position  = "right",
+    legend.title     = element_text(face = "bold")
+  )
+
+down_riboDunbiased_vs_biases_plot
+```
+
+```{r down_riboDunbiased_vs_biases_plot_bydisease}
+down_riboDunbiased_vs_biases_plot_bydisease <- ggplot(down_riboDunbiased_vs_biases, aes(x = disease_comparison, y = percentage, fill = region)) +
+  geom_col(position = position_stack(), width = 0.7) +
+  geom_text(aes(label = percentage),
+            position = position_stack(vjust = 0.5),
+#            vjust = -0.4,
+            size = 2.8,
+            color = "black") +
+  scale_fill_manual(values = c(
+    "riboD unbiased only" = "#BB5566",
+    "polyA biased only" = "#0072B2",
+    "riboD biased only" = "#E69F00",
+    "riboD unbiased & polyA biased" = "#8391b5",
+    "riboD unbiased & riboD biased" = "#e2a86c",
+    "polyA biased & riboD biased" = "#bfad80",
+    "riboD unbiased, polyA biased, riboD biased" = "#b7986a"
+  )) +
+  labs(
+    title    = "Percentage of downregulated genes in each region - riboD unbiased vs biases",
+    subtitle = "Each bar shows the percentage of genes in each \nvenn diagram region for a given disease comparison",
+    x        = "Disease comparison",
+    y        = "Percentage",
+    fill     = "Venn diagram region"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(face = "bold", 
+                                    size = 15,
+                                    margin = margin(b = 4)),
+    plot.subtitle    = element_text(color = "grey45", size = 11, margin = margin(b = 12)),
+    axis.text.x      = element_text(angle = 50, hjust = 1),
+    panel.grid.major.x = element_blank(), #removes the major vertical grid lines from the plot panel
+    legend.position  = "right",
+    legend.title     = element_text(face = "bold")
+  )
+down_riboDunbiased_vs_biases_plot_bydisease
+```
+
+## Session Info
+
+```{r session info}
+sessioninfo::session_info()
+```
