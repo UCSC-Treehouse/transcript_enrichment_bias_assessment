@@ -284,7 +284,10 @@ Fig1C <- map(diseasesC, function(d) {
   
   ggplot(dfC, aes(x = Compendia, y = Proportion, fill = ExprBin)) +
     geom_bar(stat = "identity", position = "stack") +
-    scale_fill_viridis_d(option = "D", name = "Expression \nin log2(TPM+1)") +
+    scale_fill_viridis_d(
+      option = "D", 
+      name = expression(atop("Expression", "in log"[2]*"(TPM+1)"))
+      ) +
     labs(
       title = paste(d),
       # x = "Library Prep",
@@ -296,7 +299,7 @@ Fig1C <- map(diseasesC, function(d) {
 
 # Name the plots by disease
 names(Fig1C) <- diseasesC
-plots_by_diseaseC
+Fig1C
 ```
 
 Save plot
@@ -305,21 +308,21 @@ Save plot
 # ggsave("/figures/fig1C.png", plot = plots_by_diseaseC, width = 6, height = 4, units = "in", dpi = 300)
 
 
-ggsave("../../Figures/Fig1C.png", plot = plots_by_diseaseC$SS)
-ggsave("../../Figures/Fig1C.tif", plot = plots_by_diseaseC$SS)
+ggsave("../../Figures/Fig1C.png", plot = Fig1C$SS)
+ggsave("../../Figures/Fig1C.tif", plot = Fig1C$SS)
 
 ```
 
 ## Fig S2
 
 ```{r FigS2}
-diseases_to_plot <- names(plots_by_diseaseC)
+diseases_to_plot <- names(Fig1C)
 n <- length(diseases_to_plot)
 ncols <- 6
 bottom_row <- diseases_to_plot[seq(from = ceiling(n / ncols) * ncols - ncols + 1, to = n)]
 
 
-plots_subset <- imap(plots_by_diseaseC[diseases_to_plot], function(p, name) {
+plots_subset <- imap(Fig1C[diseases_to_plot], function(p, name) {
   if (!name %in% bottom_row) {
     # hide x-axis on all panels except the last
     p + theme(

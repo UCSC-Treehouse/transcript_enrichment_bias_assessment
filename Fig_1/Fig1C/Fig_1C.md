@@ -502,6 +502,8 @@ all_medians_bins <- all_medians %>%
       include.lowest = TRUE
     )
   )
+
+write_tsv(all_medians_bins, "../../output_data/Fig1C/all_medians_bins.tsv.gz")
 ```
 
 Compute proportion of genes in each bin per lib prep
@@ -512,12 +514,13 @@ bin_prop <- all_medians_bins %>%
   summarise(n = n(), .groups = "drop") %>%
   group_by(Disease, Compendia) %>%
   mutate(Proportion = n / sum(n))
+write_tsv(bin_prop, "../../output_data/Fig1C/bin_prop.tsv.gz")
 ```
 
 Custom color theme
 
 ``` r
-theme_2D <- function(base_size = 14) {
+theme_1C <- function(base_size = 14) {
   theme_minimal(base_size = base_size) +
     theme(
       legend.position = "right",
@@ -555,25 +558,28 @@ Generate stacked bar plot
 diseasesC <- unique(bin_prop$Disease)
 
 # Generate one plot per disease
-plots_by_diseaseC <- map(diseasesC, function(d) {
+Fig1C <- map(diseasesC, function(d) {
   
   dfC <- bin_prop %>% filter(Disease == d)
   
   ggplot(dfC, aes(x = Compendia, y = Proportion, fill = ExprBin)) +
     geom_bar(stat = "identity", position = "stack") +
-    scale_fill_viridis_d(option = "D", name = "Expression \nin log2(TPM+1)") +
+    scale_fill_viridis_d(
+      option = "D", 
+      name = expression(atop("Expression", "in log"[2]*"(TPM+1)"))
+      ) +
     labs(
       title = paste(d),
       # x = "Library Prep",
       y = "Proportion of Genes",
       fill = "Expression Level"
     ) +
-    theme_2D()
+    theme_1C()
 })
 
 # Name the plots by disease
-names(plots_by_diseaseC) <- diseasesC
-plots_by_diseaseC
+names(Fig1C) <- diseasesC
+Fig1C
 ```
 
     $ALL
@@ -611,13 +617,13 @@ Save plot
 # ggsave("/figures/fig1C.png", plot = plots_by_diseaseC, width = 6, height = 4, units = "in", dpi = 300)
 
 
-ggsave("../../Figures/Fig1C.png", plot = plots_by_diseaseC$SS)
+ggsave("../../Figures/Fig1C.png", plot = Fig1C$SS)
 ```
 
     Saving 7 x 5 in image
 
 ``` r
-ggsave("../../Figures/Fig1C.tif", plot = plots_by_diseaseC$SS)
+ggsave("../../Figures/Fig1C.tif", plot = Fig1C$SS)
 ```
 
     Saving 7 x 5 in image
@@ -625,13 +631,13 @@ ggsave("../../Figures/Fig1C.tif", plot = plots_by_diseaseC$SS)
 ## Fig S2
 
 ``` r
-diseases_to_plot <- names(plots_by_diseaseC)
+diseases_to_plot <- names(Fig1C)
 n <- length(diseases_to_plot)
 ncols <- 6
 bottom_row <- diseases_to_plot[seq(from = ceiling(n / ncols) * ncols - ncols + 1, to = n)]
 
 
-plots_subset <- imap(plots_by_diseaseC[diseases_to_plot], function(p, name) {
+plots_subset <- imap(Fig1C[diseases_to_plot], function(p, name) {
   if (!name %in% bottom_row) {
     # hide x-axis on all panels except the last
     p + theme(
@@ -692,7 +698,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-06-22
+     date     2026-07-07
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
