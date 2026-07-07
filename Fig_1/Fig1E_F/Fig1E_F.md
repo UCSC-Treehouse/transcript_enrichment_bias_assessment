@@ -1208,9 +1208,9 @@ Fig1E_SS <- map(diseases, function(d) {
     facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
     labs(
       title = paste(d),
-      x = NULL,
-      y = "Expression log2(TPM+1)"
+      x = NULL
     ) +
+    ylab(bquote(log[2](TPM+1))) +
     color_theme() +
     theme(
       axis.title.y = element_text(size = 20),
@@ -1305,9 +1305,9 @@ Fig1E <- map(diseases, function(d) {
     facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
     labs(
       title = paste(d),
-      x = NULL,
-      y = "Expression log2(TPM+1)"
+      x = NULL
     ) +
+    ylab(bquote(log[2](TPM+1))) +
     color_theme() +
     theme(
       axis.title.y = element_text(size = 32),
