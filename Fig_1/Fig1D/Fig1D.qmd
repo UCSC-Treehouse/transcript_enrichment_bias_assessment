@@ -103,7 +103,7 @@ combined_counts <- bind_rows(
   ALL_polyA_counts, 
   AML_riboD_counts, 
   AML_polyA_counts)
-write_tsv(combined_counts, "../../output_data/Fig1D/combined_counts.tsv.gz")
+#write_tsv(combined_counts, "../../output_data/Fig1D/combined_counts.tsv.gz")
 ```
 
 Custom theme
@@ -195,7 +195,7 @@ Summarized stats for each disease, bin, and test
 ```{r summarize stats}
 all_stats <- bind_rows(stats_SS, stats_aRMS, stats_WT, stats_NB, stats_ALL, stats_AML)
 print(all_stats)
-write_tsv(all_stats, "../../output_data/Fig1D/all_stats.tsv.gz")
+#write_tsv(all_stats, "../../output_data/Fig1D/all_stats.tsv.gz")
 ```
 
 selecting correct test
@@ -409,10 +409,11 @@ Fig1D <- map(diseases, function(d) {
     scale_color_compendia() +
 #    coord_cartesian(ylim = c(0, y_star * 1.1)) +
     labs(
-      title = paste(d),
-      x = "log2(TPM+1) = x",
-      y = "Number of Genes Expressed"
+      title = paste(d)
+      # x = "log2(TPM+1) = x",
+      # y = "Number of Genes Expressed"
     ) +
+    xlab(bquote(log[2](TPM+1))) +
     theme_minimal() +
     theme_1d() +
     theme(
@@ -468,10 +469,11 @@ Fig1D_all <- map(diseases, function(d) {
     scale_color_compendia() +
 #    coord_cartesian(ylim = c(0, y_star * 1.1)) +
     labs(
-      title = paste(d),
-      x = "log2(TPM+1) = x",
-      y = "Number of Genes Expressed"
+      title = paste(d)
+      # x = "log2(TPM+1) = x",
+      # y = "Number of Genes Expressed"
     ) +
+    xlab(bquote(log[2](TPM+1))) +
     theme_minimal() +
     theme_1d() +
     theme(
@@ -510,8 +512,8 @@ FigS3
 ```
 
 ```{r FigS3 save}
-ggsave("../../Figures/FigS3.png", FigS3, width = 20, height = 36, dpi = 500)
-ggsave("../../Figures/FigS3.tif", FigS3, width = 20, height = 36, dpi = 500)
+ggsave("../../Figures/FigS3.png", FigS3, width = 20, height = 36, dpi = 300)
+ggsave("../../Figures/FigS3.tif", FigS3, width = 20, height = 36, dpi = 300)
 ```
 
 Session Info

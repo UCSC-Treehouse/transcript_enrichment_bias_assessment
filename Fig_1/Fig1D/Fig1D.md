@@ -385,6 +385,7 @@ combined_counts <- bind_rows(
   ALL_polyA_counts, 
   AML_riboD_counts, 
   AML_polyA_counts)
+#write_tsv(combined_counts, "../../output_data/Fig1D/combined_counts.tsv.gz")
 ```
 
 Custom theme
@@ -492,6 +493,10 @@ print(all_stats)
      9 aRMS    0.1-0.99          0.189         0.500    0.0187       2.31e-14
     10 aRMS    1-2.99            0.937         0.0934   0.000000776  9.67e-12
     # ℹ 26 more rows
+
+``` r
+#write_tsv(all_stats, "../../output_data/Fig1D/all_stats.tsv.gz")
+```
 
 selecting correct test
 
@@ -686,6 +691,10 @@ sig_bins_all
 | AML | \>5 | 4944, 4610, 4620, 4809, 4818, 5257, 4981, 4967, 4775, 5215, 4359, 4810, 4895, 4560, 3962, 4507, 4351, 4483, 4911 | 842, 1211, 1219, 1341, 927, 723, 1025, 672, 703, 1278, 1094, 954, 1063, 1433, 732, 791, 788, 824, 970, 972 | 0.0000000 | student_t | 0.0000000 | \*\*\*\* |
 
 ``` r
+write_tsv(sig_bins_all, "../../output_data/Fig1D/sig_bins_all.tsv.gz")
+```
+
+``` r
 facet_labels <- c(
   "0" = "x = 0",
   "0-0.09" = "0 > x > 0.1",
@@ -742,10 +751,11 @@ Fig1D <- map(diseases, function(d) {
     scale_color_compendia() +
 #    coord_cartesian(ylim = c(0, y_star * 1.1)) +
     labs(
-      title = paste(d),
-      x = "log2(TPM+1) = x",
-      y = "Number of Genes Expressed"
+      title = paste(d)
+      # x = "log2(TPM+1) = x",
+      # y = "Number of Genes Expressed"
     ) +
+    xlab(bquote(log[2](TPM+1))) +
     theme_minimal() +
     theme_1d() +
     theme(
@@ -840,10 +850,11 @@ Fig1D_all <- map(diseases, function(d) {
     scale_color_compendia() +
 #    coord_cartesian(ylim = c(0, y_star * 1.1)) +
     labs(
-      title = paste(d),
-      x = "log2(TPM+1) = x",
-      y = "Number of Genes Expressed"
+      title = paste(d)
+      # x = "log2(TPM+1) = x",
+      # y = "Number of Genes Expressed"
     ) +
+    xlab(bquote(log[2](TPM+1))) +
     theme_minimal() +
     theme_1d() +
     theme(
@@ -913,8 +924,8 @@ FigS3
 ![](Fig1D_files/figure-commonmark/FigS3-1.png)
 
 ``` r
-ggsave("../../Figures/FigS3.png", FigS3, width = 20, height = 36, dpi = 500)
-ggsave("../../Figures/FigS3.tif", FigS3, width = 20, height = 36, dpi = 500)
+ggsave("../../Figures/FigS3.png", FigS3, width = 20, height = 36, dpi = 300)
+ggsave("../../Figures/FigS3.tif", FigS3, width = 20, height = 36, dpi = 300)
 ```
 
 Session Info
@@ -933,7 +944,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-06-25
+     date     2026-07-07
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
