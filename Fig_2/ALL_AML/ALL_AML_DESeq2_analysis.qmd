@@ -658,6 +658,9 @@ downregulated polyA biased
 
 ```{r ALL_AML_down_polyAbiased}
 ALL_AML_down_polyAbiased <- inner_join(ALL_AML_down_polyAunbiased_uniquetopolyAbiased, ALL_AML_down_riboDunbiased_uniquetopolyAbiased, by = "Gene")
+
+write_rds(ALL_AML_down_polyAbiased, "../../output_data/ALL_AML/ALL_AML_down_polyAbiased.rds")
+
 print(nrow(ALL_AML_down_polyAbiased))
 ```
 
