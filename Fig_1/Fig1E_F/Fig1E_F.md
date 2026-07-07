@@ -42,6 +42,21 @@ library(cowplot)
         stamp
 
 ``` r
+library(scales)
+```
+
+
+    Attaching package: 'scales'
+
+    The following object is masked from 'package:purrr':
+
+        discard
+
+    The following object is masked from 'package:readr':
+
+        col_factor
+
+``` r
 # expression files
 SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv")
 ```
@@ -403,6 +418,10 @@ SS_most_average_gene_hugo
 | Gene  | SS_polyA_median | SS_riboD_median | SS_median_ratio |  dist |
 |:------|----------------:|----------------:|----------------:|------:|
 | MTMR2 |        4.797532 |        2.954196 |        1.623972 | 5e-07 |
+
+``` r
+write_tsv(SS_most_average_gene_hugo, "../../output_data/Fig1E_F/SS_most_average_gene_hugo.tsv.gz")
+```
 
 ``` r
 # Find gene medians in polyA aRMS
@@ -950,6 +969,7 @@ combined_long <- bind_rows(
   avg_AML_riboD_long %>%
     mutate(Disease = "AML"),
 )
+write_tsv(combined_long, "../../output_data/Fig1E_F/combined_long.tsv.gz")
 ```
 
 Custom color theme
@@ -996,6 +1016,9 @@ median_gene_map <- list(
   ALL     = ALL_most_average_gene_hugo$Gene,
   AML     = AML_most_average_gene_hugo$Gene
 )
+median_gene_map_df <- as.data.frame(median_gene_map)
+
+#write_tsv(median_gene_map_df, "../../output_data/Fig1E_F/median_gene_map_df.tsv.gz")
 
 diseases <- unique(combined_long$Disease)
 ```
@@ -1104,6 +1127,7 @@ compute_significance_table <- function(df) {
 
 
 sig_results <- compute_significance_table(combined_long)
+write_tsv(sig_results, "../../output_data/Fig1E_F/sig_results.tsv.gz")
 
 sig_results
 ```
@@ -1201,37 +1225,10 @@ Fig1E_SS <- map(diseases, function(d) {
       legend.margin = margin(t = -2) 
     ) 
 })
-Fig1E_SS
+Fig1E_SS[[1]]
 ```
 
-    [[1]]
-
-![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-1.png)
-
-
-    [[2]]
-
-![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-2.png)
-
-
-    [[3]]
-
-![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-3.png)
-
-
-    [[4]]
-
-![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-4.png)
-
-
-    [[5]]
-
-![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-5.png)
-
-
-    [[6]]
-
-![](Fig1E_F_files/figure-commonmark/unnamed-chunk-2-6.png)
+![](Fig1E_F_files/figure-commonmark/Fig1E_SS-1.png)
 
 ``` r
 ggsave("../../Figures/Fig1E.png", plot = Fig1E_SS[[1]])
@@ -1380,8 +1377,8 @@ FigS4
 ![](Fig1E_F_files/figure-commonmark/FigS4-1.png)
 
 ``` r
-ggsave("../../Figures/FigS4.png", FigS4, width = 20, height = 30, dpi = 500)
-ggsave("../../Figures/FigS4.tif", FigS4, width = 20, height = 30, dpi = 500)
+ggsave("../../Figures/FigS4.png", FigS4, width = 20, height = 30, dpi = 300)
+ggsave("../../Figures/FigS4.tif", FigS4, width = 20, height = 30, dpi = 300)
 ```
 
 ## Fig 1F
@@ -1394,6 +1391,8 @@ in RiboD samples
 ss_ratios <- SS_gene_medians %>%
   select(Gene, Ratio = SS_median_ratio) %>%
   mutate(Disease = "SS")
+write_tsv(ss_ratios, "../../output_data/Fig1E_F/ss_ratios.tsv.gz")
+
 
 arms_ratios <- aRMS_gene_medians %>%
   select(Gene = Gene, Ratio = aRMS_median_ratio) %>%
@@ -1440,6 +1439,7 @@ theme_Fig1F <- function(base_size = 14) {
 ``` r
 SS_HIST1H1B <- SS_gene_medians_hugo %>%
   filter(Gene %in% c("HIST1H1B"))
+write_tsv(SS_HIST1H1B, "../../output_data/Fig1E_F/SS_HIST1H1B.tsv.gz")
 
 aRMS_HIST1H1B <- aRMS_gene_median_hugo %>%
   filter(Gene %in% c("HIST1H1B"))
@@ -1457,6 +1457,10 @@ ALL_HIST1H1B <- ALL_gene_medians_hugo %>%
   filter(Gene %in% c("HIST1H1B"))
 ```
 
+x = “Median expression ratio”,
+
+y = “Number of genes expressed”
+
 ``` r
 # Fig1F - SS standalone
 Fig1F <- ggplot(ss_ratios, aes(x = Ratio)) +
@@ -1470,11 +1474,14 @@ Fig1F <- ggplot(ss_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -5, hjust = 0.2, color = "#E69F00", size = 8) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "SS",
-    x = "Median Expression Ratio",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1550,11 +1557,14 @@ Fig1F_aRMS <- ggplot(arms_ratios, aes(x = Ratio)) +
   geom_vline(xintercept = aRMS_HIST1H1B$aRMS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
   geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "aRMS",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1594,11 +1604,14 @@ Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "SS",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1638,11 +1651,14 @@ Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "WT",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1682,11 +1698,14 @@ Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "NB",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1726,11 +1745,14 @@ Fig1F_ALL <- ggplot(all_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "ALL",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1774,11 +1796,14 @@ Fig1F_AML <- ggplot(aml_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
    title = "AML",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1891,7 +1916,7 @@ FigS5
 ![](Fig1E_F_files/figure-commonmark/FigS5-1.png)
 
 ``` r
-ggsave("../../Figures/FigS5.png", FigS5, width = 20, height = 30, dpi = 500)
+ggsave("../../Figures/FigS5.png", FigS5, width = 20, height = 30, dpi = 300)
 ```
 
     Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
@@ -1961,7 +1986,7 @@ ggsave("../../Figures/FigS5.png", FigS5, width = 20, height = 30, dpi = 500)
     (`stat_bin()`).
 
 ``` r
-ggsave("../../Figures/FigS5.tif", FigS5, width = 20, height = 30, dpi = 500)
+ggsave("../../Figures/FigS5.tif", FigS5, width = 20, height = 30, dpi = 300)
 ```
 
     Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
@@ -2046,7 +2071,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-06-24
+     date     2026-07-07
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
@@ -2087,7 +2112,7 @@ sessioninfo::session_info()
      rmarkdown      2.30    2025-09-28 [1] CRAN (R 4.5.0)
      rstudioapi     0.17.1  2024-10-22 [1] CRAN (R 4.5.0)
      S7             0.2.0   2024-11-07 [1] CRAN (R 4.5.0)
-     scales         1.4.0   2025-04-24 [1] CRAN (R 4.5.0)
+     scales       * 1.4.0   2025-04-24 [1] CRAN (R 4.5.0)
      sessioninfo    1.2.3   2025-02-05 [1] CRAN (R 4.5.0)
      stringi        1.8.7   2025-03-27 [1] CRAN (R 4.5.0)
      stringr      * 1.5.2   2025-09-08 [1] CRAN (R 4.5.0)

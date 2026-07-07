@@ -17,6 +17,7 @@ Boxplot showing expression of average median ratio gene, calculated as the media
 library(tidyverse)
 library(patchwork)
 library(cowplot)
+library(scales)
 ```
 
 ```{r load in files}
@@ -678,7 +679,7 @@ scale_color_compendia <- function() {
   }
 ```
 
-```{r}
+```{r median_gene_map}
 # Map of median-ratio genes
 median_gene_map <- list(
   SS      = SS_most_average_gene_hugo$Gene,
@@ -690,7 +691,7 @@ median_gene_map <- list(
 )
 median_gene_map_df <- as.data.frame(median_gene_map)
 
-write_tsv(median_gene_map_df, "../../output_data/Fig1E_F/median_gene_map_df.tsv.gz")
+#write_tsv(median_gene_map_df, "../../output_data/Fig1E_F/median_gene_map_df.tsv.gz")
 
 diseases <- unique(combined_long$Disease)
 
@@ -993,8 +994,8 @@ FigS4
 ```
 
 ```{r save figs4}
-ggsave("../../Figures/FigS4.png", FigS4, width = 20, height = 30, dpi = 500)
-ggsave("../../Figures/FigS4.tif", FigS4, width = 20, height = 30, dpi = 500)
+ggsave("../../Figures/FigS4.png", FigS4, width = 20, height = 30, dpi = 300)
+ggsave("../../Figures/FigS4.tif", FigS4, width = 20, height = 30, dpi = 300)
 ```
 
 ## Fig 1F
@@ -1071,6 +1072,10 @@ ALL_HIST1H1B <- ALL_gene_medians_hugo %>%
   filter(Gene %in% c("HIST1H1B"))
 ```
 
+x = "Median expression ratio",
+
+y = "Number of genes expressed"
+
 ```{r Fig1F}
 # Fig1F - SS standalone
 Fig1F <- ggplot(ss_ratios, aes(x = Ratio)) +
@@ -1084,11 +1089,14 @@ Fig1F <- ggplot(ss_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -5, hjust = 0.2, color = "#E69F00", size = 8) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "SS",
-    x = "Median Expression Ratio",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1119,11 +1127,14 @@ Fig1F_aRMS <- ggplot(arms_ratios, aes(x = Ratio)) +
   geom_vline(xintercept = aRMS_HIST1H1B$aRMS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
   geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "aRMS",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1150,11 +1161,14 @@ Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "SS",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1181,11 +1195,14 @@ Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "WT",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1212,11 +1229,14 @@ Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "NB",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1243,11 +1263,14 @@ Fig1F_ALL <- ggplot(all_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "ALL",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1274,11 +1297,14 @@ Fig1F_AML <- ggplot(aml_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
    title = "AML",
-    x = "Median Expression Ratio (polyA / riboD)",
-    y = "Number of Genes"
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
   theme_Fig1F() +
       theme(
@@ -1310,8 +1336,8 @@ FigS5
 ```
 
 ```{r save figs5}
-ggsave("../../Figures/FigS5.png", FigS5, width = 20, height = 30, dpi = 500)
-ggsave("../../Figures/FigS5.tif", FigS5, width = 20, height = 30, dpi = 500)
+ggsave("../../Figures/FigS5.png", FigS5, width = 20, height = 30, dpi = 300)
+ggsave("../../Figures/FigS5.tif", FigS5, width = 20, height = 30, dpi = 300)
 ```
 
 Session Info
