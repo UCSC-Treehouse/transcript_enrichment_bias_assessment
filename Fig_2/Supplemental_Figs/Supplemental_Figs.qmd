@@ -57,6 +57,14 @@ ALL_AML_down_polyAbiased <- read_rds("../../output_data/ALL_AML/ALL_AML_down_pol
 aRMS_SS_down_riboDbiased <- read_rds("../../output_data/aRMS_SS/aRMS_SS_down_riboDbiased.rds") # histogram
 WT_NB_down_riboDbiased <- read_rds("../../output_data/NB_WT/WT_NB_down_riboDbiased.rds") # histogram
 ALL_AML_down_riboDbiased <- read_rds("../../output_data/ALL_AML/ALL_AML_down_riboDbiased.rds") # histogram
+
+
+# for figS16
+down_polyAbiased_all <- read_rds("../../output_data/all_disease_comparisons/down_polyAbiased_all.rds") # venn diagram
+
+# for figS17
+down_riboDbiased_all <- read_rds("../../output_data/all_disease_comparisons/down_riboDbiased_all.rds") # venn diagram
+
 ```
 
 ### Fig S8
@@ -926,6 +934,80 @@ Fig_S15 <- wrap_plots(
 Fig_S15
 
 ggsave("../../Figures/Fig_S15.png", Fig_S15, width = 10, height = 3.4, dpi = 300)
+```
+
+### Fig S16
+
+```{r Fig_S16}
+Fig_S16 <- venn.diagram(
+  x = down_polyAbiased_all,
+  category.names = c(
+    "SS to aRMS",
+    "WT to NB",
+    "AML to ALL"
+    ),
+  filename = NULL, # Save as a rds file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  sigdigs = 3, # the amount of significant digits in percent
+  # Customize appearance (optional)
+  fill = c("#0072B2", "#0098ed", "#87CEEB"),
+#  cat.col = c("#0072B2", "#0072B2", "#0072B2"),
+  cex = 1.5, # Font size for counts
+  cat.cex = 1.2, # Font size for category names
+  cat.dist = c(0.04, 0.04, 0.04),
+  # height = 2000,
+  # width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-14, 14, 175), 
+    cat.fontfamily = "sans",
+    fontfamily = "sans",
+  main = "Downregulated in\nPolyA Biased",
+  main.fontfamily = "sans",
+  main.cex = 1.3, # Font size for main title
+  disable.logging = TRUE
+)
+
+ggsave(Fig_S16, file="../../Figures/Fig_S16.png", device = "png")
+
+Fig_S16
+```
+
+### Fig S17
+
+```{r Fig_S17}
+Fig_S17 <- venn.diagram(
+  x = down_riboDbiased_all,
+  category.names = c(
+    "SS to aRMS",
+    "WT to NB",
+    "AML to ALL"
+    ),
+  filename = NULL, # Save as a rds file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  sigdigs = 3, # the amount of significant digits in percent
+  # Customize appearance (optional)
+  fill = c("#E69F00", "#ff9b00", "#e6b200"),
+#  cat.col = c("#E69F00", "#E69F00", "#E69F00"),
+  cex = 1.5, # Font size for counts
+  cat.cex = 1.2, # Font size for category names
+  cat.dist = c(0.04, 0.04, 0.04), # distance of category name to VD
+  # height = 2000,
+  # width = 2000,
+  cat.default.pos = "outer", # location of category names
+  cat.pos = c(-14, 14, 175), # position of category names
+  main = "Downregulated in \nRiboD Biased",
+    fontfamily = "sans",
+  main.fontfamily = "sans",
+    cat.fontfamily = "sans",
+  main.cex = 1.3, # Font size for main title
+  disable.logging = TRUE
+)
+
+ggsave(Fig_S17, file="../../Figures/Fig_S17.png", device = "png")
+
+Fig_S17
 ```
 
 ### Session Info

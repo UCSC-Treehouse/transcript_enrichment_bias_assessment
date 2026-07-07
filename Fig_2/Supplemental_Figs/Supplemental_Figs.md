@@ -88,6 +88,13 @@ ALL_AML_down_polyAbiased <- read_rds("../../output_data/ALL_AML/ALL_AML_down_pol
 aRMS_SS_down_riboDbiased <- read_rds("../../output_data/aRMS_SS/aRMS_SS_down_riboDbiased.rds") # histogram
 WT_NB_down_riboDbiased <- read_rds("../../output_data/NB_WT/WT_NB_down_riboDbiased.rds") # histogram
 ALL_AML_down_riboDbiased <- read_rds("../../output_data/ALL_AML/ALL_AML_down_riboDbiased.rds") # histogram
+
+
+# for figS16
+down_polyAbiased_all <- read_rds("../../output_data/all_disease_comparisons/down_polyAbiased_all.rds") # venn diagram
+
+# for figS17
+down_riboDbiased_all <- read_rds("../../output_data/all_disease_comparisons/down_riboDbiased_all.rds") # venn diagram
 ```
 
 ### Fig S8
@@ -126,63 +133,63 @@ aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:28] $x
-    INFO [2026-07-06 18:43:28] aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $category.names
-    INFO [2026-07-06 18:43:28] c("PolyA unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $filename
-    INFO [2026-07-06 18:43:28] NULL
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $output
-    INFO [2026-07-06 18:43:28] [1] TRUE
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $print.mode
-    INFO [2026-07-06 18:43:28] c("raw", "percent")
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $fill
-    INFO [2026-07-06 18:43:28] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cex
-    INFO [2026-07-06 18:43:28] [1] 0.9
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.cex
-    INFO [2026-07-06 18:43:28] [1] 0.9
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.dist
-    INFO [2026-07-06 18:43:28] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.default.pos
-    INFO [2026-07-06 18:43:28] [1] "outer"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.pos
-    INFO [2026-07-06 18:43:28] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main
-    INFO [2026-07-06 18:43:28] [1] "Upregulated genes in\nSS relative to aRMS"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main.cex
-    INFO [2026-07-06 18:43:28] [1] 1.1
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main.pos
-    INFO [2026-07-06 18:43:28] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $disable.logging
-    INFO [2026-07-06 18:43:28] [1] TRUE
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $sigdigs
-    INFO [2026-07-06 18:43:28] [1] 3
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.fontfamily
-    INFO [2026-07-06 18:43:28] [1] "sans"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main.fontfamily
-    INFO [2026-07-06 18:43:28] [1] "sans"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $fontfamily
-    INFO [2026-07-06 18:43:28] [1] "sans"
-    INFO [2026-07-06 18:43:28] 
+    INFO [2026-07-06 19:10:38] $x
+    INFO [2026-07-06 19:10:38] aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $category.names
+    INFO [2026-07-06 19:10:38] c("PolyA unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $filename
+    INFO [2026-07-06 19:10:38] NULL
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $output
+    INFO [2026-07-06 19:10:38] [1] TRUE
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $print.mode
+    INFO [2026-07-06 19:10:38] c("raw", "percent")
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $fill
+    INFO [2026-07-06 19:10:38] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cex
+    INFO [2026-07-06 19:10:38] [1] 0.9
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.cex
+    INFO [2026-07-06 19:10:38] [1] 0.9
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.dist
+    INFO [2026-07-06 19:10:38] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.default.pos
+    INFO [2026-07-06 19:10:38] [1] "outer"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.pos
+    INFO [2026-07-06 19:10:38] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main
+    INFO [2026-07-06 19:10:38] [1] "Upregulated genes in\nSS relative to aRMS"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main.cex
+    INFO [2026-07-06 19:10:38] [1] 1.1
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main.pos
+    INFO [2026-07-06 19:10:38] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $disable.logging
+    INFO [2026-07-06 19:10:38] [1] TRUE
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $sigdigs
+    INFO [2026-07-06 19:10:38] [1] 3
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.fontfamily
+    INFO [2026-07-06 19:10:38] [1] "sans"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main.fontfamily
+    INFO [2026-07-06 19:10:38] [1] "sans"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $fontfamily
+    INFO [2026-07-06 19:10:38] [1] "sans"
+    INFO [2026-07-06 19:10:38] 
 
 ``` r
 # NB v WT
@@ -217,63 +224,63 @@ WT_NB_up_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:28] $x
-    INFO [2026-07-06 18:43:28] WT_NB_up_polyAunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $category.names
-    INFO [2026-07-06 18:43:28] c("PolyA unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $filename
-    INFO [2026-07-06 18:43:28] NULL
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $output
-    INFO [2026-07-06 18:43:28] [1] TRUE
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $print.mode
-    INFO [2026-07-06 18:43:28] c("raw", "percent")
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $fill
-    INFO [2026-07-06 18:43:28] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cex
-    INFO [2026-07-06 18:43:28] [1] 0.9
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.cex
-    INFO [2026-07-06 18:43:28] [1] 0.9
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.dist
-    INFO [2026-07-06 18:43:28] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.default.pos
-    INFO [2026-07-06 18:43:28] [1] "outer"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.pos
-    INFO [2026-07-06 18:43:28] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main
-    INFO [2026-07-06 18:43:28] [1] "Upregulated genes in\nWT relative to NB"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main.cex
-    INFO [2026-07-06 18:43:28] [1] 1.1
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main.pos
-    INFO [2026-07-06 18:43:28] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $disable.logging
-    INFO [2026-07-06 18:43:28] [1] TRUE
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $sigdigs
-    INFO [2026-07-06 18:43:28] [1] 3
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.fontfamily
-    INFO [2026-07-06 18:43:28] [1] "sans"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main.fontfamily
-    INFO [2026-07-06 18:43:28] [1] "sans"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $fontfamily
-    INFO [2026-07-06 18:43:28] [1] "sans"
-    INFO [2026-07-06 18:43:28] 
+    INFO [2026-07-06 19:10:38] $x
+    INFO [2026-07-06 19:10:38] WT_NB_up_polyAunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $category.names
+    INFO [2026-07-06 19:10:38] c("PolyA unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $filename
+    INFO [2026-07-06 19:10:38] NULL
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $output
+    INFO [2026-07-06 19:10:38] [1] TRUE
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $print.mode
+    INFO [2026-07-06 19:10:38] c("raw", "percent")
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $fill
+    INFO [2026-07-06 19:10:38] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cex
+    INFO [2026-07-06 19:10:38] [1] 0.9
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.cex
+    INFO [2026-07-06 19:10:38] [1] 0.9
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.dist
+    INFO [2026-07-06 19:10:38] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.default.pos
+    INFO [2026-07-06 19:10:38] [1] "outer"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.pos
+    INFO [2026-07-06 19:10:38] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main
+    INFO [2026-07-06 19:10:38] [1] "Upregulated genes in\nWT relative to NB"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main.cex
+    INFO [2026-07-06 19:10:38] [1] 1.1
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main.pos
+    INFO [2026-07-06 19:10:38] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $disable.logging
+    INFO [2026-07-06 19:10:38] [1] TRUE
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $sigdigs
+    INFO [2026-07-06 19:10:38] [1] 3
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.fontfamily
+    INFO [2026-07-06 19:10:38] [1] "sans"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main.fontfamily
+    INFO [2026-07-06 19:10:38] [1] "sans"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $fontfamily
+    INFO [2026-07-06 19:10:38] [1] "sans"
+    INFO [2026-07-06 19:10:38] 
 
 ``` r
 # NB v WT
@@ -308,63 +315,63 @@ ALL_AML_up_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:28] $x
-    INFO [2026-07-06 18:43:28] ALL_AML_up_polyAunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $category.names
-    INFO [2026-07-06 18:43:28] c("PolyA unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $filename
-    INFO [2026-07-06 18:43:28] NULL
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $output
-    INFO [2026-07-06 18:43:28] [1] TRUE
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $print.mode
-    INFO [2026-07-06 18:43:28] c("raw", "percent")
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $fill
-    INFO [2026-07-06 18:43:28] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cex
-    INFO [2026-07-06 18:43:28] [1] 0.9
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.cex
-    INFO [2026-07-06 18:43:28] [1] 0.9
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.dist
-    INFO [2026-07-06 18:43:28] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.default.pos
-    INFO [2026-07-06 18:43:28] [1] "outer"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.pos
-    INFO [2026-07-06 18:43:28] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main
-    INFO [2026-07-06 18:43:28] [1] "Upregulated genes in\nAML relative to ALL"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main.cex
-    INFO [2026-07-06 18:43:28] [1] 1.1
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main.pos
-    INFO [2026-07-06 18:43:28] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $disable.logging
-    INFO [2026-07-06 18:43:28] [1] TRUE
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $sigdigs
-    INFO [2026-07-06 18:43:28] [1] 3
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $cat.fontfamily
-    INFO [2026-07-06 18:43:28] [1] "sans"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $main.fontfamily
-    INFO [2026-07-06 18:43:28] [1] "sans"
-    INFO [2026-07-06 18:43:28] 
-    INFO [2026-07-06 18:43:28] $fontfamily
-    INFO [2026-07-06 18:43:28] [1] "sans"
-    INFO [2026-07-06 18:43:28] 
+    INFO [2026-07-06 19:10:38] $x
+    INFO [2026-07-06 19:10:38] ALL_AML_up_polyAunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $category.names
+    INFO [2026-07-06 19:10:38] c("PolyA unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $filename
+    INFO [2026-07-06 19:10:38] NULL
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $output
+    INFO [2026-07-06 19:10:38] [1] TRUE
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $print.mode
+    INFO [2026-07-06 19:10:38] c("raw", "percent")
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $fill
+    INFO [2026-07-06 19:10:38] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cex
+    INFO [2026-07-06 19:10:38] [1] 0.9
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.cex
+    INFO [2026-07-06 19:10:38] [1] 0.9
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.dist
+    INFO [2026-07-06 19:10:38] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.default.pos
+    INFO [2026-07-06 19:10:38] [1] "outer"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.pos
+    INFO [2026-07-06 19:10:38] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main
+    INFO [2026-07-06 19:10:38] [1] "Upregulated genes in\nAML relative to ALL"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main.cex
+    INFO [2026-07-06 19:10:38] [1] 1.1
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main.pos
+    INFO [2026-07-06 19:10:38] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $disable.logging
+    INFO [2026-07-06 19:10:38] [1] TRUE
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $sigdigs
+    INFO [2026-07-06 19:10:38] [1] 3
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $cat.fontfamily
+    INFO [2026-07-06 19:10:38] [1] "sans"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $main.fontfamily
+    INFO [2026-07-06 19:10:38] [1] "sans"
+    INFO [2026-07-06 19:10:38] 
+    INFO [2026-07-06 19:10:38] $fontfamily
+    INFO [2026-07-06 19:10:38] [1] "sans"
+    INFO [2026-07-06 19:10:38] 
 
 ``` r
 Fig_S8 <- plot_grid(
@@ -413,63 +420,63 @@ aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:31] $x
-    INFO [2026-07-06 18:43:31] aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $category.names
-    INFO [2026-07-06 18:43:31] c("RiboD unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $filename
-    INFO [2026-07-06 18:43:31] NULL
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $output
-    INFO [2026-07-06 18:43:31] [1] TRUE
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $print.mode
-    INFO [2026-07-06 18:43:31] c("raw", "percent")
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $fill
-    INFO [2026-07-06 18:43:31] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cex
-    INFO [2026-07-06 18:43:31] [1] 0.9
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.cex
-    INFO [2026-07-06 18:43:31] [1] 0.9
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.dist
-    INFO [2026-07-06 18:43:31] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.default.pos
-    INFO [2026-07-06 18:43:31] [1] "outer"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.pos
-    INFO [2026-07-06 18:43:31] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main
-    INFO [2026-07-06 18:43:31] [1] "Upregulated genes in\nSS relative to aRMS"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main.cex
-    INFO [2026-07-06 18:43:31] [1] 1.1
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main.pos
-    INFO [2026-07-06 18:43:31] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $disable.logging
-    INFO [2026-07-06 18:43:31] [1] TRUE
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $sigdigs
-    INFO [2026-07-06 18:43:31] [1] 3
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.fontfamily
-    INFO [2026-07-06 18:43:31] [1] "sans"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main.fontfamily
-    INFO [2026-07-06 18:43:31] [1] "sans"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $fontfamily
-    INFO [2026-07-06 18:43:31] [1] "sans"
-    INFO [2026-07-06 18:43:31] 
+    INFO [2026-07-06 19:10:40] $x
+    INFO [2026-07-06 19:10:40] aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $category.names
+    INFO [2026-07-06 19:10:40] c("RiboD unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $filename
+    INFO [2026-07-06 19:10:40] NULL
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $output
+    INFO [2026-07-06 19:10:40] [1] TRUE
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $print.mode
+    INFO [2026-07-06 19:10:40] c("raw", "percent")
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $fill
+    INFO [2026-07-06 19:10:40] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cex
+    INFO [2026-07-06 19:10:40] [1] 0.9
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.cex
+    INFO [2026-07-06 19:10:40] [1] 0.9
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.dist
+    INFO [2026-07-06 19:10:40] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.default.pos
+    INFO [2026-07-06 19:10:40] [1] "outer"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.pos
+    INFO [2026-07-06 19:10:40] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main
+    INFO [2026-07-06 19:10:40] [1] "Upregulated genes in\nSS relative to aRMS"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main.cex
+    INFO [2026-07-06 19:10:40] [1] 1.1
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main.pos
+    INFO [2026-07-06 19:10:40] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $disable.logging
+    INFO [2026-07-06 19:10:40] [1] TRUE
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $sigdigs
+    INFO [2026-07-06 19:10:40] [1] 3
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.fontfamily
+    INFO [2026-07-06 19:10:40] [1] "sans"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main.fontfamily
+    INFO [2026-07-06 19:10:40] [1] "sans"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $fontfamily
+    INFO [2026-07-06 19:10:40] [1] "sans"
+    INFO [2026-07-06 19:10:40] 
 
 ``` r
 # NB v WT
@@ -504,63 +511,63 @@ WT_NB_up_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:31] $x
-    INFO [2026-07-06 18:43:31] WT_NB_up_riboDunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $category.names
-    INFO [2026-07-06 18:43:31] c("RiboD unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $filename
-    INFO [2026-07-06 18:43:31] NULL
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $output
-    INFO [2026-07-06 18:43:31] [1] TRUE
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $print.mode
-    INFO [2026-07-06 18:43:31] c("raw", "percent")
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $fill
-    INFO [2026-07-06 18:43:31] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cex
-    INFO [2026-07-06 18:43:31] [1] 0.9
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.cex
-    INFO [2026-07-06 18:43:31] [1] 0.9
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.dist
-    INFO [2026-07-06 18:43:31] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.default.pos
-    INFO [2026-07-06 18:43:31] [1] "outer"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.pos
-    INFO [2026-07-06 18:43:31] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main
-    INFO [2026-07-06 18:43:31] [1] "Upregulated genes in\nWT relative to NB"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main.cex
-    INFO [2026-07-06 18:43:31] [1] 1.1
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main.pos
-    INFO [2026-07-06 18:43:31] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $disable.logging
-    INFO [2026-07-06 18:43:31] [1] TRUE
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $sigdigs
-    INFO [2026-07-06 18:43:31] [1] 3
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.fontfamily
-    INFO [2026-07-06 18:43:31] [1] "sans"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main.fontfamily
-    INFO [2026-07-06 18:43:31] [1] "sans"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $fontfamily
-    INFO [2026-07-06 18:43:31] [1] "sans"
-    INFO [2026-07-06 18:43:31] 
+    INFO [2026-07-06 19:10:40] $x
+    INFO [2026-07-06 19:10:40] WT_NB_up_riboDunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $category.names
+    INFO [2026-07-06 19:10:40] c("RiboD unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $filename
+    INFO [2026-07-06 19:10:40] NULL
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $output
+    INFO [2026-07-06 19:10:40] [1] TRUE
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $print.mode
+    INFO [2026-07-06 19:10:40] c("raw", "percent")
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $fill
+    INFO [2026-07-06 19:10:40] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cex
+    INFO [2026-07-06 19:10:40] [1] 0.9
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.cex
+    INFO [2026-07-06 19:10:40] [1] 0.9
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.dist
+    INFO [2026-07-06 19:10:40] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.default.pos
+    INFO [2026-07-06 19:10:40] [1] "outer"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.pos
+    INFO [2026-07-06 19:10:40] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main
+    INFO [2026-07-06 19:10:40] [1] "Upregulated genes in\nWT relative to NB"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main.cex
+    INFO [2026-07-06 19:10:40] [1] 1.1
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main.pos
+    INFO [2026-07-06 19:10:40] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $disable.logging
+    INFO [2026-07-06 19:10:40] [1] TRUE
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $sigdigs
+    INFO [2026-07-06 19:10:40] [1] 3
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.fontfamily
+    INFO [2026-07-06 19:10:40] [1] "sans"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main.fontfamily
+    INFO [2026-07-06 19:10:40] [1] "sans"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $fontfamily
+    INFO [2026-07-06 19:10:40] [1] "sans"
+    INFO [2026-07-06 19:10:40] 
 
 ``` r
 # NB v WT
@@ -595,63 +602,63 @@ ALL_AML_up_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:31] $x
-    INFO [2026-07-06 18:43:31] ALL_AML_up_riboDunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $category.names
-    INFO [2026-07-06 18:43:31] c("RiboD unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $filename
-    INFO [2026-07-06 18:43:31] NULL
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $output
-    INFO [2026-07-06 18:43:31] [1] TRUE
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $print.mode
-    INFO [2026-07-06 18:43:31] c("raw", "percent")
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $fill
-    INFO [2026-07-06 18:43:31] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cex
-    INFO [2026-07-06 18:43:31] [1] 0.9
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.cex
-    INFO [2026-07-06 18:43:31] [1] 0.9
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.dist
-    INFO [2026-07-06 18:43:31] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.default.pos
-    INFO [2026-07-06 18:43:31] [1] "outer"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.pos
-    INFO [2026-07-06 18:43:31] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main
-    INFO [2026-07-06 18:43:31] [1] "Upregulated genes in\nAML relative to ALL"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main.cex
-    INFO [2026-07-06 18:43:31] [1] 1.1
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main.pos
-    INFO [2026-07-06 18:43:31] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $disable.logging
-    INFO [2026-07-06 18:43:31] [1] TRUE
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $sigdigs
-    INFO [2026-07-06 18:43:31] [1] 3
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $cat.fontfamily
-    INFO [2026-07-06 18:43:31] [1] "sans"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $main.fontfamily
-    INFO [2026-07-06 18:43:31] [1] "sans"
-    INFO [2026-07-06 18:43:31] 
-    INFO [2026-07-06 18:43:31] $fontfamily
-    INFO [2026-07-06 18:43:31] [1] "sans"
-    INFO [2026-07-06 18:43:31] 
+    INFO [2026-07-06 19:10:40] $x
+    INFO [2026-07-06 19:10:40] ALL_AML_up_riboDunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $category.names
+    INFO [2026-07-06 19:10:40] c("RiboD unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $filename
+    INFO [2026-07-06 19:10:40] NULL
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $output
+    INFO [2026-07-06 19:10:40] [1] TRUE
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $print.mode
+    INFO [2026-07-06 19:10:40] c("raw", "percent")
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $fill
+    INFO [2026-07-06 19:10:40] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cex
+    INFO [2026-07-06 19:10:40] [1] 0.9
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.cex
+    INFO [2026-07-06 19:10:40] [1] 0.9
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.dist
+    INFO [2026-07-06 19:10:40] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.default.pos
+    INFO [2026-07-06 19:10:40] [1] "outer"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.pos
+    INFO [2026-07-06 19:10:40] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main
+    INFO [2026-07-06 19:10:40] [1] "Upregulated genes in\nAML relative to ALL"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main.cex
+    INFO [2026-07-06 19:10:40] [1] 1.1
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main.pos
+    INFO [2026-07-06 19:10:40] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $disable.logging
+    INFO [2026-07-06 19:10:40] [1] TRUE
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $sigdigs
+    INFO [2026-07-06 19:10:40] [1] 3
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $cat.fontfamily
+    INFO [2026-07-06 19:10:40] [1] "sans"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $main.fontfamily
+    INFO [2026-07-06 19:10:40] [1] "sans"
+    INFO [2026-07-06 19:10:40] 
+    INFO [2026-07-06 19:10:40] $fontfamily
+    INFO [2026-07-06 19:10:40] [1] "sans"
+    INFO [2026-07-06 19:10:40] 
 
 ``` r
 Fig_S9 <- plot_grid(
@@ -960,63 +967,63 @@ aRMS_SS_down_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:38] $x
-    INFO [2026-07-06 18:43:38] aRMS_SS_down_polyAunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $category.names
-    INFO [2026-07-06 18:43:38] c("PolyA unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $filename
-    INFO [2026-07-06 18:43:38] NULL
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $output
-    INFO [2026-07-06 18:43:38] [1] TRUE
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $print.mode
-    INFO [2026-07-06 18:43:38] c("raw", "percent")
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $fill
-    INFO [2026-07-06 18:43:38] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cex
-    INFO [2026-07-06 18:43:38] [1] 0.9
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.cex
-    INFO [2026-07-06 18:43:38] [1] 0.9
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.dist
-    INFO [2026-07-06 18:43:38] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.default.pos
-    INFO [2026-07-06 18:43:38] [1] "outer"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.pos
-    INFO [2026-07-06 18:43:38] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main
-    INFO [2026-07-06 18:43:38] [1] "Downregulated genes in\nSS relative to aRMS"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main.cex
-    INFO [2026-07-06 18:43:38] [1] 1.1
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main.pos
-    INFO [2026-07-06 18:43:38] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $disable.logging
-    INFO [2026-07-06 18:43:38] [1] TRUE
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $sigdigs
-    INFO [2026-07-06 18:43:38] [1] 3
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.fontfamily
-    INFO [2026-07-06 18:43:38] [1] "sans"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main.fontfamily
-    INFO [2026-07-06 18:43:38] [1] "sans"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $fontfamily
-    INFO [2026-07-06 18:43:38] [1] "sans"
-    INFO [2026-07-06 18:43:38] 
+    INFO [2026-07-06 19:10:50] $x
+    INFO [2026-07-06 19:10:50] aRMS_SS_down_polyAunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $category.names
+    INFO [2026-07-06 19:10:50] c("PolyA unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $filename
+    INFO [2026-07-06 19:10:50] NULL
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $output
+    INFO [2026-07-06 19:10:50] [1] TRUE
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $print.mode
+    INFO [2026-07-06 19:10:50] c("raw", "percent")
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $fill
+    INFO [2026-07-06 19:10:50] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cex
+    INFO [2026-07-06 19:10:50] [1] 0.9
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.cex
+    INFO [2026-07-06 19:10:50] [1] 0.9
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.dist
+    INFO [2026-07-06 19:10:50] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.default.pos
+    INFO [2026-07-06 19:10:50] [1] "outer"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.pos
+    INFO [2026-07-06 19:10:50] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main
+    INFO [2026-07-06 19:10:50] [1] "Downregulated genes in\nSS relative to aRMS"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main.cex
+    INFO [2026-07-06 19:10:50] [1] 1.1
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main.pos
+    INFO [2026-07-06 19:10:50] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $disable.logging
+    INFO [2026-07-06 19:10:50] [1] TRUE
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $sigdigs
+    INFO [2026-07-06 19:10:50] [1] 3
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.fontfamily
+    INFO [2026-07-06 19:10:50] [1] "sans"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main.fontfamily
+    INFO [2026-07-06 19:10:50] [1] "sans"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $fontfamily
+    INFO [2026-07-06 19:10:50] [1] "sans"
+    INFO [2026-07-06 19:10:50] 
 
 ``` r
 # NB v WT
@@ -1051,63 +1058,63 @@ WT_NB_down_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:38] $x
-    INFO [2026-07-06 18:43:38] WT_NB_down_polyAunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $category.names
-    INFO [2026-07-06 18:43:38] c("PolyA unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $filename
-    INFO [2026-07-06 18:43:38] NULL
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $output
-    INFO [2026-07-06 18:43:38] [1] TRUE
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $print.mode
-    INFO [2026-07-06 18:43:38] c("raw", "percent")
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $fill
-    INFO [2026-07-06 18:43:38] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cex
-    INFO [2026-07-06 18:43:38] [1] 0.9
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.cex
-    INFO [2026-07-06 18:43:38] [1] 0.9
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.dist
-    INFO [2026-07-06 18:43:38] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.default.pos
-    INFO [2026-07-06 18:43:38] [1] "outer"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.pos
-    INFO [2026-07-06 18:43:38] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main
-    INFO [2026-07-06 18:43:38] [1] "Downregulated genes in\nWT relative to NB"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main.cex
-    INFO [2026-07-06 18:43:38] [1] 1.1
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main.pos
-    INFO [2026-07-06 18:43:38] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $disable.logging
-    INFO [2026-07-06 18:43:38] [1] TRUE
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $sigdigs
-    INFO [2026-07-06 18:43:38] [1] 3
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.fontfamily
-    INFO [2026-07-06 18:43:38] [1] "sans"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main.fontfamily
-    INFO [2026-07-06 18:43:38] [1] "sans"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $fontfamily
-    INFO [2026-07-06 18:43:38] [1] "sans"
-    INFO [2026-07-06 18:43:38] 
+    INFO [2026-07-06 19:10:50] $x
+    INFO [2026-07-06 19:10:50] WT_NB_down_polyAunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $category.names
+    INFO [2026-07-06 19:10:50] c("PolyA unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $filename
+    INFO [2026-07-06 19:10:50] NULL
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $output
+    INFO [2026-07-06 19:10:50] [1] TRUE
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $print.mode
+    INFO [2026-07-06 19:10:50] c("raw", "percent")
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $fill
+    INFO [2026-07-06 19:10:50] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cex
+    INFO [2026-07-06 19:10:50] [1] 0.9
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.cex
+    INFO [2026-07-06 19:10:50] [1] 0.9
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.dist
+    INFO [2026-07-06 19:10:50] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.default.pos
+    INFO [2026-07-06 19:10:50] [1] "outer"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.pos
+    INFO [2026-07-06 19:10:50] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main
+    INFO [2026-07-06 19:10:50] [1] "Downregulated genes in\nWT relative to NB"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main.cex
+    INFO [2026-07-06 19:10:50] [1] 1.1
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main.pos
+    INFO [2026-07-06 19:10:50] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $disable.logging
+    INFO [2026-07-06 19:10:50] [1] TRUE
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $sigdigs
+    INFO [2026-07-06 19:10:50] [1] 3
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.fontfamily
+    INFO [2026-07-06 19:10:50] [1] "sans"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main.fontfamily
+    INFO [2026-07-06 19:10:50] [1] "sans"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $fontfamily
+    INFO [2026-07-06 19:10:50] [1] "sans"
+    INFO [2026-07-06 19:10:50] 
 
 ``` r
 # NB v WT
@@ -1142,63 +1149,63 @@ ALL_AML_down_polyAunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:38] $x
-    INFO [2026-07-06 18:43:38] ALL_AML_down_polyAunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $category.names
-    INFO [2026-07-06 18:43:38] c("PolyA unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $filename
-    INFO [2026-07-06 18:43:38] NULL
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $output
-    INFO [2026-07-06 18:43:38] [1] TRUE
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $print.mode
-    INFO [2026-07-06 18:43:38] c("raw", "percent")
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $fill
-    INFO [2026-07-06 18:43:38] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cex
-    INFO [2026-07-06 18:43:38] [1] 0.9
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.cex
-    INFO [2026-07-06 18:43:38] [1] 0.9
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.dist
-    INFO [2026-07-06 18:43:38] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.default.pos
-    INFO [2026-07-06 18:43:38] [1] "outer"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.pos
-    INFO [2026-07-06 18:43:38] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main
-    INFO [2026-07-06 18:43:38] [1] "Downregulated genes in\nAML relative to ALL"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main.cex
-    INFO [2026-07-06 18:43:38] [1] 1.1
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main.pos
-    INFO [2026-07-06 18:43:38] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $disable.logging
-    INFO [2026-07-06 18:43:38] [1] TRUE
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $sigdigs
-    INFO [2026-07-06 18:43:38] [1] 3
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $cat.fontfamily
-    INFO [2026-07-06 18:43:38] [1] "sans"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $main.fontfamily
-    INFO [2026-07-06 18:43:38] [1] "sans"
-    INFO [2026-07-06 18:43:38] 
-    INFO [2026-07-06 18:43:38] $fontfamily
-    INFO [2026-07-06 18:43:38] [1] "sans"
-    INFO [2026-07-06 18:43:38] 
+    INFO [2026-07-06 19:10:50] $x
+    INFO [2026-07-06 19:10:50] ALL_AML_down_polyAunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $category.names
+    INFO [2026-07-06 19:10:50] c("PolyA unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $filename
+    INFO [2026-07-06 19:10:50] NULL
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $output
+    INFO [2026-07-06 19:10:50] [1] TRUE
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $print.mode
+    INFO [2026-07-06 19:10:50] c("raw", "percent")
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $fill
+    INFO [2026-07-06 19:10:50] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cex
+    INFO [2026-07-06 19:10:50] [1] 0.9
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.cex
+    INFO [2026-07-06 19:10:50] [1] 0.9
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.dist
+    INFO [2026-07-06 19:10:50] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.default.pos
+    INFO [2026-07-06 19:10:50] [1] "outer"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.pos
+    INFO [2026-07-06 19:10:50] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main
+    INFO [2026-07-06 19:10:50] [1] "Downregulated genes in\nAML relative to ALL"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main.cex
+    INFO [2026-07-06 19:10:50] [1] 1.1
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main.pos
+    INFO [2026-07-06 19:10:50] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $disable.logging
+    INFO [2026-07-06 19:10:50] [1] TRUE
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $sigdigs
+    INFO [2026-07-06 19:10:50] [1] 3
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $cat.fontfamily
+    INFO [2026-07-06 19:10:50] [1] "sans"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $main.fontfamily
+    INFO [2026-07-06 19:10:50] [1] "sans"
+    INFO [2026-07-06 19:10:50] 
+    INFO [2026-07-06 19:10:50] $fontfamily
+    INFO [2026-07-06 19:10:50] [1] "sans"
+    INFO [2026-07-06 19:10:50] 
 
 ``` r
 Fig_S12 <- plot_grid(
@@ -1247,63 +1254,63 @@ aRMS_SS_down_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:40] $x
-    INFO [2026-07-06 18:43:40] aRMS_SS_down_riboDunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $category.names
-    INFO [2026-07-06 18:43:40] c("RiboD unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $filename
-    INFO [2026-07-06 18:43:40] NULL
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $output
-    INFO [2026-07-06 18:43:40] [1] TRUE
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $print.mode
-    INFO [2026-07-06 18:43:40] c("raw", "percent")
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $fill
-    INFO [2026-07-06 18:43:40] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $cex
-    INFO [2026-07-06 18:43:40] [1] 0.9
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $cat.cex
-    INFO [2026-07-06 18:43:40] [1] 0.9
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $cat.dist
-    INFO [2026-07-06 18:43:40] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $cat.default.pos
-    INFO [2026-07-06 18:43:40] [1] "outer"
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $cat.pos
-    INFO [2026-07-06 18:43:40] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $main
-    INFO [2026-07-06 18:43:40] [1] "Downregulated genes in\nSS relative to aRMS"
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $main.cex
-    INFO [2026-07-06 18:43:40] [1] 1.1
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $main.pos
-    INFO [2026-07-06 18:43:40] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $disable.logging
-    INFO [2026-07-06 18:43:40] [1] TRUE
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $sigdigs
-    INFO [2026-07-06 18:43:40] [1] 3
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $cat.fontfamily
-    INFO [2026-07-06 18:43:40] [1] "sans"
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $main.fontfamily
-    INFO [2026-07-06 18:43:40] [1] "sans"
-    INFO [2026-07-06 18:43:40] 
-    INFO [2026-07-06 18:43:40] $fontfamily
-    INFO [2026-07-06 18:43:40] [1] "sans"
-    INFO [2026-07-06 18:43:40] 
+    INFO [2026-07-06 19:10:52] $x
+    INFO [2026-07-06 19:10:52] aRMS_SS_down_riboDunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $category.names
+    INFO [2026-07-06 19:10:52] c("RiboD unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $filename
+    INFO [2026-07-06 19:10:52] NULL
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $output
+    INFO [2026-07-06 19:10:52] [1] TRUE
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $print.mode
+    INFO [2026-07-06 19:10:52] c("raw", "percent")
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $fill
+    INFO [2026-07-06 19:10:52] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $cex
+    INFO [2026-07-06 19:10:52] [1] 0.9
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $cat.cex
+    INFO [2026-07-06 19:10:52] [1] 0.9
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $cat.dist
+    INFO [2026-07-06 19:10:52] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $cat.default.pos
+    INFO [2026-07-06 19:10:52] [1] "outer"
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $cat.pos
+    INFO [2026-07-06 19:10:52] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $main
+    INFO [2026-07-06 19:10:52] [1] "Downregulated genes in\nSS relative to aRMS"
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $main.cex
+    INFO [2026-07-06 19:10:52] [1] 1.1
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $main.pos
+    INFO [2026-07-06 19:10:52] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $disable.logging
+    INFO [2026-07-06 19:10:52] [1] TRUE
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $sigdigs
+    INFO [2026-07-06 19:10:52] [1] 3
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $cat.fontfamily
+    INFO [2026-07-06 19:10:52] [1] "sans"
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $main.fontfamily
+    INFO [2026-07-06 19:10:52] [1] "sans"
+    INFO [2026-07-06 19:10:52] 
+    INFO [2026-07-06 19:10:52] $fontfamily
+    INFO [2026-07-06 19:10:52] [1] "sans"
+    INFO [2026-07-06 19:10:52] 
 
 ``` r
 # NB v WT
@@ -1338,63 +1345,63 @@ WT_NB_down_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:41] $x
-    INFO [2026-07-06 18:43:41] WT_NB_down_riboDunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $category.names
-    INFO [2026-07-06 18:43:41] c("RiboD unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $filename
-    INFO [2026-07-06 18:43:41] NULL
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $output
-    INFO [2026-07-06 18:43:41] [1] TRUE
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $print.mode
-    INFO [2026-07-06 18:43:41] c("raw", "percent")
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $fill
-    INFO [2026-07-06 18:43:41] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cex
-    INFO [2026-07-06 18:43:41] [1] 0.9
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cat.cex
-    INFO [2026-07-06 18:43:41] [1] 0.9
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cat.dist
-    INFO [2026-07-06 18:43:41] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cat.default.pos
-    INFO [2026-07-06 18:43:41] [1] "outer"
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cat.pos
-    INFO [2026-07-06 18:43:41] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $main
-    INFO [2026-07-06 18:43:41] [1] "Downregulated genes in\nWT relative to NB"
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $main.cex
-    INFO [2026-07-06 18:43:41] [1] 1.1
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $main.pos
-    INFO [2026-07-06 18:43:41] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $disable.logging
-    INFO [2026-07-06 18:43:41] [1] TRUE
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $sigdigs
-    INFO [2026-07-06 18:43:41] [1] 3
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cat.fontfamily
-    INFO [2026-07-06 18:43:41] [1] "sans"
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $main.fontfamily
-    INFO [2026-07-06 18:43:41] [1] "sans"
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $fontfamily
-    INFO [2026-07-06 18:43:41] [1] "sans"
-    INFO [2026-07-06 18:43:41] 
+    INFO [2026-07-06 19:10:53] $x
+    INFO [2026-07-06 19:10:53] WT_NB_down_riboDunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $category.names
+    INFO [2026-07-06 19:10:53] c("RiboD unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $filename
+    INFO [2026-07-06 19:10:53] NULL
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $output
+    INFO [2026-07-06 19:10:53] [1] TRUE
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $print.mode
+    INFO [2026-07-06 19:10:53] c("raw", "percent")
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $fill
+    INFO [2026-07-06 19:10:53] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cex
+    INFO [2026-07-06 19:10:53] [1] 0.9
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cat.cex
+    INFO [2026-07-06 19:10:53] [1] 0.9
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cat.dist
+    INFO [2026-07-06 19:10:53] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cat.default.pos
+    INFO [2026-07-06 19:10:53] [1] "outer"
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cat.pos
+    INFO [2026-07-06 19:10:53] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $main
+    INFO [2026-07-06 19:10:53] [1] "Downregulated genes in\nWT relative to NB"
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $main.cex
+    INFO [2026-07-06 19:10:53] [1] 1.1
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $main.pos
+    INFO [2026-07-06 19:10:53] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $disable.logging
+    INFO [2026-07-06 19:10:53] [1] TRUE
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $sigdigs
+    INFO [2026-07-06 19:10:53] [1] 3
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cat.fontfamily
+    INFO [2026-07-06 19:10:53] [1] "sans"
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $main.fontfamily
+    INFO [2026-07-06 19:10:53] [1] "sans"
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $fontfamily
+    INFO [2026-07-06 19:10:53] [1] "sans"
+    INFO [2026-07-06 19:10:53] 
 
 ``` r
 # NB v WT
@@ -1429,63 +1436,63 @@ ALL_AML_down_riboDunbiased_polyAbiased_riboDbiased_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-06 18:43:41] $x
-    INFO [2026-07-06 18:43:41] ALL_AML_down_riboDunbiased_polyAbiased_riboDbiased
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $category.names
-    INFO [2026-07-06 18:43:41] c("RiboD unbiased", "PolyA biased", "RiboD biased")
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $filename
-    INFO [2026-07-06 18:43:41] NULL
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $output
-    INFO [2026-07-06 18:43:41] [1] TRUE
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $print.mode
-    INFO [2026-07-06 18:43:41] c("raw", "percent")
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $fill
-    INFO [2026-07-06 18:43:41] c("#BB5566", "#0072B2", "#E69F00")
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cex
-    INFO [2026-07-06 18:43:41] [1] 0.9
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cat.cex
-    INFO [2026-07-06 18:43:41] [1] 0.9
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cat.dist
-    INFO [2026-07-06 18:43:41] c(0.04, 0.04, 0.04)
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cat.default.pos
-    INFO [2026-07-06 18:43:41] [1] "outer"
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cat.pos
-    INFO [2026-07-06 18:43:41] c(-14, 14, 175)
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $main
-    INFO [2026-07-06 18:43:41] [1] "Downregulated genes in\nAML relative to ALL"
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $main.cex
-    INFO [2026-07-06 18:43:41] [1] 1.1
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $main.pos
-    INFO [2026-07-06 18:43:41] c(0.5, 1.2)
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $disable.logging
-    INFO [2026-07-06 18:43:41] [1] TRUE
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $sigdigs
-    INFO [2026-07-06 18:43:41] [1] 3
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $cat.fontfamily
-    INFO [2026-07-06 18:43:41] [1] "sans"
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $main.fontfamily
-    INFO [2026-07-06 18:43:41] [1] "sans"
-    INFO [2026-07-06 18:43:41] 
-    INFO [2026-07-06 18:43:41] $fontfamily
-    INFO [2026-07-06 18:43:41] [1] "sans"
-    INFO [2026-07-06 18:43:41] 
+    INFO [2026-07-06 19:10:53] $x
+    INFO [2026-07-06 19:10:53] ALL_AML_down_riboDunbiased_polyAbiased_riboDbiased
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $category.names
+    INFO [2026-07-06 19:10:53] c("RiboD unbiased", "PolyA biased", "RiboD biased")
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $filename
+    INFO [2026-07-06 19:10:53] NULL
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $output
+    INFO [2026-07-06 19:10:53] [1] TRUE
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $print.mode
+    INFO [2026-07-06 19:10:53] c("raw", "percent")
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $fill
+    INFO [2026-07-06 19:10:53] c("#BB5566", "#0072B2", "#E69F00")
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cex
+    INFO [2026-07-06 19:10:53] [1] 0.9
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cat.cex
+    INFO [2026-07-06 19:10:53] [1] 0.9
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cat.dist
+    INFO [2026-07-06 19:10:53] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cat.default.pos
+    INFO [2026-07-06 19:10:53] [1] "outer"
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cat.pos
+    INFO [2026-07-06 19:10:53] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $main
+    INFO [2026-07-06 19:10:53] [1] "Downregulated genes in\nAML relative to ALL"
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $main.cex
+    INFO [2026-07-06 19:10:53] [1] 1.1
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $main.pos
+    INFO [2026-07-06 19:10:53] c(0.5, 1.2)
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $disable.logging
+    INFO [2026-07-06 19:10:53] [1] TRUE
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $sigdigs
+    INFO [2026-07-06 19:10:53] [1] 3
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $cat.fontfamily
+    INFO [2026-07-06 19:10:53] [1] "sans"
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $main.fontfamily
+    INFO [2026-07-06 19:10:53] [1] "sans"
+    INFO [2026-07-06 19:10:53] 
+    INFO [2026-07-06 19:10:53] $fontfamily
+    INFO [2026-07-06 19:10:53] [1] "sans"
+    INFO [2026-07-06 19:10:53] 
 
 ``` r
 Fig_S13 <- plot_grid(
@@ -1754,6 +1761,206 @@ Fig_S15
 ``` r
 ggsave("../../Figures/Fig_S15.png", Fig_S15, width = 10, height = 3.4, dpi = 300)
 ```
+
+### Fig S16
+
+``` r
+Fig_S16 <- venn.diagram(
+  x = down_polyAbiased_all,
+  category.names = c(
+    "SS to aRMS",
+    "WT to NB",
+    "AML to ALL"
+    ),
+  filename = NULL, # Save as a rds file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  sigdigs = 3, # the amount of significant digits in percent
+  # Customize appearance (optional)
+  fill = c("#0072B2", "#0098ed", "#87CEEB"),
+#  cat.col = c("#0072B2", "#0072B2", "#0072B2"),
+  cex = 1.5, # Font size for counts
+  cat.cex = 1.2, # Font size for category names
+  cat.dist = c(0.04, 0.04, 0.04),
+  # height = 2000,
+  # width = 2000,
+  cat.default.pos = "outer",
+  cat.pos = c(-14, 14, 175), 
+    cat.fontfamily = "sans",
+    fontfamily = "sans",
+  main = "Downregulated in\nPolyA Biased",
+  main.fontfamily = "sans",
+  main.cex = 1.3, # Font size for main title
+  disable.logging = TRUE
+)
+```
+
+    INFO [2026-07-06 19:10:56] $x
+    INFO [2026-07-06 19:10:56] down_polyAbiased_all
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $category.names
+    INFO [2026-07-06 19:10:56] c("SS to aRMS", "WT to NB", "AML to ALL")
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $filename
+    INFO [2026-07-06 19:10:56] NULL
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $output
+    INFO [2026-07-06 19:10:56] [1] TRUE
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $print.mode
+    INFO [2026-07-06 19:10:56] c("raw", "percent")
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $sigdigs
+    INFO [2026-07-06 19:10:56] [1] 3
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $fill
+    INFO [2026-07-06 19:10:56] c("#0072B2", "#0098ed", "#87CEEB")
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $cex
+    INFO [2026-07-06 19:10:56] [1] 1.5
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $cat.cex
+    INFO [2026-07-06 19:10:56] [1] 1.2
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $cat.dist
+    INFO [2026-07-06 19:10:56] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $cat.default.pos
+    INFO [2026-07-06 19:10:56] [1] "outer"
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $cat.pos
+    INFO [2026-07-06 19:10:56] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $cat.fontfamily
+    INFO [2026-07-06 19:10:56] [1] "sans"
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $fontfamily
+    INFO [2026-07-06 19:10:56] [1] "sans"
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $main
+    INFO [2026-07-06 19:10:56] [1] "Downregulated in\nPolyA Biased"
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $main.fontfamily
+    INFO [2026-07-06 19:10:56] [1] "sans"
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $main.cex
+    INFO [2026-07-06 19:10:56] [1] 1.3
+    INFO [2026-07-06 19:10:56] 
+    INFO [2026-07-06 19:10:56] $disable.logging
+    INFO [2026-07-06 19:10:56] [1] TRUE
+    INFO [2026-07-06 19:10:56] 
+
+``` r
+ggsave(Fig_S16, file="../../Figures/Fig_S16.png", device = "png")
+```
+
+    Saving 7 x 5 in image
+
+``` r
+Fig_S16
+```
+
+![](Supplemental_Figs_files/figure-commonmark/Fig_S16-1.png)
+
+### Fig S17
+
+``` r
+Fig_S17 <- venn.diagram(
+  x = down_riboDbiased_all,
+  category.names = c(
+    "SS to aRMS",
+    "WT to NB",
+    "AML to ALL"
+    ),
+  filename = NULL, # Save as a rds file
+  output = TRUE,
+  print.mode = c("raw", "percent"),
+  sigdigs = 3, # the amount of significant digits in percent
+  # Customize appearance (optional)
+  fill = c("#E69F00", "#ff9b00", "#e6b200"),
+#  cat.col = c("#E69F00", "#E69F00", "#E69F00"),
+  cex = 1.5, # Font size for counts
+  cat.cex = 1.2, # Font size for category names
+  cat.dist = c(0.04, 0.04, 0.04), # distance of category name to VD
+  # height = 2000,
+  # width = 2000,
+  cat.default.pos = "outer", # location of category names
+  cat.pos = c(-14, 14, 175), # position of category names
+  main = "Downregulated in \nRiboD Biased",
+    fontfamily = "sans",
+  main.fontfamily = "sans",
+    cat.fontfamily = "sans",
+  main.cex = 1.3, # Font size for main title
+  disable.logging = TRUE
+)
+```
+
+    INFO [2026-07-06 19:10:57] $x
+    INFO [2026-07-06 19:10:57] down_riboDbiased_all
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $category.names
+    INFO [2026-07-06 19:10:57] c("SS to aRMS", "WT to NB", "AML to ALL")
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $filename
+    INFO [2026-07-06 19:10:57] NULL
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $output
+    INFO [2026-07-06 19:10:57] [1] TRUE
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $print.mode
+    INFO [2026-07-06 19:10:57] c("raw", "percent")
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $sigdigs
+    INFO [2026-07-06 19:10:57] [1] 3
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $fill
+    INFO [2026-07-06 19:10:57] c("#E69F00", "#ff9b00", "#e6b200")
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $cex
+    INFO [2026-07-06 19:10:57] [1] 1.5
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $cat.cex
+    INFO [2026-07-06 19:10:57] [1] 1.2
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $cat.dist
+    INFO [2026-07-06 19:10:57] c(0.04, 0.04, 0.04)
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $cat.default.pos
+    INFO [2026-07-06 19:10:57] [1] "outer"
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $cat.pos
+    INFO [2026-07-06 19:10:57] c(-14, 14, 175)
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $main
+    INFO [2026-07-06 19:10:57] [1] "Downregulated in \nRiboD Biased"
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $fontfamily
+    INFO [2026-07-06 19:10:57] [1] "sans"
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $main.fontfamily
+    INFO [2026-07-06 19:10:57] [1] "sans"
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $cat.fontfamily
+    INFO [2026-07-06 19:10:57] [1] "sans"
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $main.cex
+    INFO [2026-07-06 19:10:57] [1] 1.3
+    INFO [2026-07-06 19:10:57] 
+    INFO [2026-07-06 19:10:57] $disable.logging
+    INFO [2026-07-06 19:10:57] [1] TRUE
+    INFO [2026-07-06 19:10:57] 
+
+``` r
+ggsave(Fig_S17, file="../../Figures/Fig_S17.png", device = "png")
+```
+
+    Saving 7 x 5 in image
+
+``` r
+Fig_S17
+```
+
+![](Supplemental_Figs_files/figure-commonmark/Fig_S17-1.png)
 
 ### Session Info
 
