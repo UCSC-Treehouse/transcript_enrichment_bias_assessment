@@ -217,6 +217,11 @@ theme_1d <- function(base_size = 14) {
 ```
 
 ``` r
+combined_counts_1D <- combined_counts_1D %>% mutate(Bin = fct_inorder(Bin))
+sig_bins_all_1D <- sig_bins_all_1D %>% mutate(Bin = fct_inorder(Bin))
+
+
+
 facet_labels <- c(
   "0" = "x = 0",
   "0-0.09" = "0 > x > 0.1",
@@ -228,13 +233,24 @@ facet_labels <- c(
 
 # List of diseases
 diseases <- unique(combined_counts_1D$Disease)
-
-max_y <- max(combined_counts_1D$Count, na.rm = TRUE)
 ```
 
 ``` r
+scale_fill_compendia <- function() {
+  scale_fill_manual(values = c(
+    "polyA" = "#0072B2",  # blue
+    "riboD" = "#E69F00"   # yellow
+  ))
+}
+scale_color_compendia <- function() {
+  scale_color_manual(values = c( 
+    "polyA" = "#0072B2",  # blue
+    "riboD" = "#E69F00"   # yellow
+    ))
+  }
+
 # y-position for stars
-y_star <- max(combined_counts_1D$Count, na.rm = TRUE) * 1.05
+y_star_1D <- max(combined_counts_1D$Count, na.rm = TRUE) * 1.05
 
 Fig1D_SS <- ggplot(combined_counts_1D, aes(x = Compendia, y = Count, fill = Compendia)) +
     geom_boxplot(outlier.shape = NA, alpha = 0.6,
@@ -246,7 +262,7 @@ Fig1D_SS <- ggplot(combined_counts_1D, aes(x = Compendia, y = Count, fill = Comp
     # ---- ADD STARS ABOVE EACH FACET ----
     geom_text(
       data = sig_bins_all_1D,
-      aes(x = 1.5, y = y_star, label = stars_adj),   # x = 1.5 centers between polyA/riboD
+      aes(x = 1.5, y = y_star_1D, label = stars_adj),   # x = 1.5 centers between polyA/riboD
       inherit.aes = FALSE,
       size = 6
     ) +
@@ -352,7 +368,7 @@ star_df <- tibble(
   )
 
 # y-position for stars (slightly above max)
-y_star <- max(combined_long$Expression, na.rm = TRUE) * 1.05
+y_star_1E <- max(combined_long$Expression, na.rm = TRUE) * 1.05
 
 Fig1E_SS <- ggplot(combined_long, aes(x = Gene, y = Expression, fill = Compendia)) +
     geom_boxplot(
@@ -371,7 +387,7 @@ Fig1E_SS <- ggplot(combined_long, aes(x = Gene, y = Expression, fill = Compendia
     # ADD STARS
     geom_text(
       data = star_df,
-      aes(x = Gene, y = y_star, label = stars_adj),
+      aes(x = Gene, y = y_star_1E, label = stars_adj),
       inherit.aes = FALSE,
       size = 12
     ) +
@@ -533,7 +549,7 @@ nonpoly_gene <- "HIST1H1B"
 combined_medians_hugo_res <- combined_medians_hugo_res %>%
   mutate(
     label = case_when(
-      Gene == poly_gene[Disease] ~ Gene,
+      Gene == poly_gene ~ Gene,
       Gene == nonpoly_gene ~ Gene,            # HIST1H1B + median ratio gene
       TRUE ~ NA_character_
     )
@@ -596,7 +612,7 @@ Fig1G_SS <- ggplot(combined_medians_hugo_res, aes(x = polyA_medians, y = riboD_m
 Fig1G_SS
 ```
 
-    Warning: Removed 60497 rows containing missing values or values outside the scale range
+    Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
 ![](Fig1_all_files/figure-commonmark/Fig1G-1.png)
@@ -700,7 +716,7 @@ Fig1_all <- plot_grid(
     Warning: Removed 29257 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-    Warning: Removed 60497 rows containing missing values or values outside the scale range
+    Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
 ``` r
