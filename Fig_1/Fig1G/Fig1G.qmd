@@ -234,10 +234,12 @@ Fig1G <- map(diseases, function(d) {
                 linetype = "dashed", color = "gray50") +
 
     labs(
-      title = paste(d),
-      x = "Average PolyA Expression (log2(TPM+1))",
-      y = "Average RiboD Expression (log2(TPM+1))",
+      title = paste(d)
+      # x = "Average PolyA Expression (log2(TPM+1))",
+      # y = "Average RiboD Expression (log2(TPM+1))",
     ) +
+    xlab(bquote(Median~PolyA~log[2](TPM+1))) +
+    ylab(bquote(Median~RiboD~log[2](TPM+1))) +
     theme_minimal(base_size = 14) +
     plot_theme()
 })
@@ -288,10 +290,12 @@ Fig1G_all <- map(diseases, function(d) {
                 linetype = "dashed", color = "gray50") +
 
     labs(
-      title = paste(d),
-      x = "Average PolyA Expression (log2(TPM+1))",
-      y = "Average RiboD Expression (log2(TPM+1))",
+      title = paste(d)
+      # x = "Average PolyA Expression (log2(TPM+1))",
+      # y = "Average RiboD Expression (log2(TPM+1))",
     ) +
+    xlab(bquote(Median~PolyA~log[2](TPM+1))) +
+    ylab(bquote(Median~RiboD~log[2](TPM+1))) +
     theme_minimal(base_size = 14) +
     plot_theme() +
     coord_cartesian(xlim = c(0, 15), ylim = c(0, 20)) +
@@ -325,8 +329,8 @@ FigS6
 ```
 
 ```{r save FigS6}
-ggsave("../../Figures/FigS6.png", FigS6, width = 20, height = 36, dpi = 500)
-ggsave("../../Figures/FigS6.tif", FigS6, width = 20, height = 36, dpi = 500)
+ggsave("../../Figures/FigS6.png", FigS6, width = 20, height = 36, dpi = 300)
+ggsave("../../Figures/FigS6.tif", FigS6, width = 20, height = 36, dpi = 300)
 ```
 
 Session Info

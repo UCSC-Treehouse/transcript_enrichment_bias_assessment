@@ -468,6 +468,7 @@ combined_medians_hugo_res <- combined_medians_hugo_res %>%
     )
   )
 # this creates a dataframe that shows the polyA median expression and riboD median expression with the calculated residual for each disease. The representative polyadenylated genes are colored for their respective disease. HIST1H1B is colored for all diseases as the representative nonpolyadenylated gene.
+write_tsv(combined_medians_hugo_res, "../../output_data/Fig1G/combined_medians_hugo_res.tsv.gz")
 ```
 
 Fig1G
@@ -509,10 +510,12 @@ Fig1G <- map(diseases, function(d) {
                 linetype = "dashed", color = "gray50") +
 
     labs(
-      title = paste(d),
-      x = "Average PolyA Expression (log2(TPM+1))",
-      y = "Average RiboD Expression (log2(TPM+1))",
+      title = paste(d)
+      # x = "Average PolyA Expression (log2(TPM+1))",
+      # y = "Average RiboD Expression (log2(TPM+1))",
     ) +
+    xlab(bquote(Median~PolyA~log[2](TPM+1))) +
+    ylab(bquote(Median~RiboD~log[2](TPM+1))) +
     theme_minimal(base_size = 14) +
     plot_theme()
 })
@@ -623,10 +626,12 @@ Fig1G_all <- map(diseases, function(d) {
                 linetype = "dashed", color = "gray50") +
 
     labs(
-      title = paste(d),
-      x = "Average PolyA Expression (log2(TPM+1))",
-      y = "Average RiboD Expression (log2(TPM+1))",
+      title = paste(d)
+      # x = "Average PolyA Expression (log2(TPM+1))",
+      # y = "Average RiboD Expression (log2(TPM+1))",
     ) +
+    xlab(bquote(Median~PolyA~log[2](TPM+1))) +
+    ylab(bquote(Median~RiboD~log[2](TPM+1))) +
     theme_minimal(base_size = 14) +
     plot_theme() +
     coord_cartesian(xlim = c(0, 15), ylim = c(0, 20)) +
@@ -722,7 +727,7 @@ FigS6
 ![](Fig1G_files/figure-commonmark/FigS6-1.png)
 
 ``` r
-ggsave("../../Figures/FigS6.png", FigS6, width = 20, height = 36, dpi = 500)
+ggsave("../../Figures/FigS6.png", FigS6, width = 20, height = 36, dpi = 300)
 ```
 
     Warning: Removed 60496 rows containing missing values or values outside the scale range
@@ -739,7 +744,7 @@ ggsave("../../Figures/FigS6.png", FigS6, width = 20, height = 36, dpi = 500)
     (`geom_text_repel()`).
 
 ``` r
-ggsave("../../Figures/FigS6.tif", FigS6, width = 20, height = 36, dpi = 500)
+ggsave("../../Figures/FigS6.tif", FigS6, width = 20, height = 36, dpi = 300)
 ```
 
     Warning: Removed 60496 rows containing missing values or values outside the scale range
@@ -771,7 +776,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-06-25
+     date     2026-07-07
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
