@@ -497,6 +497,7 @@ combined_medians_drug <- bind_rows(
   AML_polyA_medians_drug,
   AML_riboD_medians_drug
 )
+write_tsv(combined_medians_drug, "../../output_data/Fig1H/combined_medians_drug.tsv.gz")
 ```
 
 Define palette
@@ -540,9 +541,10 @@ df <- combined_medians_drug %>%
     labs(
       title = paste(d),
       x = "Treehouse Druggable Genes",
-      y = "Expression log2(TPM+1)",
+      # y = "Expression log2(TPM+1)",
       color = "Library Prep"
     ) +
+    ylab(bquote(log[2](TPM+1))) +
     theme(
       # axis.text.x = element_blank(),
       # axis.title.x = element_blank(), 
@@ -560,40 +562,10 @@ df <- combined_medians_drug %>%
 names(Fig1H_SS) <- unique(combined_medians_drug$Disease)
 
 # View plots
-Fig1H_SS
+Fig1H_SS$SS
 ```
 
-    $aRMS
-
 ![](Fig1H_files/figure-commonmark/Fig1H-1.png)
-
-
-    $SS
-
-![](Fig1H_files/figure-commonmark/Fig1H-2.png)
-
-
-    $WT
-
-    Warning: Removed 1 row containing missing values or values outside the scale range
-    (`geom_point()`).
-
-![](Fig1H_files/figure-commonmark/Fig1H-3.png)
-
-
-    $NB
-
-![](Fig1H_files/figure-commonmark/Fig1H-4.png)
-
-
-    $ALL
-
-![](Fig1H_files/figure-commonmark/Fig1H-5.png)
-
-
-    $AML
-
-![](Fig1H_files/figure-commonmark/Fig1H-6.png)
 
 ``` r
 ggsave("../../Figures/Fig1H.png", Fig1H_SS$SS, width = 11)
@@ -636,9 +608,10 @@ df <- combined_medians_drug %>%
     labs(
       title = paste(d),
       x = NULL,
-      y = "Expression log2(TPM+1)",
+      # y = "Expression log2(TPM+1)",
       color = "Library Prep"
     ) +
+    ylab(bquote(log[2](TPM+1))) +
     theme(
       # axis.text.x = element_blank(),
       # axis.title.x = element_blank(), 
@@ -714,14 +687,14 @@ FigS7
 ![](Fig1H_files/figure-commonmark/FigS7-1.png)
 
 ``` r
-ggsave("../../Figures/FigS7.png", FigS7, width = 35, height = 36, dpi = 300, scale = 0.75)
+ggsave("../../Figures/FigS7.png", FigS7, width = 36, height = 36, dpi = 300, scale = 0.75)
 ```
 
     Warning: Removed 1 row containing missing values or values outside the scale range
     (`geom_point()`).
 
 ``` r
-ggsave("../../Figures/FigS7.tif", FigS7, width = 35, height = 36, dpi = 300, scale = 0.75)
+ggsave("../../Figures/FigS7.tif", FigS7, width = 36, height = 36, dpi = 300, scale = 0.75)
 ```
 
     Warning: Removed 1 row containing missing values or values outside the scale range
@@ -741,7 +714,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-06-25
+     date     2026-07-07
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 

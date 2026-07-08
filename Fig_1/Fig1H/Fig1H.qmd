@@ -247,9 +247,10 @@ df <- combined_medians_drug %>%
     labs(
       title = paste(d),
       x = "Treehouse Druggable Genes",
-      y = "Expression log2(TPM+1)",
+      # y = "Expression log2(TPM+1)",
       color = "Library Prep"
     ) +
+    ylab(bquote(log[2](TPM+1))) +
     theme(
       # axis.text.x = element_blank(),
       # axis.title.x = element_blank(), 
@@ -304,9 +305,10 @@ df <- combined_medians_drug %>%
     labs(
       title = paste(d),
       x = NULL,
-      y = "Expression log2(TPM+1)",
+      # y = "Expression log2(TPM+1)",
       color = "Library Prep"
     ) +
+    ylab(bquote(log[2](TPM+1))) +
     theme(
       # axis.text.x = element_blank(),
       # axis.title.x = element_blank(), 
@@ -345,8 +347,8 @@ FigS7
 ```
 
 ```{r save FigS7}
-ggsave("../../Figures/FigS7.png", FigS7, width = 35, height = 36, dpi = 300, scale = 0.75)
-ggsave("../../Figures/FigS7.tif", FigS7, width = 35, height = 36, dpi = 300, scale = 0.75)
+ggsave("../../Figures/FigS7.png", FigS7, width = 36, height = 36, dpi = 300, scale = 0.75)
+ggsave("../../Figures/FigS7.tif", FigS7, width = 36, height = 36, dpi = 300, scale = 0.75)
 ```
 
 ```{r session info}
