@@ -137,7 +137,10 @@ scale_color_compendia <- function() {
 ``` r
 Fig1C_SS <- ggplot(bin_prop_1C, aes(x = Compendia, y = Proportion, fill = ExprBin)) +
     geom_bar(stat = "identity", position = "stack") +
-    scale_fill_viridis_d(option = "D", name = "log2(TPM+1)") +
+    scale_fill_viridis_d(
+      option = "D", 
+      name = expression(atop("Expression", "in log"[2]*"(TPM+1)"))
+    ) +
     labs(
       x = NULL,
       y = "Proportion of Genes",
@@ -272,9 +275,10 @@ Fig1D_SS <- ggplot(combined_counts_1D, aes(x = Compendia, y = Count, fill = Comp
     scale_color_compendia() +
 #    coord_cartesian(ylim = c(0, y_star * 1.1)) +
     labs(
-      x = "log2(TPM+1) = x",
+      # x = "log2(TPM+1) = x",
       y = "Number of Unique Genes"
     ) +
+    xlab(bquote(log[2](TPM+1))) +
     theme_minimal() +
     theme_1d() +
     theme(
@@ -396,9 +400,10 @@ Fig1E_SS <- ggplot(combined_long, aes(x = Gene, y = Expression, fill = Compendia
     coord_cartesian(ylim = c(0, 10)) +
     # facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
     labs(
-      x = NULL,
-      y = "log2(TPM+1)"
+      x = NULL
+      # y = "log2(TPM+1)"
     ) +
+    ylab(bquote(log[2](TPM+1))) +
     color_theme_1E() +
     theme(
       axis.title.y = element_text(size = 20),
@@ -602,11 +607,12 @@ Fig1G_SS <- ggplot(combined_medians_hugo_res, aes(x = polyA_medians, y = riboD_m
 
     geom_abline(slope = 1, intercept = 0,
                 linetype = "dashed", color = "gray50") +
-
-    labs(
-      x = "RiboD median log2(TPM+1)",
-      y = "PolyA median log2(TPM+1)",
-    ) +
+    # labs(
+    #   x = "PolyA median log2(TPM+1)",
+    #   y = "RiboD median log2(TPM+1)",
+    # ) +
+    xlab(bquote(PolyA~Median~log[2](TPM+1))) +
+    ylab(bquote(RiboD~Median~log[2](TPM+1))) +
     theme_minimal(base_size = 14) +
     plot_theme()
 Fig1G_SS
@@ -662,9 +668,10 @@ Fig1H_SS <- ggplot(combined_medians_drug, aes(x = Gene, y = Expression, color = 
     labs(
       # x = "Treehouse Druggable Genes",
       x = NULL,
-      y = "Median log2(TPM+1)",
+      # y = "Median log2(TPM+1)",
       color = "Library Prep"
     ) +
+    ylab(bquote(Median~log[2](TPM+1))) +
     theme(
       # axis.text.x = element_blank(),
       # axis.title.x = element_blank(), 

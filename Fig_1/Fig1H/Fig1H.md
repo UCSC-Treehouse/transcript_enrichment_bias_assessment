@@ -544,7 +544,7 @@ df <- combined_medians_drug %>%
       # y = "Expression log2(TPM+1)",
       color = "Library Prep"
     ) +
-    ylab(bquote(log[2](TPM+1))) +
+    ylab(bquote(Median~log[2](TPM+1))) +
     theme(
       # axis.text.x = element_blank(),
       # axis.title.x = element_blank(), 
@@ -611,7 +611,7 @@ df <- combined_medians_drug %>%
       # y = "Expression log2(TPM+1)",
       color = "Library Prep"
     ) +
-    ylab(bquote(log[2](TPM+1))) +
+    ylab(bquote(Median~log[2](TPM+1))) +
     theme(
       # axis.text.x = element_blank(),
       # axis.title.x = element_blank(), 
