@@ -25,9 +25,9 @@ library(scales)
 ```
 
 ```{r UMAPs}
-Fig1A <- image_read("../../Figures/UMAPs/Compendia_Type.svg") %>% 
+Fig1A <- image_read("../../Figures/UMAPs/final/Compendia_Type.svg") %>% 
   image_ggplot()
-Fig1B <- image_read("../../Figures/UMAPs/10_Most_Sampled_Diseases.svg") %>% 
+Fig1B <- image_read("../../Figures/UMAPs/final/10_Most_Sampled_Diseases.svg") %>% 
   image_ggplot()
 ```
 
@@ -512,7 +512,7 @@ Fig1_all <- plot_grid(
   ncol = 2,
   label_size = 20,
   labels = "AUTO", 
-  label_x = c(0.09, 0.09, 0.12, 0.09, 0.11, 0.1, 0.1, 0.1),
+  label_x = c(0.09, 0.00, 0.12, 0.09, 0.11, 0.1, 0.1, 0.1),
   label_y = c(1,    1,    1,    1,    1.05, 1.05, 1.1, 1.1),
   hjust = 0,
   vjust = 1

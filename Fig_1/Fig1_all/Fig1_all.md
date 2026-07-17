@@ -56,9 +56,24 @@ library(cowplot)
         stamp
 
 ``` r
-Fig1A <- image_read("../../Figures/UMAPs/Compendia_Type.svg") %>% 
+library(scales)
+```
+
+
+    Attaching package: 'scales'
+
+    The following object is masked from 'package:purrr':
+
+        discard
+
+    The following object is masked from 'package:readr':
+
+        col_factor
+
+``` r
+Fig1A <- image_read("../../Figures/UMAPs/final/Compendia_Type.svg") %>% 
   image_ggplot()
-Fig1B <- image_read("../../Figures/UMAPs/10_Most_Sampled_Diseases.svg") %>% 
+Fig1B <- image_read("../../Figures/UMAPs/final/10_Most_Sampled_Diseases.svg") %>% 
   image_ggplot()
 ```
 
@@ -273,6 +288,9 @@ Fig1D_SS <- ggplot(combined_counts_1D, aes(x = Compendia, y = Count, fill = Comp
     facet_grid(. ~ Bin, labeller = labeller(Bin = facet_labels)) +
     scale_fill_compendia() +
     scale_color_compendia() +
+    scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+    ) +
 #    coord_cartesian(ylim = c(0, y_star * 1.1)) +
     labs(
       # x = "log2(TPM+1) = x",
@@ -494,7 +512,10 @@ Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
   
   geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -5, hjust = 0.2, color = "#E69F00", size = 6) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 4000)) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+    ) +
   labs(
     x = "Median Expression Ratio",
     y = "Number of Unique Genes"
@@ -705,7 +726,7 @@ Fig1_all <- plot_grid(
   ncol = 2,
   label_size = 20,
   labels = "AUTO", 
-  label_x = c(0.09, 0.09, 0.12, 0.09, 0.11, 0.1, 0.1, 0.1),
+  label_x = c(0.09, 0.00, 0.12, 0.09, 0.11, 0.1, 0.1, 0.1),
   label_y = c(1,    1,    1,    1,    1.05, 1.05, 1.1, 1.1),
   hjust = 0,
   vjust = 1
