@@ -146,6 +146,20 @@ filtered_ALL_AML_list <- read_tsv("../../input_data/filtered_ALL_AML_list.tsv")
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
+# FFPE/frozen metadata
+TEBA_Sample_Metdata <- read_tsv("../../input_data/TEBA_Sample_Metdata_2026_07_23.tsv")
+```
+
+    Rows: 200 Columns: 12
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr (10): donor_key, disease, th_donor_id, th_sampleid, source, sex_term, fr...
+    dbl  (2): age_at_dx, pedaya
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
 # SS polyA
 SS_polyA_list <- filtered_SS_aRMS_list %>%
   filter(disease_and_prep %in% c("SS_polyA")) %>% 
@@ -168,12 +182,12 @@ SS_riboD_log2tpm1 <- SS_aRMS_log2tpm1 %>%
 SS_riboD_counts <- SS_aRMS_counts %>%
   select(Gene, all_of(SS_riboD_list$term))
 
-write_tsv(SS_polyA_list, "../../input_data/sample_selection/SS_polyA_list.tsv")
-write_tsv(SS_riboD_list, "../../input_data/sample_selection/SS_riboD_list.tsv")
-write_tsv(SS_polyA_log2tpm1, "../../input_data/sample_selection/SS_polyA_log2tpm1.tsv")
-write_tsv(SS_riboD_log2tpm1, "../../input_data/sample_selection/SS_riboD_log2tpm1.tsv")
-write_tsv(SS_polyA_counts, "../../input_data/sample_selection/SS_polyA_counts.tsv")
-write_tsv(SS_riboD_counts, "../../input_data/sample_selection/SS_riboD_counts.tsv")
+# write_tsv(SS_polyA_list, "../../input_data/sample_selection/SS_polyA_list.tsv")
+# write_tsv(SS_riboD_list, "../../input_data/sample_selection/SS_riboD_list.tsv")
+# write_tsv(SS_polyA_log2tpm1, "../../input_data/sample_selection/SS_polyA_log2tpm1.tsv")
+# write_tsv(SS_riboD_log2tpm1, "../../input_data/sample_selection/SS_riboD_log2tpm1.tsv")
+# write_tsv(SS_polyA_counts, "../../input_data/sample_selection/SS_polyA_counts.tsv")
+# write_tsv(SS_riboD_counts, "../../input_data/sample_selection/SS_riboD_counts.tsv")
 
 # aRMS polyA
 aRMS_polyA_list <- filtered_SS_aRMS_list %>%
@@ -197,12 +211,12 @@ aRMS_riboD_log2tpm1 <- SS_aRMS_log2tpm1 %>%
 aRMS_riboD_counts <- SS_aRMS_counts %>%
   select(Gene, all_of(aRMS_riboD_list$term))
 
-write_tsv(aRMS_polyA_list, "../../input_data/sample_selection/aRMS_polyA_list.tsv")
-write_tsv(aRMS_riboD_list, "../../input_data/sample_selection/aRMS_riboD_list.tsv")
-write_tsv(aRMS_polyA_log2tpm1, "../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv")
-write_tsv(aRMS_riboD_log2tpm1, "../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv")
-write_tsv(aRMS_polyA_counts, "../../input_data/sample_selection/aRMS_polyA_counts.tsv")
-write_tsv(aRMS_riboD_counts, "../../input_data/sample_selection/aRMS_riboD_counts.tsv")
+# write_tsv(aRMS_polyA_list, "../../input_data/sample_selection/aRMS_polyA_list.tsv")
+# write_tsv(aRMS_riboD_list, "../../input_data/sample_selection/aRMS_riboD_list.tsv")
+# write_tsv(aRMS_polyA_log2tpm1, "../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv")
+# write_tsv(aRMS_riboD_log2tpm1, "../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv")
+# write_tsv(aRMS_polyA_counts, "../../input_data/sample_selection/aRMS_polyA_counts.tsv")
+# write_tsv(aRMS_riboD_counts, "../../input_data/sample_selection/aRMS_riboD_counts.tsv")
 
 # WT polyA
 WT_polyA_list <- filtered_WT_NB_list %>%
@@ -226,12 +240,12 @@ WT_riboD_log2tpm1 <- WT_NB_log2tpm1 %>%
 WT_riboD_counts <- WT_NB_counts %>%
   select(Gene, all_of(WT_riboD_list$term))
 
-write_tsv(WT_polyA_list, "../../input_data/sample_selection/WT_polyA_list.tsv")
-write_tsv(WT_riboD_list, "../../input_data/sample_selection/WT_riboD_list.tsv")
-write_tsv(WT_polyA_log2tpm1, "../../input_data/sample_selection/WT_polyA_log2tpm1.tsv")
-write_tsv(WT_riboD_log2tpm1, "../../input_data/sample_selection/WT_riboD_log2tpm1.tsv")
-write_tsv(WT_polyA_counts, "../../input_data/sample_selection/WT_polyA_counts.tsv")
-write_tsv(WT_riboD_counts, "../../input_data/sample_selection/WT_riboD_counts.tsv")
+# write_tsv(WT_polyA_list, "../../input_data/sample_selection/WT_polyA_list.tsv")
+# write_tsv(WT_riboD_list, "../../input_data/sample_selection/WT_riboD_list.tsv")
+# write_tsv(WT_polyA_log2tpm1, "../../input_data/sample_selection/WT_polyA_log2tpm1.tsv")
+# write_tsv(WT_riboD_log2tpm1, "../../input_data/sample_selection/WT_riboD_log2tpm1.tsv")
+# write_tsv(WT_polyA_counts, "../../input_data/sample_selection/WT_polyA_counts.tsv")
+# write_tsv(WT_riboD_counts, "../../input_data/sample_selection/WT_riboD_counts.tsv")
 
 
 # NB polyA
@@ -256,12 +270,12 @@ NB_riboD_log2tpm1 <- WT_NB_log2tpm1 %>%
 NB_riboD_counts <- WT_NB_counts %>%
   select(Gene, all_of(NB_riboD_list$term))
 
-write_tsv(NB_polyA_list, "../../input_data/sample_selection/NB_polyA_list.tsv")
-write_tsv(NB_riboD_list, "../../input_data/sample_selection/NB_riboD_list.tsv")
-write_tsv(NB_polyA_log2tpm1, "../../input_data/sample_selection/NB_polyA_log2tpm1.tsv")
-write_tsv(NB_riboD_log2tpm1, "../../input_data/sample_selection/NB_riboD_log2tpm1.tsv")
-write_tsv(NB_polyA_counts, "../../input_data/sample_selection/NB_polyA_counts.tsv")
-write_tsv(NB_riboD_counts, "../../input_data/sample_selection/NB_riboD_counts.tsv")
+# write_tsv(NB_polyA_list, "../../input_data/sample_selection/NB_polyA_list.tsv")
+# write_tsv(NB_riboD_list, "../../input_data/sample_selection/NB_riboD_list.tsv")
+# write_tsv(NB_polyA_log2tpm1, "../../input_data/sample_selection/NB_polyA_log2tpm1.tsv")
+# write_tsv(NB_riboD_log2tpm1, "../../input_data/sample_selection/NB_riboD_log2tpm1.tsv")
+# write_tsv(NB_polyA_counts, "../../input_data/sample_selection/NB_polyA_counts.tsv")
+# write_tsv(NB_riboD_counts, "../../input_data/sample_selection/NB_riboD_counts.tsv")
 
 # ALL polyA
 ALL_polyA_list <- filtered_ALL_AML_list %>%
@@ -285,12 +299,12 @@ ALL_riboD_log2tpm1 <- ALL_AML_log2tpm1 %>%
 ALL_riboD_counts <- ALL_AML_counts %>%
   select(Gene, all_of(ALL_riboD_list$term))
 
-write_tsv(ALL_polyA_list, "../../input_data/sample_selection/ALL_polyA_list.tsv")
-write_tsv(ALL_riboD_list, "../../input_data/sample_selection/ALL_riboD_list.tsv")
-write_tsv(ALL_polyA_log2tpm1, "../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv")
-write_tsv(ALL_riboD_log2tpm1, "../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv")
-write_tsv(ALL_polyA_counts, "../../input_data/sample_selection/ALL_polyA_counts.tsv")
-write_tsv(ALL_riboD_counts, "../../input_data/sample_selection/ALL_riboD_counts.tsv")
+# write_tsv(ALL_polyA_list, "../../input_data/sample_selection/ALL_polyA_list.tsv")
+# write_tsv(ALL_riboD_list, "../../input_data/sample_selection/ALL_riboD_list.tsv")
+# write_tsv(ALL_polyA_log2tpm1, "../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv")
+# write_tsv(ALL_riboD_log2tpm1, "../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv")
+# write_tsv(ALL_polyA_counts, "../../input_data/sample_selection/ALL_polyA_counts.tsv")
+# write_tsv(ALL_riboD_counts, "../../input_data/sample_selection/ALL_riboD_counts.tsv")
 
 # AML polyA
 AML_polyA_list <- filtered_ALL_AML_list %>%
@@ -314,12 +328,12 @@ AML_riboD_log2tpm1 <- ALL_AML_log2tpm1 %>%
 AML_riboD_counts <- ALL_AML_counts %>%
   select(Gene, all_of(AML_riboD_list$term))
 
-write_tsv(AML_polyA_list, "../../input_data/sample_selection/AML_polyA_list.tsv")
-write_tsv(AML_riboD_list, "../../input_data/sample_selection/AML_riboD_list.tsv")
-write_tsv(AML_polyA_log2tpm1, "../../input_data/sample_selection/AML_polyA_log2tpm1.tsv")
-write_tsv(AML_riboD_log2tpm1, "../../input_data/sample_selection/AML_riboD_log2tpm1.tsv")
-write_tsv(AML_polyA_counts, "../../input_data/sample_selection/AML_polyA_counts.tsv")
-write_tsv(AML_riboD_counts, "../../input_data/sample_selection/AML_riboD_counts.tsv")
+# write_tsv(AML_polyA_list, "../../input_data/sample_selection/AML_polyA_list.tsv")
+# write_tsv(AML_riboD_list, "../../input_data/sample_selection/AML_riboD_list.tsv")
+# write_tsv(AML_polyA_log2tpm1, "../../input_data/sample_selection/AML_polyA_log2tpm1.tsv")
+# write_tsv(AML_riboD_log2tpm1, "../../input_data/sample_selection/AML_riboD_log2tpm1.tsv")
+# write_tsv(AML_polyA_counts, "../../input_data/sample_selection/AML_polyA_counts.tsv")
+# write_tsv(AML_riboD_counts, "../../input_data/sample_selection/AML_riboD_counts.tsv")
 ```
 
 ### Samples for UMAP
@@ -392,7 +406,7 @@ polyA_riboD <- rbind(polyA_v25, riboD_v25)
 all_interested_samples <- rbind(filtered_SS_aRMS_list, filtered_WT_NB_list, filtered_ALL_AML_list) %>%
   rename(th_dataset_id = term)
 
-write_tsv(all_interested_samples, "../../input_data/sample_selection/forUMAP/all_interested_samples.tsv")
+# write_tsv(all_interested_samples, "../../input_data/sample_selection/forUMAP/all_interested_samples.tsv")
 ```
 
 ``` r
@@ -713,7 +727,131 @@ subset_samples_new_IDonly <- subset_samples_new %>%
   select(th_dataset_id) %>%
   row_to_names(row_number = 1)
 
-write_tsv(subset_samples_new_IDonly, "../../input_data/sample_selection/forUMAP/final_subset_samples_forUMAP_IDonly.tsv")
+# write_tsv(subset_samples_new_IDonly, "../../input_data/sample_selection/forUMAP/final_subset_samples_forUMAP_IDonly.tsv")
+```
+
+### demographic info
+
+``` r
+FFPE_sample_number <- TEBA_Sample_Metdata %>%
+  group_by(disease_and_prep, froffp_term) %>%
+  summarize(n_sample = n()) %>%
+  mutate(Proportion = n_sample / sum(n_sample)) %>%
+  mutate(froffp_term = replace_na(froffp_term, "Unknown"))
+```
+
+    `summarise()` has grouped output by 'disease_and_prep'. You can override using
+    the `.groups` argument.
+
+``` r
+# stacked barplot for sample type
+FFPE_sample_number_chart <- ggplot(FFPE_sample_number, aes(x = disease_and_prep, y = Proportion, fill = froffp_term)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = n_sample), size = 3, position = position_stack(vjust = 0.5)) +
+#  scale_fill_viridis_d(option = "E") +
+  labs(
+    title = paste("Number of samples per tissue type")
+  ) +
+  theme(axis.text.x=element_text(angle = 300, vjust = 0.5)) +
+  theme(legend.title = element_blank())
+FFPE_sample_number_chart
+```
+
+![](sample_selection_files/figure-commonmark/FFPE_sample_number-1.png)
+
+``` r
+age_sample_number <- TEBA_Sample_Metdata %>%
+  group_by(disease_and_prep, age_at_dx) %>%
+  summarize(n_sample = n()) %>%
+  mutate(Proportion = n_sample / sum(n_sample))
+```
+
+    `summarise()` has grouped output by 'disease_and_prep'. You can override using
+    the `.groups` argument.
+
+``` r
+# stacked barplot for sample type
+age_sample_number_chart <- ggplot(age_sample_number, aes(x = disease_and_prep, y = age_at_dx, fill = age_at_dx)) +
+    geom_boxplot(
+      alpha = 0.7,
+      position = position_dodge(width = 0.8),
+      outlier.shape = NA,
+      linewidth = 0.4
+    ) +
+    geom_jitter(
+      # aes(color = Compendia),
+      position = position_jitterdodge(jitter.width = 0.2,
+                                      dodge.width = 0.8),
+      size = 1.2,
+      alpha = 0.6
+    ) +
+  # geom_bar(stat = "identity", position = "stack") +
+  # geom_text(aes(label = n_sample), size = 3, position = position_stack(vjust = 0.5)) +
+#  scale_fill_viridis_d(option = "E") +
+  labs(
+    title = paste("Number of samples per age")
+  ) +
+  theme(axis.text.x=element_text(angle = 300, vjust = 0.5)) +
+  theme(legend.title = element_blank()) +
+  scale_x_discrete(drop = FALSE) # Prevents ggplot from dropping empty/NA categories
+age_sample_number_chart
+```
+
+    Warning: Removed 4 rows containing non-finite outside the scale range
+    (`stat_boxplot()`).
+
+    Warning: The following aesthetics were dropped during statistical transformation: fill.
+    ℹ This can happen when ggplot fails to infer the correct grouping structure in
+      the data.
+    ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+      variable into a factor?
+
+    Warning: Removed 4 rows containing missing values or values outside the scale range
+    (`geom_point()`).
+
+![](sample_selection_files/figure-commonmark/age_sample_number-1.png)
+
+``` r
+sex_sample_number <- TEBA_Sample_Metdata %>%
+  mutate(sex_term = case_when(
+    sex_term == "not reported" ~ NA,
+    TRUE ~ sex_term
+  )) %>%
+  mutate(sex_term = replace_na(sex_term, "unknown")) %>%
+  group_by(disease_and_prep, sex_term) %>%
+  summarize(n_sample = n()) %>%
+  mutate(Proportion = n_sample / sum(n_sample))
+```
+
+    `summarise()` has grouped output by 'disease_and_prep'. You can override using
+    the `.groups` argument.
+
+``` r
+# stacked barplot for sample type
+sex_sample_number_chart <- ggplot(sex_sample_number, aes(x = disease_and_prep, y = Proportion, fill = sex_term)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = n_sample), size = 3, position = position_stack(vjust = 0.5)) +
+#  scale_fill_viridis_d(option = "E") +
+  labs(
+    title = paste("Number of samples per sex")
+  ) +
+  theme(axis.text.x=element_text(angle = 300, vjust = 0.5)) +
+  theme(legend.title = element_blank())
+sex_sample_number_chart
+```
+
+![](sample_selection_files/figure-commonmark/sex_sample_number-1.png)
+
+Supplemental data file w/ demographic info
+
+``` r
+TEBA_Sample_Metdata_SF <- TEBA_Sample_Metdata %>%
+  select(disease, th_sampleid, source, age_at_dx, sex_term, froffp_term, tr_enrichment_method, disease_and_prep) %>%
+  relocate(disease_and_prep, th_sampleid) %>%
+  mutate(age_at_dx = as.character(age_at_dx)) %>%
+  mutate(across(everything(), ~ replace_na(.x, "not reported")))
+
+# write_tsv(TEBA_Sample_Metdata_SF, "../../output_data/Additional_File_1.tsv.gz")
 ```
 
 ``` r
@@ -730,7 +868,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-06-25
+     date     2026-07-29
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
@@ -755,6 +893,7 @@ sessioninfo::session_info()
      janitor      * 2.2.1   2024-12-22 [1] CRAN (R 4.5.0)
      jsonlite       2.0.0   2025-03-27 [1] CRAN (R 4.5.0)
      knitr          1.50    2025-03-16 [1] CRAN (R 4.5.0)
+     labeling       0.4.3   2023-08-29 [1] CRAN (R 4.5.0)
      lifecycle      1.0.4   2023-11-07 [1] CRAN (R 4.5.0)
      lubridate    * 1.9.4   2024-12-08 [1] CRAN (R 4.5.0)
      magrittr       2.0.4   2025-09-12 [1] CRAN (R 4.5.0)

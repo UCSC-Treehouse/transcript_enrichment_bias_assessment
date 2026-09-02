@@ -309,6 +309,33 @@ print(paste("number of genes unique to polyA biased wrt riboDunbiased and riboDb
     [1] "number of genes unique to polyA biased wrt riboDunbiased and riboDbiased is 2038"
 
 ``` r
+up_arms_ss_PolyAunbiased_uniquetoPolyAunbiased <- armsPolyA_ssPolyA_great1 %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene") %>% # not in polyA biased
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") # not in riboD biased
+print(paste("number of genes unique to polyA unbiased wrt polyAbiased and riboD biased is", nrow(up_arms_ss_PolyAunbiased_uniquetoPolyAunbiased)))
+```
+
+    [1] "number of genes unique to polyA unbiased wrt polyAbiased and riboD biased is 163"
+
+``` r
+up_arms_ss_RiboDunbiased_uniquetoRiboDunbiased <- armsRiboD_ssRiboD_great1 %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene") %>% # not in polyA biased
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") # not in riboD biased
+print(paste("number of genes unique to RiboD unbiased wrt polyA biased and riboD biased is", nrow(up_arms_ss_RiboDunbiased_uniquetoRiboDunbiased)))
+```
+
+    [1] "number of genes unique to RiboD unbiased wrt polyA biased and riboD biased is 114"
+
+``` r
+# are there any genes found to be differentially upregulated in the polyA unbiased and riboD unbiased that are not found in the biased comparisons?
+up_arms_ss_polyAunbiased_riboDunbiased <- up_arms_ss_PolyAunbiased_uniquetoPolyAunbiased %>%
+  inner_join(up_arms_ss_RiboDunbiased_uniquetoRiboDunbiased, by = "Gene")
+print(paste("number of genes in both unique_to_polyAunbiased and unique_to_riboDunbiased is", nrow(up_arms_ss_polyAunbiased_riboDunbiased)))
+```
+
+    [1] "number of genes in both unique_to_polyAunbiased and unique_to_riboDunbiased is 2"
+
+``` r
 # need to combine these to get the genes in common between the two venn diagram polyA biased sections
 up_arms_ss_polyAbiased <- inner_join(up_arms_ss_PolyAunbiased_uniquetoPolyAbiased, up_arms_ss_RiboDunbiased_uniquetoPolyAbiased, by = "Gene")
 print(paste("number of genes in common as unique to polyA biased is", nrow(up_arms_ss_polyAbiased)))
@@ -317,7 +344,7 @@ print(paste("number of genes in common as unique to polyA biased is", nrow(up_ar
     [1] "number of genes in common as unique to polyA biased is 1590"
 
 ``` r
-write_tsv(up_arms_ss_polyAbiased, "../../output_data/all_disease_comparisons/up_arms_ss_polyAbiased.tsv.gz")
+# write_tsv(up_arms_ss_polyAbiased, "../../output_data/all_disease_comparisons/up_arms_ss_polyAbiased.tsv.gz")
 ```
 
 ``` r
@@ -356,7 +383,7 @@ print(paste("number of genes unique to riboD biased is", nrow(up_arms_ss_riboDbi
     [1] "number of genes unique to riboD biased is 4864"
 
 ``` r
-write_tsv(up_arms_ss_riboDbiased, "../../output_data/all_disease_comparisons/up_arms_ss_riboDbiased.tsv.gz")
+# write_tsv(up_arms_ss_riboDbiased, "../../output_data/all_disease_comparisons/up_arms_ss_riboDbiased.tsv.gz")
 ```
 
 #### up in WT relative to NB
@@ -397,7 +424,7 @@ print(paste("number of genes unique to polyAbiased is", nrow(up_nb_wt_polyAbiase
     [1] "number of genes unique to polyAbiased is 2216"
 
 ``` r
-write_tsv(up_nb_wt_polyAbiased, "../../output_data/all_disease_comparisons/up_nb_wt_polyAbiased.tsv.gz")
+# write_tsv(up_nb_wt_polyAbiased, "../../output_data/all_disease_comparisons/up_nb_wt_polyAbiased.tsv.gz")
 ```
 
 ``` r
@@ -436,7 +463,7 @@ print(paste("number of genes unique to riboD biased is", nrow(up_nb_wt_riboDbias
     [1] "number of genes unique to riboD biased is 4934"
 
 ``` r
-write_tsv(up_nb_wt_riboDbiased, "../../output_data/all_disease_comparisons/up_nb_wt_riboDbiased.tsv.gz")
+# write_tsv(up_nb_wt_riboDbiased, "../../output_data/all_disease_comparisons/up_nb_wt_riboDbiased.tsv.gz")
 ```
 
 #### up in AML relative to ALL
@@ -477,7 +504,7 @@ print(paste("number of genes unique to polyA biased is", nrow(up_all_aml_polyAbi
     [1] "number of genes unique to polyA biased is 1520"
 
 ``` r
-write_tsv(up_all_aml_polyAbiased, "../../output_data/all_disease_comparisons/up_all_aml_polyAbiased.tsv.gz")
+# write_tsv(up_all_aml_polyAbiased, "../../output_data/all_disease_comparisons/up_all_aml_polyAbiased.tsv.gz")
 ```
 
 ``` r
@@ -516,7 +543,7 @@ print(paste("number of genes unique to riboD biased is", nrow(up_all_aml_riboDbi
     [1] "number of genes unique to riboD biased is 2443"
 
 ``` r
-write_tsv(up_all_aml_riboDbiased, "../../output_data/all_disease_comparisons/up_all_aml_riboDbiased.tsv.gz")
+# write_tsv(up_all_aml_riboDbiased, "../../output_data/all_disease_comparisons/up_all_aml_riboDbiased.tsv.gz")
 ```
 
 ### Venn Diagrams
@@ -529,7 +556,7 @@ up_polyAbiased_all <- list(
   "Up in AML polyA relative to ALL riboD (polyA biased)" = up_all_aml_polyAbiased$Gene
 )
 
-write_rds(up_polyAbiased_all, "../../output_data/all_disease_comparisons/up_polyAbiased_all.rds")
+# write_rds(up_polyAbiased_all, "../../output_data/all_disease_comparisons/up_polyAbiased_all.rds")
 
 up_polyAbiased_all_VD <- venn.diagram(
   x = up_polyAbiased_all,
@@ -557,55 +584,55 @@ up_polyAbiased_all_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-04 17:31:38] $x
-    INFO [2026-07-04 17:31:38] up_polyAbiased_all
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $category.names
-    INFO [2026-07-04 17:31:38] c("Up in SS polyA relative to \n aRMS riboD (polyAbiased)", "Up in WT polyA relative to \n NB riboD (polyAbiased)", 
-    INFO [2026-07-04 17:31:38]     "Up in AML polyA relative to \n ALL riboD (polyAbiased)")
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $filename
-    INFO [2026-07-04 17:31:38] NULL
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $output
-    INFO [2026-07-04 17:31:38] [1] TRUE
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $print.mode
-    INFO [2026-07-04 17:31:38] c("raw", "percent")
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $fill
-    INFO [2026-07-04 17:31:38] c("#0072B2", "#0098ed", "#87CEEB")
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $cex
-    INFO [2026-07-04 17:31:38] [1] 1
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $cat.cex
-    INFO [2026-07-04 17:31:38] [1] 0.65
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $cat.dist
-    INFO [2026-07-04 17:31:38] c(0.05, 0.05, 0.05)
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $height
-    INFO [2026-07-04 17:31:38] [1] 2000
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $width
-    INFO [2026-07-04 17:31:38] [1] 2000
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $cat.default.pos
-    INFO [2026-07-04 17:31:38] [1] "outer"
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $cat.pos
-    INFO [2026-07-04 17:31:38] c(-12, 12, 175)
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $main
-    INFO [2026-07-04 17:31:38] [1] "Genes upregulated in PolyA disease relative to \n reference RiboD disease (L2FC >= 1 and  p-adj < 0.05)"
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $main.cex
-    INFO [2026-07-04 17:31:38] [1] 0.7
-    INFO [2026-07-04 17:31:38] 
-    INFO [2026-07-04 17:31:38] $disable.logging
-    INFO [2026-07-04 17:31:38] [1] TRUE
-    INFO [2026-07-04 17:31:38] 
+    INFO [2026-09-02 11:31:47] $x
+    INFO [2026-09-02 11:31:47] up_polyAbiased_all
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $category.names
+    INFO [2026-09-02 11:31:47] c("Up in SS polyA relative to \n aRMS riboD (polyAbiased)", "Up in WT polyA relative to \n NB riboD (polyAbiased)", 
+    INFO [2026-09-02 11:31:47]     "Up in AML polyA relative to \n ALL riboD (polyAbiased)")
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $filename
+    INFO [2026-09-02 11:31:47] NULL
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $output
+    INFO [2026-09-02 11:31:47] [1] TRUE
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $print.mode
+    INFO [2026-09-02 11:31:47] c("raw", "percent")
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $fill
+    INFO [2026-09-02 11:31:47] c("#0072B2", "#0098ed", "#87CEEB")
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $cex
+    INFO [2026-09-02 11:31:47] [1] 1
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $cat.cex
+    INFO [2026-09-02 11:31:47] [1] 0.65
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $cat.dist
+    INFO [2026-09-02 11:31:47] c(0.05, 0.05, 0.05)
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $height
+    INFO [2026-09-02 11:31:47] [1] 2000
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $width
+    INFO [2026-09-02 11:31:47] [1] 2000
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $cat.default.pos
+    INFO [2026-09-02 11:31:47] [1] "outer"
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $cat.pos
+    INFO [2026-09-02 11:31:47] c(-12, 12, 175)
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $main
+    INFO [2026-09-02 11:31:47] [1] "Genes upregulated in PolyA disease relative to \n reference RiboD disease (L2FC >= 1 and  p-adj < 0.05)"
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $main.cex
+    INFO [2026-09-02 11:31:47] [1] 0.7
+    INFO [2026-09-02 11:31:47] 
+    INFO [2026-09-02 11:31:47] $disable.logging
+    INFO [2026-09-02 11:31:47] [1] TRUE
+    INFO [2026-09-02 11:31:47] 
 
 ``` r
 up_polyAbiased_all_VD
@@ -621,7 +648,7 @@ up_riboDbiased_all <- list(
   "Up in AML riboD relative to ALL polyA (riboD biased)" = up_all_aml_riboDbiased$Gene
 )
 
-write_rds(up_riboDbiased_all, "../../output_data/all_disease_comparisons/up_riboDbiased_all.rds")
+# write_rds(up_riboDbiased_all, "../../output_data/all_disease_comparisons/up_riboDbiased_all.rds")
 
 up_riboDbiased_all_VD <- venn.diagram(
   x = up_riboDbiased_all,
@@ -649,56 +676,56 @@ up_riboDbiased_all_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-04 17:31:41] $x
-    INFO [2026-07-04 17:31:41] up_riboDbiased_all
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $category.names
-    INFO [2026-07-04 17:31:41] c("Up in SS riboD relative to \n aRMS polyA (riboD biased)", 
-    INFO [2026-07-04 17:31:41]     "Up in WT riboD relative to \n NB polyA (riboD biased)", 
-    INFO [2026-07-04 17:31:41]     "Up in AML riboD relative to \n ALL polyA (riboD biased)")
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $filename
-    INFO [2026-07-04 17:31:41] NULL
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $output
-    INFO [2026-07-04 17:31:41] [1] TRUE
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $print.mode
-    INFO [2026-07-04 17:31:41] c("raw", "percent")
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $fill
-    INFO [2026-07-04 17:31:41] c("#E69F00", "#ff9b00", "#e6b200")
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $cex
-    INFO [2026-07-04 17:31:41] [1] 1
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $cat.cex
-    INFO [2026-07-04 17:31:41] [1] 0.6
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $cat.dist
-    INFO [2026-07-04 17:31:41] c(0.05, 0.05, 0.05)
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $height
-    INFO [2026-07-04 17:31:41] [1] 2000
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $width
-    INFO [2026-07-04 17:31:41] [1] 2000
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $cat.default.pos
-    INFO [2026-07-04 17:31:41] [1] "outer"
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $cat.pos
-    INFO [2026-07-04 17:31:41] c(-12, 12, 175)
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $main
-    INFO [2026-07-04 17:31:41] [1] "Genes upregulated in RiboD disease relative to \n reference PolyA disease (L2FC >= 1 and  p-adj < 0.05)"
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $main.cex
-    INFO [2026-07-04 17:31:41] [1] 0.7
-    INFO [2026-07-04 17:31:41] 
-    INFO [2026-07-04 17:31:41] $disable.logging
-    INFO [2026-07-04 17:31:41] [1] TRUE
-    INFO [2026-07-04 17:31:41] 
+    INFO [2026-09-02 11:31:48] $x
+    INFO [2026-09-02 11:31:48] up_riboDbiased_all
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $category.names
+    INFO [2026-09-02 11:31:48] c("Up in SS riboD relative to \n aRMS polyA (riboD biased)", 
+    INFO [2026-09-02 11:31:48]     "Up in WT riboD relative to \n NB polyA (riboD biased)", 
+    INFO [2026-09-02 11:31:48]     "Up in AML riboD relative to \n ALL polyA (riboD biased)")
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $filename
+    INFO [2026-09-02 11:31:48] NULL
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $output
+    INFO [2026-09-02 11:31:48] [1] TRUE
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $print.mode
+    INFO [2026-09-02 11:31:48] c("raw", "percent")
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $fill
+    INFO [2026-09-02 11:31:48] c("#E69F00", "#ff9b00", "#e6b200")
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cex
+    INFO [2026-09-02 11:31:48] [1] 1
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.cex
+    INFO [2026-09-02 11:31:48] [1] 0.6
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.dist
+    INFO [2026-09-02 11:31:48] c(0.05, 0.05, 0.05)
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $height
+    INFO [2026-09-02 11:31:48] [1] 2000
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $width
+    INFO [2026-09-02 11:31:48] [1] 2000
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.default.pos
+    INFO [2026-09-02 11:31:48] [1] "outer"
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.pos
+    INFO [2026-09-02 11:31:48] c(-12, 12, 175)
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $main
+    INFO [2026-09-02 11:31:48] [1] "Genes upregulated in RiboD disease relative to \n reference PolyA disease (L2FC >= 1 and  p-adj < 0.05)"
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $main.cex
+    INFO [2026-09-02 11:31:48] [1] 0.7
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $disable.logging
+    INFO [2026-09-02 11:31:48] [1] TRUE
+    INFO [2026-09-02 11:31:48] 
 
 ``` r
 up_riboDbiased_all_VD
@@ -840,13 +867,13 @@ print(paste("number of genes unique to polyAbiased wrt riboDunbiased and riboDbi
 ``` r
 # need to combine these to get the ones in common between the two venn diagram polyA biased sections
 down_arms_ss_polyAbiased <- inner_join(down_arms_ss_PolyAunbiased_uniquetoPolyAbiased, down_arms_ss_RiboDunbiased_uniquetoPolyAbiased, by = "Gene")
-print(paste("number of genes in common as unique to first false is", nrow(down_arms_ss_polyAbiased)))
+print(paste("number of genes in common as unique to PolyA biased is", nrow(down_arms_ss_polyAbiased)))
 ```
 
-    [1] "number of genes in common as unique to first false is 4102"
+    [1] "number of genes in common as unique to PolyA biased is 4102"
 
 ``` r
-write_tsv(down_arms_ss_polyAbiased, "../../output_data/all_disease_comparisons/down_arms_ss_polyAbiased.tsv.gz")
+# write_tsv(down_arms_ss_polyAbiased, "../../output_data/all_disease_comparisons/down_arms_ss_polyAbiased.tsv.gz")
 ```
 
 ``` r
@@ -884,8 +911,35 @@ print(paste("number of genes unique to riboD biased is", nrow(down_arms_ss_riboD
     [1] "number of genes unique to riboD biased is 1712"
 
 ``` r
-write_tsv(down_arms_ss_riboDbiased, "../../output_data/all_disease_comparisons/down_arms_ss_riboDbiased.tsv.gz")
+# write_tsv(down_arms_ss_riboDbiased, "../../output_data/all_disease_comparisons/down_arms_ss_riboDbiased.tsv.gz")
 ```
+
+``` r
+down_arms_ss_PolyAunbiased_uniquetoPolyAunbiased <- armsPolyA_ssPolyA_less1 %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene") %>% # not in polyA biased
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") # not in riboD biased
+print(paste("number of genes uniquely downregulated in polyA unbiased wrt polyAbiased and riboD biased is", nrow(down_arms_ss_PolyAunbiased_uniquetoPolyAunbiased)))
+```
+
+    [1] "number of genes uniquely downregulated in polyA unbiased wrt polyAbiased and riboD biased is 234"
+
+``` r
+down_arms_ss_RiboDunbiased_uniquetoRiboDunbiased <- armsRiboD_ssRiboD_less1 %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene") %>% # not in polyA biased
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") # not in riboD biased
+print(paste("number of genes uniquely downregulated in riboD unbiased wrt polyAbiased and riboD biased is", nrow(down_arms_ss_RiboDunbiased_uniquetoRiboDunbiased)))
+```
+
+    [1] "number of genes uniquely downregulated in riboD unbiased wrt polyAbiased and riboD biased is 67"
+
+``` r
+# are there any genes found to be differentially downregulated in the polyA unbiased and riboD unbiased that are not found in the biased comparisons?
+down_arms_ss_polyAunbiased_riboDunbiased <- down_arms_ss_PolyAunbiased_uniquetoPolyAunbiased %>%
+  inner_join(down_arms_ss_RiboDunbiased_uniquetoRiboDunbiased, by = "Gene")
+print(paste("number of genes in both unique_to_polyAunbiased and unique_to_riboDunbiased is", nrow(down_arms_ss_polyAunbiased_riboDunbiased)))
+```
+
+    [1] "number of genes in both unique_to_polyAunbiased and unique_to_riboDunbiased is 12"
 
 #### **Down in WT relative to NB**
 
@@ -925,7 +979,7 @@ print(paste("number of genes unique to polyA biased is", nrow(down_nb_wt_polyAbi
     [1] "number of genes unique to polyA biased is 4553"
 
 ``` r
-write_tsv(down_nb_wt_polyAbiased, "../../output_data/all_disease_comparisons/down_nb_wt_polyAbiased.tsv.gz")
+# write_tsv(down_nb_wt_polyAbiased, "../../output_data/all_disease_comparisons/down_nb_wt_polyAbiased.tsv.gz")
 ```
 
 ``` r
@@ -964,7 +1018,7 @@ print(paste("number of genes unique to riboD biased is", nrow(down_nb_wt_riboDbi
     [1] "number of genes unique to riboD biased is 1361"
 
 ``` r
-write_tsv(down_nb_wt_riboDbiased, "../../output_data/all_disease_comparisons/down_nb_wt_riboDbiased.tsv.gz")
+# write_tsv(down_nb_wt_riboDbiased, "../../output_data/all_disease_comparisons/down_nb_wt_riboDbiased.tsv.gz")
 ```
 
 #### **Down in AML relative to ALL**
@@ -1005,7 +1059,7 @@ print(paste("number of genes unique to polyA biased is", nrow(down_all_aml_polyA
     [1] "number of genes unique to polyA biased is 2988"
 
 ``` r
-write_tsv(down_all_aml_polyAbiased, "../../output_data/all_disease_comparisons/down_all_aml_polyAbiased.tsv.gz")
+# write_tsv(down_all_aml_polyAbiased, "../../output_data/all_disease_comparisons/down_all_aml_polyAbiased.tsv.gz")
 ```
 
 ``` r
@@ -1044,7 +1098,7 @@ print(paste("number of genes unique to riboD biased is", nrow(down_all_aml_riboD
     [1] "number of genes unique to riboD biased is 1274"
 
 ``` r
-write_tsv(down_all_aml_riboDbiased, "../../output_data/all_disease_comparisons/down_all_aml_riboDbiased.tsv.gz")
+# write_tsv(down_all_aml_riboDbiased, "../../output_data/all_disease_comparisons/down_all_aml_riboDbiased.tsv.gz")
 ```
 
 ### Venn diagrams
@@ -1057,7 +1111,7 @@ down_polyAbiased_all <- list(
   "Down in AML polyA relative to ALL riboD (polyA biased)" = down_all_aml_polyAbiased$Gene
 )
 
-write_rds(down_polyAbiased_all, "../../output_data/all_disease_comparisons/down_polyAbiased_all.rds")
+# write_rds(down_polyAbiased_all, "../../output_data/all_disease_comparisons/down_polyAbiased_all.rds")
 
 
 down_polyAbiased_all_VD <- venn.diagram(
@@ -1086,56 +1140,56 @@ down_polyAbiased_all_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-04 17:31:48] $x
-    INFO [2026-07-04 17:31:48] down_polyAbiased_all
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $category.names
-    INFO [2026-07-04 17:31:48] c("Down in SS polyA relative to \n aRMS riboD (polyA biased)", 
-    INFO [2026-07-04 17:31:48]     "Down in WT polyA relative to \n NB riboD (polyA biased)", 
-    INFO [2026-07-04 17:31:48]     "Down in AML polyA relative to \n ALL riboD (polyA biased)")
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $filename
-    INFO [2026-07-04 17:31:48] NULL
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $output
-    INFO [2026-07-04 17:31:48] [1] TRUE
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $print.mode
-    INFO [2026-07-04 17:31:48] c("raw", "percent")
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $fill
-    INFO [2026-07-04 17:31:48] c("#0072B2", "#0098ed", "#87CEEB")
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $cex
-    INFO [2026-07-04 17:31:48] [1] 1
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $cat.cex
-    INFO [2026-07-04 17:31:48] [1] 0.65
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $cat.dist
-    INFO [2026-07-04 17:31:48] c(0.05, 0.05, 0.05)
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $height
-    INFO [2026-07-04 17:31:48] [1] 2000
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $width
-    INFO [2026-07-04 17:31:48] [1] 2000
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $cat.default.pos
-    INFO [2026-07-04 17:31:48] [1] "outer"
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $cat.pos
-    INFO [2026-07-04 17:31:48] c(-12, 12, 175)
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $main
-    INFO [2026-07-04 17:31:48] [1] "Genes downregulated in PolyA disease relative to \n reference RiboD disease (L2FC <= -1 and  p-adj < 0.05)"
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $main.cex
-    INFO [2026-07-04 17:31:48] [1] 0.7
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $disable.logging
-    INFO [2026-07-04 17:31:48] [1] TRUE
-    INFO [2026-07-04 17:31:48] 
+    INFO [2026-09-02 11:31:48] $x
+    INFO [2026-09-02 11:31:48] down_polyAbiased_all
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $category.names
+    INFO [2026-09-02 11:31:48] c("Down in SS polyA relative to \n aRMS riboD (polyA biased)", 
+    INFO [2026-09-02 11:31:48]     "Down in WT polyA relative to \n NB riboD (polyA biased)", 
+    INFO [2026-09-02 11:31:48]     "Down in AML polyA relative to \n ALL riboD (polyA biased)")
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $filename
+    INFO [2026-09-02 11:31:48] NULL
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $output
+    INFO [2026-09-02 11:31:48] [1] TRUE
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $print.mode
+    INFO [2026-09-02 11:31:48] c("raw", "percent")
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $fill
+    INFO [2026-09-02 11:31:48] c("#0072B2", "#0098ed", "#87CEEB")
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cex
+    INFO [2026-09-02 11:31:48] [1] 1
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.cex
+    INFO [2026-09-02 11:31:48] [1] 0.65
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.dist
+    INFO [2026-09-02 11:31:48] c(0.05, 0.05, 0.05)
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $height
+    INFO [2026-09-02 11:31:48] [1] 2000
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $width
+    INFO [2026-09-02 11:31:48] [1] 2000
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.default.pos
+    INFO [2026-09-02 11:31:48] [1] "outer"
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.pos
+    INFO [2026-09-02 11:31:48] c(-12, 12, 175)
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $main
+    INFO [2026-09-02 11:31:48] [1] "Genes downregulated in PolyA disease relative to \n reference RiboD disease (L2FC <= -1 and  p-adj < 0.05)"
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $main.cex
+    INFO [2026-09-02 11:31:48] [1] 0.7
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $disable.logging
+    INFO [2026-09-02 11:31:48] [1] TRUE
+    INFO [2026-09-02 11:31:48] 
 
 ``` r
 down_polyAbiased_all_VD
@@ -1151,7 +1205,7 @@ down_riboDbiased_all <- list(
   "Down in AML riboD relative to ALL polyA (second false)" = down_all_aml_riboDbiased$Gene
 )
 
-write_rds(down_riboDbiased_all, "../../output_data/all_disease_comparisons/down_riboDbiased_all.rds")
+# write_rds(down_riboDbiased_all, "../../output_data/all_disease_comparisons/down_riboDbiased_all.rds")
 
 
 down_riboDbiased_all_VD <- venn.diagram(
@@ -1180,56 +1234,56 @@ down_riboDbiased_all_VD <- venn.diagram(
 )
 ```
 
-    INFO [2026-07-04 17:31:48] $x
-    INFO [2026-07-04 17:31:48] down_riboDbiased_all
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $category.names
-    INFO [2026-07-04 17:31:48] c("Down in SS riboD relative to \n aRMS polyA (riboD biased)", 
-    INFO [2026-07-04 17:31:48]     "Down in WT riboD relative to \n NB polyA (riboD biased)", 
-    INFO [2026-07-04 17:31:48]     "Down in AML riboD relative to \n ALL polyA (riboD biased)")
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $filename
-    INFO [2026-07-04 17:31:48] NULL
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $output
-    INFO [2026-07-04 17:31:48] [1] TRUE
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $print.mode
-    INFO [2026-07-04 17:31:48] c("raw", "percent")
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $fill
-    INFO [2026-07-04 17:31:48] c("#E69F00", "#ff9b00", "#e6b200")
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $cex
-    INFO [2026-07-04 17:31:48] [1] 1
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $cat.cex
-    INFO [2026-07-04 17:31:48] [1] 0.6
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $cat.dist
-    INFO [2026-07-04 17:31:48] c(0.05, 0.05, 0.05)
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $height
-    INFO [2026-07-04 17:31:48] [1] 2000
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $width
-    INFO [2026-07-04 17:31:48] [1] 2000
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $cat.default.pos
-    INFO [2026-07-04 17:31:48] [1] "outer"
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $cat.pos
-    INFO [2026-07-04 17:31:48] c(-12, 12, 175)
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $main
-    INFO [2026-07-04 17:31:48] [1] "Genes downregulated in RiboD disease relative to \n reference PolyA disease (L2FC <= -1 and  p-adj < 0.05)"
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $main.cex
-    INFO [2026-07-04 17:31:48] [1] 0.7
-    INFO [2026-07-04 17:31:48] 
-    INFO [2026-07-04 17:31:48] $disable.logging
-    INFO [2026-07-04 17:31:48] [1] TRUE
-    INFO [2026-07-04 17:31:48] 
+    INFO [2026-09-02 11:31:48] $x
+    INFO [2026-09-02 11:31:48] down_riboDbiased_all
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $category.names
+    INFO [2026-09-02 11:31:48] c("Down in SS riboD relative to \n aRMS polyA (riboD biased)", 
+    INFO [2026-09-02 11:31:48]     "Down in WT riboD relative to \n NB polyA (riboD biased)", 
+    INFO [2026-09-02 11:31:48]     "Down in AML riboD relative to \n ALL polyA (riboD biased)")
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $filename
+    INFO [2026-09-02 11:31:48] NULL
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $output
+    INFO [2026-09-02 11:31:48] [1] TRUE
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $print.mode
+    INFO [2026-09-02 11:31:48] c("raw", "percent")
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $fill
+    INFO [2026-09-02 11:31:48] c("#E69F00", "#ff9b00", "#e6b200")
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cex
+    INFO [2026-09-02 11:31:48] [1] 1
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.cex
+    INFO [2026-09-02 11:31:48] [1] 0.6
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.dist
+    INFO [2026-09-02 11:31:48] c(0.05, 0.05, 0.05)
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $height
+    INFO [2026-09-02 11:31:48] [1] 2000
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $width
+    INFO [2026-09-02 11:31:48] [1] 2000
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.default.pos
+    INFO [2026-09-02 11:31:48] [1] "outer"
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $cat.pos
+    INFO [2026-09-02 11:31:48] c(-12, 12, 175)
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $main
+    INFO [2026-09-02 11:31:48] [1] "Genes downregulated in RiboD disease relative to \n reference PolyA disease (L2FC <= -1 and  p-adj < 0.05)"
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $main.cex
+    INFO [2026-09-02 11:31:48] [1] 0.7
+    INFO [2026-09-02 11:31:48] 
+    INFO [2026-09-02 11:31:48] $disable.logging
+    INFO [2026-09-02 11:31:48] [1] TRUE
+    INFO [2026-09-02 11:31:48] 
 
 ``` r
 down_riboDbiased_all_VD
@@ -1717,6 +1771,768 @@ down_riboDunbiased_vs_biases_plot_bydisease
 
 ![](all_disease_comparisons_files/figure-commonmark/down_riboDunbiased_vs_biases_plot_bydisease-1.png)
 
+### Misc Analysis
+
+Interested in knowing how many DEGs are unique across all 4 comparisons
+(polyA unbiased, riboD unbiased, polyA biased, and riboD biased).
+
+#### aRMS v SS - Up DEGS across all 4 comparisons
+
+``` r
+aRMS_SS_up_list <- list(armsPolyA_ssPolyA_great1, armsRiboD_ssRiboD_great1, armsPolyA_ssRiboD_great1, armsRiboD_ssPolyA_great1)
+
+aRMS_SS_up_genes <- aRMS_SS_up_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+```
+
+    Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
+    dplyr 1.1.0.
+    ℹ Please use `reframe()` instead.
+    ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
+      always returns an ungrouped data frame and adjust accordingly.
+
+``` r
+print(aRMS_SS_up_genes %>% nrow())
+```
+
+    [1] 12012
+
+``` r
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+aRMS_SS_up_polyAunbiased_unique_v_all <- armsPolyA_ssPolyA_great1 %>%
+  anti_join(armsRiboD_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene")
+print(armsPolyA_ssPolyA_great1 %>% nrow())
+```
+
+    [1] 4622
+
+``` r
+print(aRMS_SS_up_polyAunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 161
+
+``` r
+#riboD_unbiased
+aRMS_SS_up_riboDunbiased_unique_v_all <- armsRiboD_ssRiboD_great1 %>%
+  anti_join(armsPolyA_ssPolyA_great1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene")
+print(armsRiboD_ssRiboD_great1 %>% nrow())
+```
+
+    [1] 3921
+
+``` r
+print(aRMS_SS_up_riboDunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 112
+
+``` r
+#polyA_biased
+aRMS_SS_up_polyAbiased_unique_v_all <- armsRiboD_ssPolyA_great1 %>%
+  anti_join(armsPolyA_ssPolyA_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") 
+print(armsRiboD_ssPolyA_great1 %>% nrow())
+```
+
+    [1] 4894
+
+``` r
+print(aRMS_SS_up_polyAbiased_unique_v_all %>% nrow())
+```
+
+    [1] 1590
+
+``` r
+#riboD_biased
+aRMS_SS_up_riboDbiased_unique_v_all <- armsPolyA_ssRiboD_great1 %>%
+  anti_join(armsPolyA_ssPolyA_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene") 
+print(armsPolyA_ssRiboD_great1 %>% nrow())
+```
+
+    [1] 8951
+
+``` r
+print(aRMS_SS_up_riboDbiased_unique_v_all %>% nrow())
+```
+
+    [1] 4864
+
+4-part venn diagram
+
+``` r
+g1_aRMS_SS_up = armsPolyA_ssPolyA_great1$Gene
+g2_aRMS_SS_up = armsRiboD_ssRiboD_great1$Gene
+g3_aRMS_SS_up = armsRiboD_ssPolyA_great1$Gene
+g4_aRMS_SS_up = armsPolyA_ssRiboD_great1$Gene
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_aRMS_SS_up), 
+  area2 = length(g2_aRMS_SS_up), 
+  area3 = length(g3_aRMS_SS_up), 
+  area4 = length(g4_aRMS_SS_up),
+  n12 = length(intersect(g1_aRMS_SS_up, g2_aRMS_SS_up)), 
+  n13 = length(intersect(g1_aRMS_SS_up, g3_aRMS_SS_up)), 
+  n14 = length(intersect(g1_aRMS_SS_up, g4_aRMS_SS_up)),
+  n23 = length(intersect(g2_aRMS_SS_up, g3_aRMS_SS_up)), 
+  n24 = length(intersect(g2_aRMS_SS_up, g4_aRMS_SS_up)), 
+  n34 = length(intersect(g3_aRMS_SS_up, g4_aRMS_SS_up)),
+  n123 = length(intersect(intersect(g1_aRMS_SS_up, g2_aRMS_SS_up), g3_aRMS_SS_up)),
+  n124 = length(intersect(intersect(g1_aRMS_SS_up, g2_aRMS_SS_up), g4_aRMS_SS_up)),
+  n134 = length(intersect(intersect(g1_aRMS_SS_up, g3_aRMS_SS_up), g4_aRMS_SS_up)),
+  n234 = length(intersect(intersect(g2_aRMS_SS_up, g3_aRMS_SS_up), g4_aRMS_SS_up)),
+  n1234 = length(intersect(intersect(intersect(g1_aRMS_SS_up, g2_aRMS_SS_up), g3_aRMS_SS_up), g4_aRMS_SS_up)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
+```
+
+![](all_disease_comparisons_files/figure-commonmark/aRMS_SS_up_VD-1.png)
+
+![](all_disease_comparisons_files/figure-commonmark/aRMS_SS_up_VD-2.png)
+
+#### aRMS v SS - Down DEGS across all 4 comparisons
+
+``` r
+aRMS_SS_down_list <- list(armsPolyA_ssPolyA_less1, armsRiboD_ssRiboD_less1, armsPolyA_ssRiboD_less1, armsRiboD_ssPolyA_less1)
+
+aRMS_SS_down_genes <- aRMS_SS_down_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+```
+
+    Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
+    dplyr 1.1.0.
+    ℹ Please use `reframe()` instead.
+    ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
+      always returns an ungrouped data frame and adjust accordingly.
+
+``` r
+print(aRMS_SS_down_genes %>% nrow())
+```
+
+    [1] 13664
+
+``` r
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+aRMS_SS_down_polyAunbiased_unique_v_all <- armsPolyA_ssPolyA_less1 %>%
+  anti_join(armsRiboD_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene")
+print(armsPolyA_ssPolyA_less1 %>% nrow())
+```
+
+    [1] 6759
+
+``` r
+print(aRMS_SS_down_polyAunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 222
+
+``` r
+#riboD_unbiased
+aRMS_SS_down_riboDunbiased_unique_v_all <- armsRiboD_ssRiboD_less1 %>%
+  anti_join(armsPolyA_ssPolyA_less1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene")
+print(armsRiboD_ssRiboD_less1 %>% nrow())
+```
+
+    [1] 4981
+
+``` r
+print(aRMS_SS_down_riboDunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 55
+
+``` r
+#polyA_biased
+aRMS_SS_down_polyAbiased_unique_v_all <- armsRiboD_ssPolyA_less1 %>%
+  anti_join(armsPolyA_ssPolyA_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") 
+print(armsRiboD_ssPolyA_less1 %>% nrow())
+```
+
+    [1] 10438
+
+``` r
+print(aRMS_SS_down_polyAbiased_unique_v_all %>% nrow())
+```
+
+    [1] 4102
+
+``` r
+#riboD_biased
+aRMS_SS_down_riboDbiased_unique_v_all <- armsPolyA_ssRiboD_less1 %>%
+  anti_join(armsPolyA_ssPolyA_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene") 
+print(armsPolyA_ssRiboD_less1 %>% nrow())
+```
+
+    [1] 5711
+
+``` r
+print(aRMS_SS_down_riboDbiased_unique_v_all %>% nrow())
+```
+
+    [1] 1712
+
+``` r
+g1_aRMS_SS_down = armsPolyA_ssPolyA_less1$Gene
+g2_aRMS_SS_down = armsRiboD_ssRiboD_less1$Gene
+g3_aRMS_SS_down = armsRiboD_ssPolyA_less1$Gene
+g4_aRMS_SS_down = armsPolyA_ssRiboD_less1$Gene
+
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_aRMS_SS_down), 
+  area2 = length(g2_aRMS_SS_down), 
+  area3 = length(g3_aRMS_SS_down), 
+  area4 = length(g4_aRMS_SS_down),
+  n12 = length(intersect(g1_aRMS_SS_down, g2_aRMS_SS_down)), 
+  n13 = length(intersect(g1_aRMS_SS_down, g3_aRMS_SS_down)), 
+  n14 = length(intersect(g1_aRMS_SS_down, g4_aRMS_SS_down)),
+  n23 = length(intersect(g2_aRMS_SS_down, g3_aRMS_SS_down)), 
+  n24 = length(intersect(g2_aRMS_SS_down, g4_aRMS_SS_down)), 
+  n34 = length(intersect(g3_aRMS_SS_down, g4_aRMS_SS_down)),
+  n123 = length(intersect(intersect(g1_aRMS_SS_down, g2_aRMS_SS_down), g3_aRMS_SS_down)),
+  n124 = length(intersect(intersect(g1_aRMS_SS_down, g2_aRMS_SS_down), g4_aRMS_SS_down)),
+  n134 = length(intersect(intersect(g1_aRMS_SS_down, g3_aRMS_SS_down), g4_aRMS_SS_down)),
+  n234 = length(intersect(intersect(g2_aRMS_SS_down, g3_aRMS_SS_down), g4_aRMS_SS_down)),
+  n1234 = length(intersect(intersect(intersect(g1_aRMS_SS_down, g2_aRMS_SS_down), g3_aRMS_SS_down), g4_aRMS_SS_down)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
+```
+
+![](all_disease_comparisons_files/figure-commonmark/aRMS_SS_down_VD-1.png)
+
+![](all_disease_comparisons_files/figure-commonmark/aRMS_SS_down_VD-2.png)
+
+#### NB v WT - Up DEGS across all 4 comparisons
+
+``` r
+NB_WT_up_list <- list(nbPolyA_wtPolyA_great1, nbRiboD_wtRiboD_great1, nbPolyA_wtRiboD_great1, nbRiboD_wtPolyA_great1)
+
+NB_WT_up_genes <- NB_WT_up_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+```
+
+    Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
+    dplyr 1.1.0.
+    ℹ Please use `reframe()` instead.
+    ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
+      always returns an ungrouped data frame and adjust accordingly.
+
+``` r
+print(NB_WT_up_genes %>% nrow())
+```
+
+    [1] 13981
+
+``` r
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+NB_WT_up_polyAunbiased_unique_v_all <- nbPolyA_wtPolyA_great1 %>%
+  anti_join(nbRiboD_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_great1, by = "Gene")
+print(nbPolyA_wtPolyA_great1 %>% nrow())
+```
+
+    [1] 5557
+
+``` r
+print(NB_WT_up_polyAunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 194
+
+``` r
+#riboD_unbiased
+NB_WT_up_riboDunbiased_unique_v_all <- nbRiboD_wtRiboD_great1 %>%
+  anti_join(nbPolyA_wtPolyA_great1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_great1, by = "Gene")
+print(nbRiboD_wtRiboD_great1 %>% nrow())
+```
+
+    [1] 4144
+
+``` r
+print(NB_WT_up_riboDunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 150
+
+``` r
+#polyA_biased
+NB_WT_up_polyAbiased_unique_v_all <- nbRiboD_wtPolyA_great1 %>%
+  anti_join(nbPolyA_wtPolyA_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_great1, by = "Gene") 
+print(nbRiboD_wtPolyA_great1 %>% nrow())
+```
+
+    [1] 5907
+
+``` r
+print(NB_WT_up_polyAbiased_unique_v_all %>% nrow())
+```
+
+    [1] 2216
+
+``` r
+#riboD_biased
+NB_WT_up_riboDbiased_unique_v_all <- nbPolyA_wtRiboD_great1 %>%
+  anti_join(nbPolyA_wtPolyA_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_great1, by = "Gene") 
+print(nbPolyA_wtRiboD_great1 %>% nrow())
+```
+
+    [1] 9793
+
+``` r
+print(NB_WT_up_riboDbiased_unique_v_all %>% nrow())
+```
+
+    [1] 4934
+
+``` r
+g1_NB_WT_up = nbPolyA_wtPolyA_great1$Gene
+g2_NB_WT_up = nbRiboD_wtRiboD_great1$Gene
+g3_NB_WT_up = nbRiboD_wtPolyA_great1$Gene
+g4_NB_WT_up = nbPolyA_wtRiboD_great1$Gene
+
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_NB_WT_up), 
+  area2 = length(g2_NB_WT_up), 
+  area3 = length(g3_NB_WT_up), 
+  area4 = length(g4_NB_WT_up),
+  n12 = length(intersect(g1_NB_WT_up, g2_NB_WT_up)), 
+  n13 = length(intersect(g1_NB_WT_up, g3_NB_WT_up)), 
+  n14 = length(intersect(g1_NB_WT_up, g4_NB_WT_up)),
+  n23 = length(intersect(g2_NB_WT_up, g3_NB_WT_up)), 
+  n24 = length(intersect(g2_NB_WT_up, g4_NB_WT_up)), 
+  n34 = length(intersect(g3_NB_WT_up, g4_NB_WT_up)),
+  n123 = length(intersect(intersect(g1_NB_WT_up, g2_NB_WT_up), g3_NB_WT_up)),
+  n124 = length(intersect(intersect(g1_NB_WT_up, g2_NB_WT_up), g4_NB_WT_up)),
+  n134 = length(intersect(intersect(g1_NB_WT_up, g3_NB_WT_up), g4_NB_WT_up)),
+  n234 = length(intersect(intersect(g2_NB_WT_up, g3_NB_WT_up), g4_NB_WT_up)),
+  n1234 = length(intersect(intersect(intersect(g1_NB_WT_up, g2_NB_WT_up), g3_NB_WT_up), g4_NB_WT_up)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
+```
+
+![](all_disease_comparisons_files/figure-commonmark/NB_WT_up_VD-1.png)
+
+![](all_disease_comparisons_files/figure-commonmark/NB_WT_up_VD-2.png)
+
+#### NB v WT - Down DEGS across all 4 comparisons
+
+``` r
+NB_WT_down_list <- list(nbPolyA_wtPolyA_less1, nbRiboD_wtRiboD_less1, nbPolyA_wtRiboD_less1, nbRiboD_wtPolyA_less1)
+
+NB_WT_down_genes <- NB_WT_down_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+```
+
+    Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
+    dplyr 1.1.0.
+    ℹ Please use `reframe()` instead.
+    ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
+      always returns an ungrouped data frame and adjust accordingly.
+
+``` r
+print(NB_WT_down_genes %>% nrow())
+```
+
+    [1] 15370
+
+``` r
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+NB_WT_down_polyAunbiased_unique_v_all <- nbPolyA_wtPolyA_less1 %>%
+  anti_join(nbRiboD_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_less1, by = "Gene")
+print(nbPolyA_wtPolyA_less1 %>% nrow())
+```
+
+    [1] 7876
+
+``` r
+print(NB_WT_down_polyAunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 421
+
+``` r
+#riboD_unbiased
+NB_WT_down_riboDunbiased_unique_v_all <- nbRiboD_wtRiboD_less1 %>%
+  anti_join(nbPolyA_wtPolyA_less1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_less1, by = "Gene")
+print(nbRiboD_wtRiboD_less1 %>% nrow())
+```
+
+    [1] 6065
+
+``` r
+print(NB_WT_down_riboDunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 163
+
+``` r
+#polyA_biased
+NB_WT_down_polyAbiased_unique_v_all <- nbRiboD_wtPolyA_less1 %>%
+  anti_join(nbPolyA_wtPolyA_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_less1, by = "Gene") 
+print(nbRiboD_wtPolyA_less1 %>% nrow())
+```
+
+    [1] 11990
+
+``` r
+print(NB_WT_down_polyAbiased_unique_v_all %>% nrow())
+```
+
+    [1] 4553
+
+``` r
+#riboD_biased
+NB_WT_down_riboDbiased_unique_v_all <- nbPolyA_wtRiboD_less1 %>%
+  anti_join(nbPolyA_wtPolyA_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_less1, by = "Gene") 
+print(nbPolyA_wtRiboD_less1 %>% nrow())
+```
+
+    [1] 6127
+
+``` r
+print(NB_WT_down_riboDbiased_unique_v_all %>% nrow())
+```
+
+    [1] 1361
+
+``` r
+g1_NB_WT_down = nbPolyA_wtPolyA_less1$Gene
+g2_NB_WT_down = nbRiboD_wtRiboD_less1$Gene
+g3_NB_WT_down = nbRiboD_wtPolyA_less1$Gene
+g4_NB_WT_down = nbPolyA_wtRiboD_less1$Gene
+
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_NB_WT_down), 
+  area2 = length(g2_NB_WT_down), 
+  area3 = length(g3_NB_WT_down), 
+  area4 = length(g4_NB_WT_down),
+  n12 = length(intersect(g1_NB_WT_down, g2_NB_WT_down)), 
+  n13 = length(intersect(g1_NB_WT_down, g3_NB_WT_down)), 
+  n14 = length(intersect(g1_NB_WT_down, g4_NB_WT_down)),
+  n23 = length(intersect(g2_NB_WT_down, g3_NB_WT_down)), 
+  n24 = length(intersect(g2_NB_WT_down, g4_NB_WT_down)), 
+  n34 = length(intersect(g3_NB_WT_down, g4_NB_WT_down)),
+  n123 = length(intersect(intersect(g1_NB_WT_down, g2_NB_WT_down), g3_NB_WT_down)),
+  n124 = length(intersect(intersect(g1_NB_WT_down, g2_NB_WT_down), g4_NB_WT_down)),
+  n134 = length(intersect(intersect(g1_NB_WT_down, g3_NB_WT_down), g4_NB_WT_down)),
+  n234 = length(intersect(intersect(g2_NB_WT_down, g3_NB_WT_down), g4_NB_WT_down)),
+  n1234 = length(intersect(intersect(intersect(g1_NB_WT_down, g2_NB_WT_down), g3_NB_WT_down), g4_NB_WT_down)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
+```
+
+![](all_disease_comparisons_files/figure-commonmark/NB_WT_down_VD-1.png)
+
+![](all_disease_comparisons_files/figure-commonmark/NB_WT_down_VD-2.png)
+
+#### ALL v AML - Up DEGS across all 4 comparisons
+
+``` r
+ALL_AML_up_list <- list(allPolyA_amlPolyA_great1, allRiboD_amlRiboD_great1, allPolyA_amlRiboD_great1, allRiboD_amlPolyA_great1)
+
+ALL_AML_up_genes <- ALL_AML_up_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+```
+
+    Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
+    dplyr 1.1.0.
+    ℹ Please use `reframe()` instead.
+    ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
+      always returns an ungrouped data frame and adjust accordingly.
+
+``` r
+print(ALL_AML_up_genes %>% nrow())
+```
+
+    [1] 10652
+
+``` r
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+ALL_AML_up_polyAunbiased_unique_v_all <- allPolyA_amlPolyA_great1 %>%
+  anti_join(allRiboD_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_great1, by = "Gene")
+print(allPolyA_amlPolyA_great1 %>% nrow())
+```
+
+    [1] 5586
+
+``` r
+print(ALL_AML_up_polyAunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 277
+
+``` r
+#riboD_unbiased
+ALL_AML_up_riboDunbiased_unique_v_all <- allRiboD_amlRiboD_great1 %>%
+  anti_join(allPolyA_amlPolyA_great1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_great1, by = "Gene")
+print(allRiboD_amlRiboD_great1 %>% nrow())
+```
+
+    [1] 3599
+
+``` r
+print(ALL_AML_up_riboDunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 124
+
+``` r
+#polyA_biased
+ALL_AML_up_polyAbiased_unique_v_all <- allRiboD_amlPolyA_great1 %>%
+  anti_join(allPolyA_amlPolyA_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_great1, by = "Gene") 
+print(allRiboD_amlPolyA_great1 %>% nrow())
+```
+
+    [1] 5140
+
+``` r
+print(ALL_AML_up_polyAbiased_unique_v_all %>% nrow())
+```
+
+    [1] 1520
+
+``` r
+#riboD_biased
+ALL_AML_up_riboDbiased_unique_v_all <- allPolyA_amlRiboD_great1 %>%
+  anti_join(allPolyA_amlPolyA_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_great1, by = "Gene") 
+print(allPolyA_amlRiboD_great1 %>% nrow())
+```
+
+    [1] 7252
+
+``` r
+print(ALL_AML_up_riboDbiased_unique_v_all %>% nrow())
+```
+
+    [1] 2443
+
+``` r
+g1_all_aml_up = allPolyA_amlPolyA_great1$Gene
+g2_all_aml_up = allRiboD_amlRiboD_great1$Gene
+g3_all_aml_up = allRiboD_amlPolyA_great1$Gene
+g4_all_aml_up = allPolyA_amlRiboD_great1$Gene
+
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_all_aml_up), 
+  area2 = length(g2_all_aml_up), 
+  area3 = length(g3_all_aml_up), 
+  area4 = length(g4_all_aml_up),
+  n12 = length(intersect(g1_all_aml_up, g2_all_aml_up)), 
+  n13 = length(intersect(g1_all_aml_up, g3_all_aml_up)), 
+  n14 = length(intersect(g1_all_aml_up, g4_all_aml_up)),
+  n23 = length(intersect(g2_all_aml_up, g3_all_aml_up)), 
+  n24 = length(intersect(g2_all_aml_up, g4_all_aml_up)), 
+  n34 = length(intersect(g3_all_aml_up, g4_all_aml_up)),
+  n123 = length(intersect(intersect(g1_all_aml_up, g2_all_aml_up), g3_all_aml_up)),
+  n124 = length(intersect(intersect(g1_all_aml_up, g2_all_aml_up), g4_all_aml_up)),
+  n134 = length(intersect(intersect(g1_all_aml_up, g3_all_aml_up), g4_all_aml_up)),
+  n234 = length(intersect(intersect(g2_all_aml_up, g3_all_aml_up), g4_all_aml_up)),
+  n1234 = length(intersect(intersect(intersect(g1_all_aml_up, g2_all_aml_up), g3_all_aml_up), g4_all_aml_up)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
+```
+
+![](all_disease_comparisons_files/figure-commonmark/ALL_AML_up_VD-1.png)
+
+![](all_disease_comparisons_files/figure-commonmark/ALL_AML_up_VD-2.png)
+
+#### ALL v AML - Down DEGS across all 4 comparisons
+
+``` r
+ALL_AML_down_list <- list(allPolyA_amlPolyA_less1, allRiboD_amlRiboD_less1, allPolyA_amlRiboD_less1, allRiboD_amlPolyA_less1)
+
+ALL_AML_down_genes <- ALL_AML_down_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+```
+
+    Warning: Returning more (or less) than 1 row per `summarise()` group was deprecated in
+    dplyr 1.1.0.
+    ℹ Please use `reframe()` instead.
+    ℹ When switching from `summarise()` to `reframe()`, remember that `reframe()`
+      always returns an ungrouped data frame and adjust accordingly.
+
+``` r
+print(ALL_AML_down_genes %>% nrow())
+```
+
+    [1] 9173
+
+``` r
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+ALL_AML_down_polyAunbiased_unique_v_all <- allPolyA_amlPolyA_less1 %>%
+  anti_join(allRiboD_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_less1, by = "Gene")
+print(allPolyA_amlPolyA_less1 %>% nrow())
+```
+
+    [1] 3878
+
+``` r
+print(ALL_AML_down_polyAunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 276
+
+``` r
+#riboD_unbiased
+ALL_AML_down_riboDunbiased_unique_v_all <- allRiboD_amlRiboD_less1 %>%
+  anti_join(allPolyA_amlPolyA_less1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_less1, by = "Gene")
+print(allRiboD_amlRiboD_less1 %>% nrow())
+```
+
+    [1] 3116
+
+``` r
+print(ALL_AML_down_riboDunbiased_unique_v_all %>% nrow())
+```
+
+    [1] 153
+
+``` r
+#polyA_biased
+ALL_AML_down_polyAbiased_unique_v_all <- allRiboD_amlPolyA_less1 %>%
+  anti_join(allPolyA_amlPolyA_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_less1, by = "Gene") 
+print(allRiboD_amlPolyA_less1 %>% nrow())
+```
+
+    [1] 6346
+
+``` r
+print(ALL_AML_down_polyAbiased_unique_v_all %>% nrow())
+```
+
+    [1] 2988
+
+``` r
+#riboD_biased
+ALL_AML_down_riboDbiased_unique_v_all <- allPolyA_amlRiboD_less1 %>%
+  anti_join(allPolyA_amlPolyA_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_less1, by = "Gene") 
+print(allPolyA_amlRiboD_less1 %>% nrow())
+```
+
+    [1] 4115
+
+``` r
+print(ALL_AML_down_riboDbiased_unique_v_all %>% nrow())
+```
+
+    [1] 1274
+
+``` r
+g1_all_aml_down = allPolyA_amlPolyA_less1$Gene
+g2_all_aml_down = allRiboD_amlRiboD_less1$Gene
+g3_all_aml_down = allRiboD_amlPolyA_less1$Gene
+g4_all_aml_down = allPolyA_amlRiboD_less1$Gene
+
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_all_aml_down), 
+  area2 = length(g2_all_aml_down), 
+  area3 = length(g3_all_aml_down), 
+  area4 = length(g4_all_aml_down),
+  n12 = length(intersect(g1_all_aml_down, g2_all_aml_down)), 
+  n13 = length(intersect(g1_all_aml_down, g3_all_aml_down)), 
+  n14 = length(intersect(g1_all_aml_down, g4_all_aml_down)),
+  n23 = length(intersect(g2_all_aml_down, g3_all_aml_down)), 
+  n24 = length(intersect(g2_all_aml_down, g4_all_aml_down)), 
+  n34 = length(intersect(g3_all_aml_down, g4_all_aml_down)),
+  n123 = length(intersect(intersect(g1_all_aml_down, g2_all_aml_down), g3_all_aml_down)),
+  n124 = length(intersect(intersect(g1_all_aml_down, g2_all_aml_down), g4_all_aml_down)),
+  n134 = length(intersect(intersect(g1_all_aml_down, g3_all_aml_down), g4_all_aml_down)),
+  n234 = length(intersect(intersect(g2_all_aml_down, g3_all_aml_down), g4_all_aml_down)),
+  n1234 = length(intersect(intersect(intersect(g1_all_aml_down, g2_all_aml_down), g3_all_aml_down), g4_all_aml_down)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
+```
+
+![](all_disease_comparisons_files/figure-commonmark/ALL_AML_down_VD-1.png)
+
+![](all_disease_comparisons_files/figure-commonmark/ALL_AML_down_VD-2.png)
+
 ## Session Info
 
 ``` r
@@ -1733,13 +2549,12 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-07-04
+     date     2026-09-02
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
     ─ Packages ───────────────────────────────────────────────────────────────────
      ! package        * version date (UTC) lib source
-     P BiocManager      1.30.26 2025-06-05 [?] CRAN (R 4.5.0)
      P bit              4.6.0   2025-03-06 [?] RSPM
      P bit64            4.6.0-1 2025-01-16 [?] CRAN (R 4.5.0)
      P cli              3.6.5   2025-04-23 [?] CRAN (R 4.5.0)
@@ -1794,7 +2609,7 @@ sessioninfo::session_info()
      P xfun             0.55    2025-12-16 [?] CRAN (R 4.5.2)
      P yaml             2.3.10  2024-07-26 [?] CRAN (R 4.5.0)
 
-     [1] /Users/maryke/Documents/Treehouse/Lab_Notebooks/transcript_enrichment_bias_assessment/Fig_2/ALL_AML/renv/library/macos/R-4.5/aarch64-apple-darwin20
+     [1] /Users/maryke/Documents/Treehouse/Lab_Notebooks/transcript_enrichment_bias_assessment/Fig_2/all_disease_comparisons/renv/library/macos/R-4.5/aarch64-apple-darwin20
      [2] /Users/maryke/Library/Caches/org.R-project.R/R/renv/sandbox/macos/R-4.5/aarch64-apple-darwin20/4cd76b74
 
      * ── Packages attached to the search path.

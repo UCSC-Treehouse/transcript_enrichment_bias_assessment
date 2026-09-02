@@ -142,12 +142,33 @@ up_arms_ss_RiboDunbiased_uniquetoPolyAbiased <- armsRiboD_ssPolyA_great1 %>%
 print(paste("number of genes unique to polyA biased wrt riboDunbiased and riboDbiased is", nrow(up_arms_ss_RiboDunbiased_uniquetoPolyAbiased)))
 ```
 
+```{r up_uniquetoPolyAunbiased}
+up_arms_ss_PolyAunbiased_uniquetoPolyAunbiased <- armsPolyA_ssPolyA_great1 %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene") %>% # not in polyA biased
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") # not in riboD biased
+print(paste("number of genes unique to polyA unbiased wrt polyAbiased and riboD biased is", nrow(up_arms_ss_PolyAunbiased_uniquetoPolyAunbiased)))
+```
+
+```{r up_uniquetoRiboDunbiased}
+up_arms_ss_RiboDunbiased_uniquetoRiboDunbiased <- armsRiboD_ssRiboD_great1 %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene") %>% # not in polyA biased
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") # not in riboD biased
+print(paste("number of genes unique to RiboD unbiased wrt polyA biased and riboD biased is", nrow(up_arms_ss_RiboDunbiased_uniquetoRiboDunbiased)))
+```
+
+```{r up_polyAunbiased_riboDunbiased}
+# are there any genes found to be differentially upregulated in the polyA unbiased and riboD unbiased that are not found in the biased comparisons?
+up_arms_ss_polyAunbiased_riboDunbiased <- up_arms_ss_PolyAunbiased_uniquetoPolyAunbiased %>%
+  inner_join(up_arms_ss_RiboDunbiased_uniquetoRiboDunbiased, by = "Gene")
+print(paste("number of genes in both unique_to_polyAunbiased and unique_to_riboDunbiased is", nrow(up_arms_ss_polyAunbiased_riboDunbiased)))
+```
+
 ```{r up_arms_ss_polyAbiased}
 # need to combine these to get the genes in common between the two venn diagram polyA biased sections
 up_arms_ss_polyAbiased <- inner_join(up_arms_ss_PolyAunbiased_uniquetoPolyAbiased, up_arms_ss_RiboDunbiased_uniquetoPolyAbiased, by = "Gene")
 print(paste("number of genes in common as unique to polyA biased is", nrow(up_arms_ss_polyAbiased)))
 
-write_tsv(up_arms_ss_polyAbiased, "../../output_data/all_disease_comparisons/up_arms_ss_polyAbiased.tsv.gz")
+# write_tsv(up_arms_ss_polyAbiased, "../../output_data/all_disease_comparisons/up_arms_ss_polyAbiased.tsv.gz")
 ```
 
 ```{r armsPolyA_ssRiboD_great1}
@@ -172,7 +193,7 @@ up_arms_ss_riboDbiased <- inner_join(up_arms_ss_polyAunbiased_uniquetoRiboDbiase
 
 print(paste("number of genes unique to riboD biased is", nrow(up_arms_ss_riboDbiased)))
 
-write_tsv(up_arms_ss_riboDbiased, "../../output_data/all_disease_comparisons/up_arms_ss_riboDbiased.tsv.gz")
+# write_tsv(up_arms_ss_riboDbiased, "../../output_data/all_disease_comparisons/up_arms_ss_riboDbiased.tsv.gz")
 ```
 
 #### up in WT relative to NB
@@ -199,7 +220,7 @@ up_nb_wt_polyAbiased <- inner_join(up_nb_wt_PolyAunbiased_uniquetoPolyAbiased, u
 
 print(paste("number of genes unique to polyAbiased is", nrow(up_nb_wt_polyAbiased)))
 
-write_tsv(up_nb_wt_polyAbiased, "../../output_data/all_disease_comparisons/up_nb_wt_polyAbiased.tsv.gz")
+# write_tsv(up_nb_wt_polyAbiased, "../../output_data/all_disease_comparisons/up_nb_wt_polyAbiased.tsv.gz")
 ```
 
 ```{r nbPolyA_wtRiboD_great1}
@@ -224,7 +245,7 @@ up_nb_wt_riboDbiased <- inner_join(up_nb_wt_polyAunbiased_uniquetoRiboDbiased, u
 
 print(paste("number of genes unique to riboD biased is", nrow(up_nb_wt_riboDbiased)))
 
-write_tsv(up_nb_wt_riboDbiased, "../../output_data/all_disease_comparisons/up_nb_wt_riboDbiased.tsv.gz")
+# write_tsv(up_nb_wt_riboDbiased, "../../output_data/all_disease_comparisons/up_nb_wt_riboDbiased.tsv.gz")
 ```
 
 #### up in AML relative to ALL
@@ -251,7 +272,7 @@ up_all_aml_polyAbiased <- inner_join(up_all_aml_PolyAunbiased_uniquetoPolyAbiase
 
 print(paste("number of genes unique to polyA biased is", nrow(up_all_aml_polyAbiased)))
 
-write_tsv(up_all_aml_polyAbiased, "../../output_data/all_disease_comparisons/up_all_aml_polyAbiased.tsv.gz")
+# write_tsv(up_all_aml_polyAbiased, "../../output_data/all_disease_comparisons/up_all_aml_polyAbiased.tsv.gz")
 ```
 
 ```{r allPolyA_amlRiboD_great1}
@@ -276,7 +297,7 @@ up_all_aml_riboDbiased <- inner_join(up_all_aml_polyAunbiased_uniquetoRiboDbiase
 
 print(paste("number of genes unique to riboD biased is", nrow(up_all_aml_riboDbiased)))
 
-write_tsv(up_all_aml_riboDbiased, "../../output_data/all_disease_comparisons/up_all_aml_riboDbiased.tsv.gz")
+# write_tsv(up_all_aml_riboDbiased, "../../output_data/all_disease_comparisons/up_all_aml_riboDbiased.tsv.gz")
 ```
 
 ### Venn Diagrams
@@ -289,7 +310,7 @@ up_polyAbiased_all <- list(
   "Up in AML polyA relative to ALL riboD (polyA biased)" = up_all_aml_polyAbiased$Gene
 )
 
-write_rds(up_polyAbiased_all, "../../output_data/all_disease_comparisons/up_polyAbiased_all.rds")
+# write_rds(up_polyAbiased_all, "../../output_data/all_disease_comparisons/up_polyAbiased_all.rds")
 
 up_polyAbiased_all_VD <- venn.diagram(
   x = up_polyAbiased_all,
@@ -326,7 +347,7 @@ up_riboDbiased_all <- list(
   "Up in AML riboD relative to ALL polyA (riboD biased)" = up_all_aml_riboDbiased$Gene
 )
 
-write_rds(up_riboDbiased_all, "../../output_data/all_disease_comparisons/up_riboDbiased_all.rds")
+# write_rds(up_riboDbiased_all, "../../output_data/all_disease_comparisons/up_riboDbiased_all.rds")
 
 up_riboDbiased_all_VD <- venn.diagram(
   x = up_riboDbiased_all,
@@ -471,9 +492,9 @@ print(paste("number of genes unique to polyAbiased wrt riboDunbiased and riboDbi
 ```{r}
 # need to combine these to get the ones in common between the two venn diagram polyA biased sections
 down_arms_ss_polyAbiased <- inner_join(down_arms_ss_PolyAunbiased_uniquetoPolyAbiased, down_arms_ss_RiboDunbiased_uniquetoPolyAbiased, by = "Gene")
-print(paste("number of genes in common as unique to first false is", nrow(down_arms_ss_polyAbiased)))
+print(paste("number of genes in common as unique to PolyA biased is", nrow(down_arms_ss_polyAbiased)))
 
-write_tsv(down_arms_ss_polyAbiased, "../../output_data/all_disease_comparisons/down_arms_ss_polyAbiased.tsv.gz")
+# write_tsv(down_arms_ss_polyAbiased, "../../output_data/all_disease_comparisons/down_arms_ss_polyAbiased.tsv.gz")
 ```
 
 ```{r armsPolyA_ssRiboD_less1}
@@ -497,7 +518,28 @@ print(paste("number of genes unique to riboD biased wrt riboDunbiased is", nrow(
 down_arms_ss_riboDbiased <- inner_join(down_arms_ss_polyAunbiased_uniquetoRiboDbiased, down_arms_ss_riboDunbiased_uniquetoRiboDbiased, by = "Gene")
 print(paste("number of genes unique to riboD biased is", nrow(down_arms_ss_riboDbiased)))
 
-write_tsv(down_arms_ss_riboDbiased, "../../output_data/all_disease_comparisons/down_arms_ss_riboDbiased.tsv.gz")
+# write_tsv(down_arms_ss_riboDbiased, "../../output_data/all_disease_comparisons/down_arms_ss_riboDbiased.tsv.gz")
+```
+
+```{r down_uniquetoPolyAunbiased}
+down_arms_ss_PolyAunbiased_uniquetoPolyAunbiased <- armsPolyA_ssPolyA_less1 %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene") %>% # not in polyA biased
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") # not in riboD biased
+print(paste("number of genes uniquely downregulated in polyA unbiased wrt polyAbiased and riboD biased is", nrow(down_arms_ss_PolyAunbiased_uniquetoPolyAunbiased)))
+```
+
+```{r down_uniquetoRiboDunbiased}
+down_arms_ss_RiboDunbiased_uniquetoRiboDunbiased <- armsRiboD_ssRiboD_less1 %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene") %>% # not in polyA biased
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") # not in riboD biased
+print(paste("number of genes uniquely downregulated in riboD unbiased wrt polyAbiased and riboD biased is", nrow(down_arms_ss_RiboDunbiased_uniquetoRiboDunbiased)))
+```
+
+```{r}
+# are there any genes found to be differentially downregulated in the polyA unbiased and riboD unbiased that are not found in the biased comparisons?
+down_arms_ss_polyAunbiased_riboDunbiased <- down_arms_ss_PolyAunbiased_uniquetoPolyAunbiased %>%
+  inner_join(down_arms_ss_RiboDunbiased_uniquetoRiboDunbiased, by = "Gene")
+print(paste("number of genes in both unique_to_polyAunbiased and unique_to_riboDunbiased is", nrow(down_arms_ss_polyAunbiased_riboDunbiased)))
 ```
 
 #### **Down in WT relative to NB**
@@ -524,7 +566,7 @@ down_nb_wt_polyAbiased <- inner_join(down_nb_wt_PolyAunbiased_uniquetoPolyAbiase
 
 print(paste("number of genes unique to polyA biased is", nrow(down_nb_wt_polyAbiased)))
 
-write_tsv(down_nb_wt_polyAbiased, "../../output_data/all_disease_comparisons/down_nb_wt_polyAbiased.tsv.gz")
+# write_tsv(down_nb_wt_polyAbiased, "../../output_data/all_disease_comparisons/down_nb_wt_polyAbiased.tsv.gz")
 ```
 
 ```{r nbPolyA_wtRiboD_less1}
@@ -549,7 +591,7 @@ down_nb_wt_riboDbiased <- inner_join(down_nb_wt_polyAunbiased_uniquetoRiboDbiase
 
 print(paste("number of genes unique to riboD biased is", nrow(down_nb_wt_riboDbiased)))
 
-write_tsv(down_nb_wt_riboDbiased, "../../output_data/all_disease_comparisons/down_nb_wt_riboDbiased.tsv.gz")
+# write_tsv(down_nb_wt_riboDbiased, "../../output_data/all_disease_comparisons/down_nb_wt_riboDbiased.tsv.gz")
 ```
 
 #### **Down in AML relative to ALL**
@@ -576,7 +618,7 @@ down_all_aml_polyAbiased <- inner_join(down_all_aml_PolyAunbiased_uniquetoPolyAb
 
 print(paste("number of genes unique to polyA biased is", nrow(down_all_aml_polyAbiased)))
 
-write_tsv(down_all_aml_polyAbiased, "../../output_data/all_disease_comparisons/down_all_aml_polyAbiased.tsv.gz")
+# write_tsv(down_all_aml_polyAbiased, "../../output_data/all_disease_comparisons/down_all_aml_polyAbiased.tsv.gz")
 ```
 
 ```{r allPolyA_amlRiboD_less1}
@@ -601,7 +643,7 @@ down_all_aml_riboDbiased <- inner_join(down_all_aml_polyAunbiased_uniquetoRiboDb
 
 print(paste("number of genes unique to riboD biased is", nrow(down_all_aml_riboDbiased)))
 
-write_tsv(down_all_aml_riboDbiased, "../../output_data/all_disease_comparisons/down_all_aml_riboDbiased.tsv.gz")
+# write_tsv(down_all_aml_riboDbiased, "../../output_data/all_disease_comparisons/down_all_aml_riboDbiased.tsv.gz")
 ```
 
 ### Venn diagrams
@@ -614,7 +656,7 @@ down_polyAbiased_all <- list(
   "Down in AML polyA relative to ALL riboD (polyA biased)" = down_all_aml_polyAbiased$Gene
 )
 
-write_rds(down_polyAbiased_all, "../../output_data/all_disease_comparisons/down_polyAbiased_all.rds")
+# write_rds(down_polyAbiased_all, "../../output_data/all_disease_comparisons/down_polyAbiased_all.rds")
 
 
 down_polyAbiased_all_VD <- venn.diagram(
@@ -652,7 +694,7 @@ down_riboDbiased_all <- list(
   "Down in AML riboD relative to ALL polyA (second false)" = down_all_aml_riboDbiased$Gene
 )
 
-write_rds(down_riboDbiased_all, "../../output_data/all_disease_comparisons/down_riboDbiased_all.rds")
+# write_rds(down_riboDbiased_all, "../../output_data/all_disease_comparisons/down_riboDbiased_all.rds")
 
 
 down_riboDbiased_all_VD <- venn.diagram(
@@ -1132,6 +1174,473 @@ down_riboDunbiased_vs_biases_plot_bydisease <- ggplot(down_riboDunbiased_vs_bias
     legend.title     = element_text(face = "bold")
   )
 down_riboDunbiased_vs_biases_plot_bydisease
+```
+
+### Misc Analysis
+
+Interested in knowing how many DEGs are unique across all 4 comparisons (polyA unbiased, riboD unbiased, polyA biased, and riboD biased).
+
+#### aRMS v SS - Up DEGS across all 4 comparisons
+
+```{r aRMS_SS_up_genes}
+aRMS_SS_up_list <- list(armsPolyA_ssPolyA_great1, armsRiboD_ssRiboD_great1, armsPolyA_ssRiboD_great1, armsRiboD_ssPolyA_great1)
+
+aRMS_SS_up_genes <- aRMS_SS_up_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+print(aRMS_SS_up_genes %>% nrow())
+```
+
+```{r aRMS_SS_up_uniques}
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+aRMS_SS_up_polyAunbiased_unique_v_all <- armsPolyA_ssPolyA_great1 %>%
+  anti_join(armsRiboD_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene")
+print(armsPolyA_ssPolyA_great1 %>% nrow())
+print(aRMS_SS_up_polyAunbiased_unique_v_all %>% nrow())
+
+#riboD_unbiased
+aRMS_SS_up_riboDunbiased_unique_v_all <- armsRiboD_ssRiboD_great1 %>%
+  anti_join(armsPolyA_ssPolyA_great1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene")
+print(armsRiboD_ssRiboD_great1 %>% nrow())
+print(aRMS_SS_up_riboDunbiased_unique_v_all %>% nrow())
+
+#polyA_biased
+aRMS_SS_up_polyAbiased_unique_v_all <- armsRiboD_ssPolyA_great1 %>%
+  anti_join(armsPolyA_ssPolyA_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_great1, by = "Gene") 
+print(armsRiboD_ssPolyA_great1 %>% nrow())
+print(aRMS_SS_up_polyAbiased_unique_v_all %>% nrow())
+
+#riboD_biased
+aRMS_SS_up_riboDbiased_unique_v_all <- armsPolyA_ssRiboD_great1 %>%
+  anti_join(armsPolyA_ssPolyA_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssRiboD_great1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_great1, by = "Gene") 
+print(armsPolyA_ssRiboD_great1 %>% nrow())
+print(aRMS_SS_up_riboDbiased_unique_v_all %>% nrow())
+```
+
+4-part venn diagram
+
+```{r aRMS_SS_up_VD}
+g1_aRMS_SS_up = armsPolyA_ssPolyA_great1$Gene
+g2_aRMS_SS_up = armsRiboD_ssRiboD_great1$Gene
+g3_aRMS_SS_up = armsRiboD_ssPolyA_great1$Gene
+g4_aRMS_SS_up = armsPolyA_ssRiboD_great1$Gene
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_aRMS_SS_up), 
+  area2 = length(g2_aRMS_SS_up), 
+  area3 = length(g3_aRMS_SS_up), 
+  area4 = length(g4_aRMS_SS_up),
+  n12 = length(intersect(g1_aRMS_SS_up, g2_aRMS_SS_up)), 
+  n13 = length(intersect(g1_aRMS_SS_up, g3_aRMS_SS_up)), 
+  n14 = length(intersect(g1_aRMS_SS_up, g4_aRMS_SS_up)),
+  n23 = length(intersect(g2_aRMS_SS_up, g3_aRMS_SS_up)), 
+  n24 = length(intersect(g2_aRMS_SS_up, g4_aRMS_SS_up)), 
+  n34 = length(intersect(g3_aRMS_SS_up, g4_aRMS_SS_up)),
+  n123 = length(intersect(intersect(g1_aRMS_SS_up, g2_aRMS_SS_up), g3_aRMS_SS_up)),
+  n124 = length(intersect(intersect(g1_aRMS_SS_up, g2_aRMS_SS_up), g4_aRMS_SS_up)),
+  n134 = length(intersect(intersect(g1_aRMS_SS_up, g3_aRMS_SS_up), g4_aRMS_SS_up)),
+  n234 = length(intersect(intersect(g2_aRMS_SS_up, g3_aRMS_SS_up), g4_aRMS_SS_up)),
+  n1234 = length(intersect(intersect(intersect(g1_aRMS_SS_up, g2_aRMS_SS_up), g3_aRMS_SS_up), g4_aRMS_SS_up)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
+```
+
+#### aRMS v SS - Down DEGS across all 4 comparisons
+
+```{r aRMS_SS_down_genes}
+aRMS_SS_down_list <- list(armsPolyA_ssPolyA_less1, armsRiboD_ssRiboD_less1, armsPolyA_ssRiboD_less1, armsRiboD_ssPolyA_less1)
+
+aRMS_SS_down_genes <- aRMS_SS_down_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+print(aRMS_SS_down_genes %>% nrow())
+```
+
+```{r aRMS_SS_down_uniques}
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+aRMS_SS_down_polyAunbiased_unique_v_all <- armsPolyA_ssPolyA_less1 %>%
+  anti_join(armsRiboD_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene")
+print(armsPolyA_ssPolyA_less1 %>% nrow())
+print(aRMS_SS_down_polyAunbiased_unique_v_all %>% nrow())
+
+#riboD_unbiased
+aRMS_SS_down_riboDunbiased_unique_v_all <- armsRiboD_ssRiboD_less1 %>%
+  anti_join(armsPolyA_ssPolyA_less1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene")
+print(armsRiboD_ssRiboD_less1 %>% nrow())
+print(aRMS_SS_down_riboDunbiased_unique_v_all %>% nrow())
+
+#polyA_biased
+aRMS_SS_down_polyAbiased_unique_v_all <- armsRiboD_ssPolyA_less1 %>%
+  anti_join(armsPolyA_ssPolyA_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsPolyA_ssRiboD_less1, by = "Gene") 
+print(armsRiboD_ssPolyA_less1 %>% nrow())
+print(aRMS_SS_down_polyAbiased_unique_v_all %>% nrow())
+
+#riboD_biased
+aRMS_SS_down_riboDbiased_unique_v_all <- armsPolyA_ssRiboD_less1 %>%
+  anti_join(armsPolyA_ssPolyA_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssRiboD_less1, by = "Gene") %>%
+  anti_join(armsRiboD_ssPolyA_less1, by = "Gene") 
+print(armsPolyA_ssRiboD_less1 %>% nrow())
+print(aRMS_SS_down_riboDbiased_unique_v_all %>% nrow())
+```
+
+```{r aRMS_SS_down_VD}
+g1_aRMS_SS_down = armsPolyA_ssPolyA_less1$Gene
+g2_aRMS_SS_down = armsRiboD_ssRiboD_less1$Gene
+g3_aRMS_SS_down = armsRiboD_ssPolyA_less1$Gene
+g4_aRMS_SS_down = armsPolyA_ssRiboD_less1$Gene
+
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_aRMS_SS_down), 
+  area2 = length(g2_aRMS_SS_down), 
+  area3 = length(g3_aRMS_SS_down), 
+  area4 = length(g4_aRMS_SS_down),
+  n12 = length(intersect(g1_aRMS_SS_down, g2_aRMS_SS_down)), 
+  n13 = length(intersect(g1_aRMS_SS_down, g3_aRMS_SS_down)), 
+  n14 = length(intersect(g1_aRMS_SS_down, g4_aRMS_SS_down)),
+  n23 = length(intersect(g2_aRMS_SS_down, g3_aRMS_SS_down)), 
+  n24 = length(intersect(g2_aRMS_SS_down, g4_aRMS_SS_down)), 
+  n34 = length(intersect(g3_aRMS_SS_down, g4_aRMS_SS_down)),
+  n123 = length(intersect(intersect(g1_aRMS_SS_down, g2_aRMS_SS_down), g3_aRMS_SS_down)),
+  n124 = length(intersect(intersect(g1_aRMS_SS_down, g2_aRMS_SS_down), g4_aRMS_SS_down)),
+  n134 = length(intersect(intersect(g1_aRMS_SS_down, g3_aRMS_SS_down), g4_aRMS_SS_down)),
+  n234 = length(intersect(intersect(g2_aRMS_SS_down, g3_aRMS_SS_down), g4_aRMS_SS_down)),
+  n1234 = length(intersect(intersect(intersect(g1_aRMS_SS_down, g2_aRMS_SS_down), g3_aRMS_SS_down), g4_aRMS_SS_down)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
+```
+
+#### NB v WT - Up DEGS across all 4 comparisons
+
+```{r NB_WT_up_genes}
+NB_WT_up_list <- list(nbPolyA_wtPolyA_great1, nbRiboD_wtRiboD_great1, nbPolyA_wtRiboD_great1, nbRiboD_wtPolyA_great1)
+
+NB_WT_up_genes <- NB_WT_up_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+print(NB_WT_up_genes %>% nrow())
+```
+
+```{r NB_WT_up_uniques}
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+NB_WT_up_polyAunbiased_unique_v_all <- nbPolyA_wtPolyA_great1 %>%
+  anti_join(nbRiboD_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_great1, by = "Gene")
+print(nbPolyA_wtPolyA_great1 %>% nrow())
+print(NB_WT_up_polyAunbiased_unique_v_all %>% nrow())
+
+#riboD_unbiased
+NB_WT_up_riboDunbiased_unique_v_all <- nbRiboD_wtRiboD_great1 %>%
+  anti_join(nbPolyA_wtPolyA_great1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_great1, by = "Gene")
+print(nbRiboD_wtRiboD_great1 %>% nrow())
+print(NB_WT_up_riboDunbiased_unique_v_all %>% nrow())
+
+#polyA_biased
+NB_WT_up_polyAbiased_unique_v_all <- nbRiboD_wtPolyA_great1 %>%
+  anti_join(nbPolyA_wtPolyA_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_great1, by = "Gene") 
+print(nbRiboD_wtPolyA_great1 %>% nrow())
+print(NB_WT_up_polyAbiased_unique_v_all %>% nrow())
+
+#riboD_biased
+NB_WT_up_riboDbiased_unique_v_all <- nbPolyA_wtRiboD_great1 %>%
+  anti_join(nbPolyA_wtPolyA_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtRiboD_great1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_great1, by = "Gene") 
+print(nbPolyA_wtRiboD_great1 %>% nrow())
+print(NB_WT_up_riboDbiased_unique_v_all %>% nrow())
+```
+
+```{r NB_WT_up_VD}
+g1_NB_WT_up = nbPolyA_wtPolyA_great1$Gene
+g2_NB_WT_up = nbRiboD_wtRiboD_great1$Gene
+g3_NB_WT_up = nbRiboD_wtPolyA_great1$Gene
+g4_NB_WT_up = nbPolyA_wtRiboD_great1$Gene
+
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_NB_WT_up), 
+  area2 = length(g2_NB_WT_up), 
+  area3 = length(g3_NB_WT_up), 
+  area4 = length(g4_NB_WT_up),
+  n12 = length(intersect(g1_NB_WT_up, g2_NB_WT_up)), 
+  n13 = length(intersect(g1_NB_WT_up, g3_NB_WT_up)), 
+  n14 = length(intersect(g1_NB_WT_up, g4_NB_WT_up)),
+  n23 = length(intersect(g2_NB_WT_up, g3_NB_WT_up)), 
+  n24 = length(intersect(g2_NB_WT_up, g4_NB_WT_up)), 
+  n34 = length(intersect(g3_NB_WT_up, g4_NB_WT_up)),
+  n123 = length(intersect(intersect(g1_NB_WT_up, g2_NB_WT_up), g3_NB_WT_up)),
+  n124 = length(intersect(intersect(g1_NB_WT_up, g2_NB_WT_up), g4_NB_WT_up)),
+  n134 = length(intersect(intersect(g1_NB_WT_up, g3_NB_WT_up), g4_NB_WT_up)),
+  n234 = length(intersect(intersect(g2_NB_WT_up, g3_NB_WT_up), g4_NB_WT_up)),
+  n1234 = length(intersect(intersect(intersect(g1_NB_WT_up, g2_NB_WT_up), g3_NB_WT_up), g4_NB_WT_up)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
+```
+
+#### NB v WT - Down DEGS across all 4 comparisons
+
+```{r NB_WT_down_genes}
+NB_WT_down_list <- list(nbPolyA_wtPolyA_less1, nbRiboD_wtRiboD_less1, nbPolyA_wtRiboD_less1, nbRiboD_wtPolyA_less1)
+
+NB_WT_down_genes <- NB_WT_down_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+print(NB_WT_down_genes %>% nrow())
+```
+
+```{r NB_WT_down_uniques}
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+NB_WT_down_polyAunbiased_unique_v_all <- nbPolyA_wtPolyA_less1 %>%
+  anti_join(nbRiboD_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_less1, by = "Gene")
+print(nbPolyA_wtPolyA_less1 %>% nrow())
+print(NB_WT_down_polyAunbiased_unique_v_all %>% nrow())
+
+#riboD_unbiased
+NB_WT_down_riboDunbiased_unique_v_all <- nbRiboD_wtRiboD_less1 %>%
+  anti_join(nbPolyA_wtPolyA_less1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_less1, by = "Gene")
+print(nbRiboD_wtRiboD_less1 %>% nrow())
+print(NB_WT_down_riboDunbiased_unique_v_all %>% nrow())
+
+#polyA_biased
+NB_WT_down_polyAbiased_unique_v_all <- nbRiboD_wtPolyA_less1 %>%
+  anti_join(nbPolyA_wtPolyA_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbPolyA_wtRiboD_less1, by = "Gene") 
+print(nbRiboD_wtPolyA_less1 %>% nrow())
+print(NB_WT_down_polyAbiased_unique_v_all %>% nrow())
+
+#riboD_biased
+NB_WT_down_riboDbiased_unique_v_all <- nbPolyA_wtRiboD_less1 %>%
+  anti_join(nbPolyA_wtPolyA_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtRiboD_less1, by = "Gene") %>%
+  anti_join(nbRiboD_wtPolyA_less1, by = "Gene") 
+print(nbPolyA_wtRiboD_less1 %>% nrow())
+print(NB_WT_down_riboDbiased_unique_v_all %>% nrow())
+```
+
+```{r NB_WT_down_VD}
+g1_NB_WT_down = nbPolyA_wtPolyA_less1$Gene
+g2_NB_WT_down = nbRiboD_wtRiboD_less1$Gene
+g3_NB_WT_down = nbRiboD_wtPolyA_less1$Gene
+g4_NB_WT_down = nbPolyA_wtRiboD_less1$Gene
+
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_NB_WT_down), 
+  area2 = length(g2_NB_WT_down), 
+  area3 = length(g3_NB_WT_down), 
+  area4 = length(g4_NB_WT_down),
+  n12 = length(intersect(g1_NB_WT_down, g2_NB_WT_down)), 
+  n13 = length(intersect(g1_NB_WT_down, g3_NB_WT_down)), 
+  n14 = length(intersect(g1_NB_WT_down, g4_NB_WT_down)),
+  n23 = length(intersect(g2_NB_WT_down, g3_NB_WT_down)), 
+  n24 = length(intersect(g2_NB_WT_down, g4_NB_WT_down)), 
+  n34 = length(intersect(g3_NB_WT_down, g4_NB_WT_down)),
+  n123 = length(intersect(intersect(g1_NB_WT_down, g2_NB_WT_down), g3_NB_WT_down)),
+  n124 = length(intersect(intersect(g1_NB_WT_down, g2_NB_WT_down), g4_NB_WT_down)),
+  n134 = length(intersect(intersect(g1_NB_WT_down, g3_NB_WT_down), g4_NB_WT_down)),
+  n234 = length(intersect(intersect(g2_NB_WT_down, g3_NB_WT_down), g4_NB_WT_down)),
+  n1234 = length(intersect(intersect(intersect(g1_NB_WT_down, g2_NB_WT_down), g3_NB_WT_down), g4_NB_WT_down)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
+```
+
+#### ALL v AML - Up DEGS across all 4 comparisons
+
+```{r ALL_AML_up_genes}
+ALL_AML_up_list <- list(allPolyA_amlPolyA_great1, allRiboD_amlRiboD_great1, allPolyA_amlRiboD_great1, allRiboD_amlPolyA_great1)
+
+ALL_AML_up_genes <- ALL_AML_up_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+print(ALL_AML_up_genes %>% nrow())
+```
+
+```{r ALL_AML_up_uniques}
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+ALL_AML_up_polyAunbiased_unique_v_all <- allPolyA_amlPolyA_great1 %>%
+  anti_join(allRiboD_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_great1, by = "Gene")
+print(allPolyA_amlPolyA_great1 %>% nrow())
+print(ALL_AML_up_polyAunbiased_unique_v_all %>% nrow())
+
+#riboD_unbiased
+ALL_AML_up_riboDunbiased_unique_v_all <- allRiboD_amlRiboD_great1 %>%
+  anti_join(allPolyA_amlPolyA_great1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_great1, by = "Gene")
+print(allRiboD_amlRiboD_great1 %>% nrow())
+print(ALL_AML_up_riboDunbiased_unique_v_all %>% nrow())
+
+#polyA_biased
+ALL_AML_up_polyAbiased_unique_v_all <- allRiboD_amlPolyA_great1 %>%
+  anti_join(allPolyA_amlPolyA_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_great1, by = "Gene") 
+print(allRiboD_amlPolyA_great1 %>% nrow())
+print(ALL_AML_up_polyAbiased_unique_v_all %>% nrow())
+
+#riboD_biased
+ALL_AML_up_riboDbiased_unique_v_all <- allPolyA_amlRiboD_great1 %>%
+  anti_join(allPolyA_amlPolyA_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlRiboD_great1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_great1, by = "Gene") 
+print(allPolyA_amlRiboD_great1 %>% nrow())
+print(ALL_AML_up_riboDbiased_unique_v_all %>% nrow())
+```
+
+```{r ALL_AML_up_VD}
+g1_all_aml_up = allPolyA_amlPolyA_great1$Gene
+g2_all_aml_up = allRiboD_amlRiboD_great1$Gene
+g3_all_aml_up = allRiboD_amlPolyA_great1$Gene
+g4_all_aml_up = allPolyA_amlRiboD_great1$Gene
+
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_all_aml_up), 
+  area2 = length(g2_all_aml_up), 
+  area3 = length(g3_all_aml_up), 
+  area4 = length(g4_all_aml_up),
+  n12 = length(intersect(g1_all_aml_up, g2_all_aml_up)), 
+  n13 = length(intersect(g1_all_aml_up, g3_all_aml_up)), 
+  n14 = length(intersect(g1_all_aml_up, g4_all_aml_up)),
+  n23 = length(intersect(g2_all_aml_up, g3_all_aml_up)), 
+  n24 = length(intersect(g2_all_aml_up, g4_all_aml_up)), 
+  n34 = length(intersect(g3_all_aml_up, g4_all_aml_up)),
+  n123 = length(intersect(intersect(g1_all_aml_up, g2_all_aml_up), g3_all_aml_up)),
+  n124 = length(intersect(intersect(g1_all_aml_up, g2_all_aml_up), g4_all_aml_up)),
+  n134 = length(intersect(intersect(g1_all_aml_up, g3_all_aml_up), g4_all_aml_up)),
+  n234 = length(intersect(intersect(g2_all_aml_up, g3_all_aml_up), g4_all_aml_up)),
+  n1234 = length(intersect(intersect(intersect(g1_all_aml_up, g2_all_aml_up), g3_all_aml_up), g4_all_aml_up)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
+```
+
+#### ALL v AML - Down DEGS across all 4 comparisons
+
+```{r ALL_AML_down_genes}
+ALL_AML_down_list <- list(allPolyA_amlPolyA_less1, allRiboD_amlRiboD_less1, allPolyA_amlRiboD_less1, allRiboD_amlPolyA_less1)
+
+ALL_AML_down_genes <- ALL_AML_down_list %>%
+  bind_rows() %>%
+  summarize(distinct_genes = unique(Gene))
+print(ALL_AML_down_genes %>% nrow())
+```
+
+```{r ALL_AML_down_uniques}
+# genes unique to each comparison across all 4 comparisons
+
+#polyA_unbiased
+ALL_AML_down_polyAunbiased_unique_v_all <- allPolyA_amlPolyA_less1 %>%
+  anti_join(allRiboD_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_less1, by = "Gene")
+print(allPolyA_amlPolyA_less1 %>% nrow())
+print(ALL_AML_down_polyAunbiased_unique_v_all %>% nrow())
+
+#riboD_unbiased
+ALL_AML_down_riboDunbiased_unique_v_all <- allRiboD_amlRiboD_less1 %>%
+  anti_join(allPolyA_amlPolyA_less1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_less1, by = "Gene")
+print(allRiboD_amlRiboD_less1 %>% nrow())
+print(ALL_AML_down_riboDunbiased_unique_v_all %>% nrow())
+
+#polyA_biased
+ALL_AML_down_polyAbiased_unique_v_all <- allRiboD_amlPolyA_less1 %>%
+  anti_join(allPolyA_amlPolyA_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allPolyA_amlRiboD_less1, by = "Gene") 
+print(allRiboD_amlPolyA_less1 %>% nrow())
+print(ALL_AML_down_polyAbiased_unique_v_all %>% nrow())
+
+#riboD_biased
+ALL_AML_down_riboDbiased_unique_v_all <- allPolyA_amlRiboD_less1 %>%
+  anti_join(allPolyA_amlPolyA_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlRiboD_less1, by = "Gene") %>%
+  anti_join(allRiboD_amlPolyA_less1, by = "Gene") 
+print(allPolyA_amlRiboD_less1 %>% nrow())
+print(ALL_AML_down_riboDbiased_unique_v_all %>% nrow())
+```
+
+```{r ALL_AML_down_VD}
+g1_all_aml_down = allPolyA_amlPolyA_less1$Gene
+g2_all_aml_down = allRiboD_amlRiboD_less1$Gene
+g3_all_aml_down = allRiboD_amlPolyA_less1$Gene
+g4_all_aml_down = allPolyA_amlRiboD_less1$Gene
+
+
+grid.newpage()
+draw.quad.venn(
+  area1 = length(g1_all_aml_down), 
+  area2 = length(g2_all_aml_down), 
+  area3 = length(g3_all_aml_down), 
+  area4 = length(g4_all_aml_down),
+  n12 = length(intersect(g1_all_aml_down, g2_all_aml_down)), 
+  n13 = length(intersect(g1_all_aml_down, g3_all_aml_down)), 
+  n14 = length(intersect(g1_all_aml_down, g4_all_aml_down)),
+  n23 = length(intersect(g2_all_aml_down, g3_all_aml_down)), 
+  n24 = length(intersect(g2_all_aml_down, g4_all_aml_down)), 
+  n34 = length(intersect(g3_all_aml_down, g4_all_aml_down)),
+  n123 = length(intersect(intersect(g1_all_aml_down, g2_all_aml_down), g3_all_aml_down)),
+  n124 = length(intersect(intersect(g1_all_aml_down, g2_all_aml_down), g4_all_aml_down)),
+  n134 = length(intersect(intersect(g1_all_aml_down, g3_all_aml_down), g4_all_aml_down)),
+  n234 = length(intersect(intersect(g2_all_aml_down, g3_all_aml_down), g4_all_aml_down)),
+  n1234 = length(intersect(intersect(intersect(g1_all_aml_down, g2_all_aml_down), g3_all_aml_down), g4_all_aml_down)),
+  category = c("PolyA unbiased", "RiboD unbiased", "PolyA biased", "RiboD biased"),
+  fill = c("#BB5566", "#D55E00", "#0072B2", "#E69F00"),
+  print.mode = c("raw", "percent")
+)
 ```
 
 ## Session Info

@@ -388,6 +388,48 @@ combined_counts <- bind_rows(
 #write_tsv(combined_counts, "../../output_data/Fig1D/combined_counts.tsv.gz")
 ```
 
+``` r
+# average number of genes not expressed per disease per lib prep type
+SS_avg_counts <- combined_counts %>%
+  filter(Disease == "SS") %>%
+  group_by(Compendia, Bin) %>%
+  summarise(med_count = median(Count))
+```
+
+    `summarise()` has grouped output by 'Compendia'. You can override using the
+    `.groups` argument.
+
+``` r
+avg_counts <- combined_counts %>%
+  group_by(Disease, Compendia, Bin) %>%
+  summarise(med_count = median(Count))
+```
+
+    `summarise()` has grouped output by 'Disease', 'Compendia'. You can override
+    using the `.groups` argument.
+
+``` r
+avg_counts_wide <- pivot_wider(avg_counts, names_from = Bin, values_from = med_count)
+#write_tsv(avg_counts_wide, "../../output_data/Fig1D/avg_counts_wide.tsv.gz")
+
+avg_counts_wide
+```
+
+| Disease | Compendia |       0 | 0-0.09 | 0.1-0.99 | 1-2.99 | 3-4.99 |    \>5 |
+|:--------|:----------|--------:|-------:|---------:|-------:|-------:|-------:|
+| ALL     | polyA     | 33037.5 | 1841.0 |   8795.5 | 5787.5 | 5470.0 | 5091.5 |
+| ALL     | riboD     | 30442.5 | 7820.5 |  10764.5 | 7768.5 | 2955.0 |  787.0 |
+| AML     | polyA     | 31259.0 | 1846.0 |   9167.0 | 7219.5 | 6056.5 | 4792.0 |
+| AML     | riboD     | 30389.0 | 6940.5 |  10607.5 | 7974.0 | 3963.0 |  962.0 |
+| NB      | polyA     | 29242.0 | 3859.0 |   9459.0 | 6633.0 | 6271.0 | 4900.0 |
+| NB      | riboD     | 24377.0 | 7644.0 |  13828.0 | 9698.0 | 4419.0 |  780.0 |
+| SS      | polyA     | 32896.0 | 2601.0 |   8400.0 | 5754.0 | 6212.0 | 4701.0 |
+| SS      | riboD     | 28656.0 | 4169.0 |  11974.0 | 8811.0 | 5182.0 | 1056.0 |
+| WT      | polyA     | 30520.0 | 4333.0 |   9562.0 | 5731.0 | 6006.0 | 4426.0 |
+| WT      | riboD     | 26529.0 | 6867.0 |  13426.0 | 8865.0 | 4122.0 |  859.0 |
+| aRMS    | polyA     | 28815.0 | 5071.0 |   9714.0 | 6638.0 | 6268.0 | 4046.0 |
+| aRMS    | riboD     | 27295.0 | 5693.0 |  12768.0 | 9376.0 | 4060.0 |  876.0 |
+
 Custom theme
 
 ``` r
@@ -944,7 +986,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-07-07
+     date     2026-07-24
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
