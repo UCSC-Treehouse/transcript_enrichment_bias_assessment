@@ -38,6 +38,10 @@ library(cowplot)
         stamp
 
 ``` r
+library(ggbeeswarm)
+```
+
+``` r
 rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
 ```
 
@@ -335,16 +339,53 @@ sig_df <- sig_bins_THR13 %>%
 #y-position for stars
 y_star <- max(combined_counts$Count, na.rm = TRUE) * 1.05
 
+# 
+# unique_genes_sig_plot <- ggplot(combined_counts, aes(x = lib_prep, y = Count, fill = lib_prep)) +
+#   # geom_boxplot(
+#   #   outlier.shape = NA, 
+#   #   alpha = 0.6, 
+#   #   position = position_dodge(width = 0.8)) +
+#   geom_jitter(aes(color = lib_prep), 
+#     position = position_jitter(width = 0.15), 
+#     size = 1.5, 
+#     alpha = 0.7) +
+#   # adding stars above text
+#   geom_text(
+#     data = sig_df,
+#     aes(x = 1.5, y = y_star, label = stars_adj),
+#     inherit.aes = FALSE,
+#     size = 6
+#   ) +
+#   
+#   facet_grid(. ~ Bin, labeller = labeller(Bin = facet_labels)) +
+#   scale_fill_compendia() +
+#   scale_color_compendia() +
+#   coord_cartesian(ylim = c(0, y_star)) +
+#   labs(
+#     title = paste("DIPG-IV Matched PolyA/RiboD datasets"),
+#     x = "log2(TPM+1) = x",
+#     y = "Gene count"
+#   ) +
+#   theme_minimal() +
+#   theme_1d() +
+#   theme(
+#       strip.background = element_blank(),
+#       axis.text.x = element_blank(),
+#       axis.ticks.x = element_blank(),
+#       panel.spacing.x = unit(1, "lines")
+#     )
+# 
+# unique_genes_sig_plot
+```
 
-unique_genes_sig_plot <- ggplot(combined_counts, aes(x = lib_prep, y = Count, fill = lib_prep)) +
-  geom_boxplot(
-    outlier.shape = NA, 
-    alpha = 0.6, 
-    position = position_dodge(width = 0.8)) +
-  geom_jitter(aes(color = lib_prep), 
-    position = position_jitter(width = 0.15), 
-    size = 1.5, 
-    alpha = 0.7) +
+``` r
+unique_genes_sig_plot2 <- ggplot(combined_counts, aes(x = lib_prep, y = Count, color = lib_prep)) +
+  geom_quasirandom(
+    dodge.width = 0.85,
+    width = 0.4,
+    alpha = .8,
+    size = 1.5
+  ) +
   # adding stars above text
   geom_text(
     data = sig_df,
@@ -354,7 +395,7 @@ unique_genes_sig_plot <- ggplot(combined_counts, aes(x = lib_prep, y = Count, fi
   ) +
   
   facet_grid(. ~ Bin, labeller = labeller(Bin = facet_labels)) +
-  scale_fill_compendia() +
+  # scale_fill_compendia() +
   scale_color_compendia() +
   coord_cartesian(ylim = c(0, y_star)) +
   labs(
@@ -371,10 +412,10 @@ unique_genes_sig_plot <- ggplot(combined_counts, aes(x = lib_prep, y = Count, fi
       panel.spacing.x = unit(1, "lines")
     )
 
-unique_genes_sig_plot
+unique_genes_sig_plot2
 ```
 
-![](THR13_0970_S12-S17_unique_genes_files/figure-commonmark/unique_genes_sig_plot-1.png)
+![](THR13_0970_S12-S17_unique_genes_files/figure-commonmark/unique_genes_sig_plot2-1.png)
 
 SessionInfo
 
@@ -392,12 +433,13 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-17
+     date     2026-09-18
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
     ─ Packages ───────────────────────────────────────────────────────────────────
      package      * version date (UTC) lib source
+     beeswarm       0.4.0   2021-06-01 [1] CRAN (R 4.5.0)
      bit            4.6.0   2025-03-06 [1] CRAN (R 4.5.0)
      bit64          4.6.0-1 2025-01-16 [1] CRAN (R 4.5.0)
      cli            3.6.5   2025-04-23 [1] CRAN (R 4.5.0)
@@ -410,6 +452,7 @@ sessioninfo::session_info()
      fastmap        1.2.0   2024-05-15 [1] CRAN (R 4.5.0)
      forcats      * 1.0.1   2025-09-25 [1] CRAN (R 4.5.0)
      generics       0.1.4   2025-05-09 [1] CRAN (R 4.5.0)
+     ggbeeswarm   * 0.7.3   2025-11-29 [1] CRAN (R 4.5.2)
      ggplot2      * 4.0.0   2025-09-11 [1] CRAN (R 4.5.0)
      glue           1.8.0   2024-09-30 [1] CRAN (R 4.5.0)
      gtable         0.3.6   2024-10-25 [1] CRAN (R 4.5.0)
@@ -444,6 +487,7 @@ sessioninfo::session_info()
      tzdb           0.5.0   2025-03-15 [1] CRAN (R 4.5.0)
      utf8           1.2.6   2025-06-08 [1] CRAN (R 4.5.0)
      vctrs          0.6.5   2023-12-01 [1] CRAN (R 4.5.0)
+     vipor          0.4.7   2023-12-18 [1] CRAN (R 4.5.0)
      vroom          1.6.6   2025-09-19 [1] CRAN (R 4.5.0)
      withr          3.0.2   2024-10-28 [1] CRAN (R 4.5.0)
      xfun           0.55    2025-12-16 [1] CRAN (R 4.5.2)

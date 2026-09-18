@@ -15,6 +15,7 @@ Boxplot showing the number of unique genes expressed at increasing log2(TPM+1) l
 library(tidyverse)
 library(patchwork)
 library(cowplot)
+library(ggbeeswarm)
 ```
 
 ```{r load in expr file}
@@ -286,16 +287,53 @@ sig_df <- sig_bins_THR13 %>%
 #y-position for stars
 y_star <- max(combined_counts$Count, na.rm = TRUE) * 1.05
 
+# 
+# unique_genes_sig_plot <- ggplot(combined_counts, aes(x = lib_prep, y = Count, fill = lib_prep)) +
+#   # geom_boxplot(
+#   #   outlier.shape = NA, 
+#   #   alpha = 0.6, 
+#   #   position = position_dodge(width = 0.8)) +
+#   geom_jitter(aes(color = lib_prep), 
+#     position = position_jitter(width = 0.15), 
+#     size = 1.5, 
+#     alpha = 0.7) +
+#   # adding stars above text
+#   geom_text(
+#     data = sig_df,
+#     aes(x = 1.5, y = y_star, label = stars_adj),
+#     inherit.aes = FALSE,
+#     size = 6
+#   ) +
+#   
+#   facet_grid(. ~ Bin, labeller = labeller(Bin = facet_labels)) +
+#   scale_fill_compendia() +
+#   scale_color_compendia() +
+#   coord_cartesian(ylim = c(0, y_star)) +
+#   labs(
+#     title = paste("DIPG-IV Matched PolyA/RiboD datasets"),
+#     x = "log2(TPM+1) = x",
+#     y = "Gene count"
+#   ) +
+#   theme_minimal() +
+#   theme_1d() +
+#   theme(
+#       strip.background = element_blank(),
+#       axis.text.x = element_blank(),
+#       axis.ticks.x = element_blank(),
+#       panel.spacing.x = unit(1, "lines")
+#     )
+# 
+# unique_genes_sig_plot
+```
 
-unique_genes_sig_plot <- ggplot(combined_counts, aes(x = lib_prep, y = Count, fill = lib_prep)) +
-  geom_boxplot(
-    outlier.shape = NA, 
-    alpha = 0.6, 
-    position = position_dodge(width = 0.8)) +
-  geom_jitter(aes(color = lib_prep), 
-    position = position_jitter(width = 0.15), 
-    size = 1.5, 
-    alpha = 0.7) +
+```{r unique_genes_sig_plot2}
+unique_genes_sig_plot2 <- ggplot(combined_counts, aes(x = lib_prep, y = Count, color = lib_prep)) +
+  geom_quasirandom(
+    dodge.width = 0.85,
+    width = 0.4,
+    alpha = .8,
+    size = 1.5
+  ) +
   # adding stars above text
   geom_text(
     data = sig_df,
@@ -305,7 +343,7 @@ unique_genes_sig_plot <- ggplot(combined_counts, aes(x = lib_prep, y = Count, fi
   ) +
   
   facet_grid(. ~ Bin, labeller = labeller(Bin = facet_labels)) +
-  scale_fill_compendia() +
+  # scale_fill_compendia() +
   scale_color_compendia() +
   coord_cartesian(ylim = c(0, y_star)) +
   labs(
@@ -322,7 +360,7 @@ unique_genes_sig_plot <- ggplot(combined_counts, aes(x = lib_prep, y = Count, fi
       panel.spacing.x = unit(1, "lines")
     )
 
-unique_genes_sig_plot
+unique_genes_sig_plot2
 ```
 
 SessionInfo
