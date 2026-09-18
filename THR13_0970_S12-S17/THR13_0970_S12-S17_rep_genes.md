@@ -6,10 +6,6 @@
 Boxplot showing expression level of HIST1H1B, a nonpolyadenylated
 histone subunit gene.
 
-Boxplot showing expression of average median ratio gene, calculated as
-the median expression level in PolyA samples divided by the median
-expression level in RiboD samples
-
 ``` r
 library(tidyverse)
 ```
@@ -55,6 +51,10 @@ library(scales)
     The following object is masked from 'package:readr':
 
         col_factor
+
+``` r
+library(ggbeeswarm)
+```
 
 ``` r
 rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
@@ -369,42 +369,31 @@ sig_results_hugo_long <- sig_results_hugo %>%
 
 ``` r
 y_star <- max(combined_labeled$Expression, na.rm = TRUE) * 1.05
+```
 
-rep_genes_plot2 <- ggplot(combined_labeled, aes(x = HugoID, y = Expression, fill = lib_prep)) +
-  geom_boxplot(
-    alpha = 0.7,
-    position = position_dodge(width = 0.8),
-    outlier.shape = NA,
-    linewidth = 0.4
+``` r
+rep_genes_plot <- ggplot(combined_labeled, aes(x = HugoID, y = Expression, color = lib_prep)) +
+  geom_quasirandom(
+    dodge.width = 0.7,
+    width = 0.15,
+    alpha = .8,
+    size = 2
   ) +
-  geom_jitter(
-    aes(color = lib_prep),
-    position = position_jitterdodge(jitter.width = 0.2,
-                                    dodge.width = 0.8),
-    size = 1.2,
-    alpha = 0.6
-  ) +
-  # add stars
   geom_text(
     data = sig_results_hugo_long,
     aes(x = HugoID, y = y_star, label = stars_adj),
     inherit.aes = FALSE,
     size = 12
   ) +
-  scale_fill_compendia() +
   scale_color_compendia() +
-  coord_cartesian(ylim = c(0, 15)) +
+  coord_cartesian(ylim = c(0, 10)) +
   facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
-  # scale_x_discrete(drop = TRUE) +
-  labs(
-    title = paste("matched DIPGIV"),
-    x = NULL,
-  ) +
+  labs(title = "matched DIPGIV", x = NULL) +
   ylab(bquote(log[2](TPM+1))) +
   color_theme() +
   theme(
     axis.title.y = element_text(size = 20),
-    axis.text.y = element_text(size = 14),
+    axis.text.y = element_text(size = 16),
     axis.text.x = element_text(size = 20),
     strip.text = element_blank(),
     plot.title = element_text(vjust = -2),
@@ -414,10 +403,71 @@ rep_genes_plot2 <- ggplot(combined_labeled, aes(x = HugoID, y = Expression, fill
     legend.key.size = unit(1, "cm"),
     legend.margin = margin(t = -2)
   )
-rep_genes_plot2
+rep_genes_plot
 ```
 
-![](THR13_0970_S12-S17_rep_genes_files/figure-commonmark/rep_genes_plot2-1.png)
+![](THR13_0970_S12-S17_rep_genes_files/figure-commonmark/rep_genes_plot-1.png)
+
+Boxplot showing expression of average median ratio gene, calculated as
+the median expression level in PolyA samples divided by the median
+expression level in RiboD samples
+
+``` r
+THR13_ratios <- THR13_gene_medians %>%
+  select(ensembl_gene_ID, THR13_median_ratio) %>%
+  mutate(Disease = "DIPGIV")
+```
+
+``` r
+theme_ratio <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+```
+
+``` r
+# median ratio for HIST1H1B = 0.08042886
+# median ratio for NUDT5 = 1.338632
+
+ratio_hist_plot <- ggplot(THR13_ratios, aes(x = THR13_median_ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  geom_vline(xintercept = 1.338632, color = "#0072B2", linetype = "dashed") +
+  geom_text(aes(x = 2.2, y = 2000, label = "NUDT5"), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  geom_vline(xintercept = 0.08042886, color = "#E69F00", linetype = "dashed") +
+  geom_text(aes(x = 1.15, y = 4500, label = "HIST1H1B"), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  coord_cartesian(xlim = c(0, 10)) +
+  labs(
+    title = "Distribution of polyA / riboD Median Ratios in \nmatched DIPGIV Samples",
+    x = "Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  theme_ratio()
+ratio_hist_plot
+```
+
+    Warning in geom_text(aes(x = 2.2, y = 2000, label = "NUDT5"), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning in geom_text(aes(x = 1.15, y = 4500, label = "HIST1H1B"), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
+    ℹ Please consider using `annotate()` or provide this layer with data containing
+      a single row.
+
+    Warning: Removed 31168 rows containing non-finite outside the scale range
+    (`stat_bin()`).
+
+![](THR13_0970_S12-S17_rep_genes_files/figure-commonmark/ratio_hist_plot-1.png)
 
 Session Info
 
@@ -441,6 +491,7 @@ sessioninfo::session_info()
 
     ─ Packages ───────────────────────────────────────────────────────────────────
      package      * version date (UTC) lib source
+     beeswarm       0.4.0   2021-06-01 [1] CRAN (R 4.5.0)
      bit            4.6.0   2025-03-06 [1] CRAN (R 4.5.0)
      bit64          4.6.0-1 2025-01-16 [1] CRAN (R 4.5.0)
      cli            3.6.5   2025-04-23 [1] CRAN (R 4.5.0)
@@ -453,6 +504,7 @@ sessioninfo::session_info()
      fastmap        1.2.0   2024-05-15 [1] CRAN (R 4.5.0)
      forcats      * 1.0.1   2025-09-25 [1] CRAN (R 4.5.0)
      generics       0.1.4   2025-05-09 [1] CRAN (R 4.5.0)
+     ggbeeswarm   * 0.7.3   2025-11-29 [1] CRAN (R 4.5.2)
      ggplot2      * 4.0.0   2025-09-11 [1] CRAN (R 4.5.0)
      glue           1.8.0   2024-09-30 [1] CRAN (R 4.5.0)
      gtable         0.3.6   2024-10-25 [1] CRAN (R 4.5.0)
@@ -486,6 +538,7 @@ sessioninfo::session_info()
      timechange     0.3.0   2024-01-18 [1] CRAN (R 4.5.0)
      tzdb           0.5.0   2025-03-15 [1] CRAN (R 4.5.0)
      vctrs          0.6.5   2023-12-01 [1] CRAN (R 4.5.0)
+     vipor          0.4.7   2023-12-18 [1] CRAN (R 4.5.0)
      vroom          1.6.6   2025-09-19 [1] CRAN (R 4.5.0)
      withr          3.0.2   2024-10-28 [1] CRAN (R 4.5.0)
      xfun           0.55    2025-12-16 [1] CRAN (R 4.5.2)
