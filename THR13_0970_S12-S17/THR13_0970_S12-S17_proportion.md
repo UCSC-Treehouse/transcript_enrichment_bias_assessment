@@ -38,14 +38,14 @@ library(cowplot)
         stamp
 
 ``` r
-rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_log2TPM1_THR13_0970_S12-S17.tsv.gz")
+rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
 ```
 
-    Rows: 351486 Columns: 8
+    Rows: 362988 Columns: 8
     ── Column specification ────────────────────────────────────────────────────────
     Delimiter: "\t"
-    chr (4): full_sample, HugoID, lib_prep, sample
-    dbl (3): max_length, TPM, log2TPM1
+    chr (5): full_sample, ensembl_gene_ID, HugoID, lib_prep, sample
+    dbl (2): TPM, log2TPM1
     lgl (1): is_treehouse_druggable_gene
 
     ℹ Use `spec()` to retrieve the full column specification for this data.
@@ -285,7 +285,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-15
+     date     2026-09-17
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 

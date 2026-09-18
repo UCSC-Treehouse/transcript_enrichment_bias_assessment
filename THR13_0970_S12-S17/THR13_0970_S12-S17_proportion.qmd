@@ -18,7 +18,7 @@ library(cowplot)
 ```
 
 ```{r load in expr file}
-rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_log2TPM1_THR13_0970_S12-S17.tsv.gz")
+rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
 ```
 
 ```{r filter by sample}

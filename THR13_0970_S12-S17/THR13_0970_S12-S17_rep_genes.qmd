@@ -1,0 +1,378 @@
+---
+title: "THR13_0970_S12-S17_representative_genes"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## THR13_0970 matched PolyA / RiboD
+
+Boxplot showing expression level of HIST1H1B, a nonpolyadenylated histone subunit gene.
+
+Boxplot showing expression of average median ratio gene, calculated as the median expression level in PolyA samples divided by the median expression level in RiboD samples
+
+```{r load library}
+library(tidyverse)
+library(patchwork)
+library(cowplot)
+library(scales)
+```
+
+```{r load in expr file}
+rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
+```
+
+```{r gene_names}
+# to convert EnsemblIDs to HugoIDs
+gene_names <- read.table("../input_data/EnsGeneID_Hugo_Observed_Conversions.txt",
+header = TRUE, sep = "\t", stringsAsFactors = FALSE )
+```
+
+```{r polyA, riboD}
+# separating PolyA and RiboD
+THR13_polyA <- rsem_log2TPM1_THR13 %>%
+  filter(lib_prep == "polyA") %>%
+  mutate(Disease = "DIPG4")
+
+THR13_polyA_wide <- THR13_polyA %>%
+  select(full_sample, ensembl_gene_ID, HugoID, log2TPM1) %>%
+  pivot_wider(names_from = full_sample, values_from = log2TPM1)
+
+THR13_riboD <- rsem_log2TPM1_THR13 %>%
+  filter(lib_prep == "riboD") %>%
+  mutate(Disease = "DIPG4")
+
+THR13_riboD_wide <- THR13_riboD %>%
+  select(full_sample, ensembl_gene_ID, HugoID, log2TPM1) %>%
+  pivot_wider(names_from = full_sample, values_from = log2TPM1)
+```
+
+Finding median expression genes
+
+```{r gene medians}
+# Find gene medians in polyA
+THR13_polyA_medians <- THR13_polyA_wide %>%
+  rowwise() %>%
+  mutate(THR13_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(ensembl_gene_ID, HugoID, THR13_polyA_median)
+
+# Find gene medians in riboD
+THR13_riboD_medians <- THR13_riboD_wide %>%
+  rowwise() %>%
+  mutate(THR13_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(ensembl_gene_ID, HugoID, THR13_riboD_median)
+
+
+# Join and compute ratio (polyA median/riboD median)
+THR13_gene_medians <- THR13_polyA_medians %>%
+  inner_join(THR13_riboD_medians, by = "ensembl_gene_ID") %>%
+  mutate(THR13_median_ratio = THR13_polyA_median / THR13_riboD_median)
+
+# Filter out genes with no expression
+THR13_gene_medians_filtered <- THR13_gene_medians %>%
+  filter(THR13_polyA_median > 0 & THR13_riboD_median > 0)
+
+# Recompute median ratio value
+THR13_median_ratio_val <- median(THR13_gene_medians_filtered$THR13_median_ratio, na.rm = TRUE)
+
+# Find gene closest to that median ratio
+THR13_most_average_gene <- THR13_gene_medians_filtered %>%
+  mutate(dist = abs(THR13_median_ratio - THR13_median_ratio_val)) %>%
+  arrange(dist) %>%
+  slice(1)
+```
+
+Filtering for HIST1H1B, a non-polyadenylated gene
+
+```{r hist1h1b}
+H1B_THR13_polyA <- THR13_polyA_wide %>%
+   filter(HugoID == "HIST1H1B") 
+
+H1B_THR13_riboD <- THR13_riboD_wide %>%
+   filter(HugoID == "HIST1H1B") 
+```
+
+Filtering for most averagely expressed gene
+
+```{r avg gene}
+avg_THR13_polyA <- THR13_polyA_wide %>%
+   filter(ensembl_gene_ID == THR13_most_average_gene$ensembl_gene_ID) 
+
+avg_THR13_riboD <- THR13_riboD_wide %>%
+   filter(ensembl_gene_ID == THR13_most_average_gene$ensembl_gene_ID)
+```
+
+Reformatting HIST1H1B data
+
+```{r h1b reformat}
+H1B_THR13_polyA_long <- H1B_THR13_polyA %>%
+  select(-HugoID) %>%
+  pivot_longer(-ensembl_gene_ID, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "DIPGIV", lib_prep = "polyA", HugoID = "HIST1H1B")
+
+H1B_THR13_riboD_long <- H1B_THR13_riboD %>%
+  select(-HugoID) %>%
+  pivot_longer(-ensembl_gene_ID, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "DIPGIV", lib_prep = "riboD", HugoID = "HIST1H1B")
+```
+
+Reformatting avg gene
+
+```{r avg gene reformat}
+avg_THR13_polyA_long <- avg_THR13_polyA %>%
+  select(-HugoID) %>%
+  pivot_longer(-ensembl_gene_ID, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "DIPGIV", lib_prep = "polyA", Gene = ensembl_gene_ID) %>%
+  select(-Gene) %>%
+  left_join(gene_names, by=c("ensembl_gene_ID" = "EnsGeneID"))
+
+
+avg_THR13_riboD_long <- avg_THR13_riboD %>%
+  select(-HugoID) %>%
+  pivot_longer(-ensembl_gene_ID, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "DIPGIV", lib_prep = "riboD", Gene = ensembl_gene_ID) %>%
+  select(-Gene) %>%
+  left_join(gene_names, by=c("ensembl_gene_ID" = "EnsGeneID"))
+```
+
+Combining dataframes
+
+```{r combined_labeled}
+H1B_THR13 <- bind_rows(
+  H1B_THR13_polyA_long,
+  H1B_THR13_riboD_long
+) %>%
+  mutate(PlotType = "HIST1H1B (PolyA-)")
+
+avg_THR13 <- bind_rows(
+  avg_THR13_polyA_long,
+  avg_THR13_riboD_long
+) %>%
+  mutate(PlotType = "Median Ratio Gene (PolyA+)")
+
+combined_labeled <- bind_rows(H1B_THR13, avg_THR13)
+```
+
+Custom theme
+
+```{r color_theme}
+color_theme <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16), 
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17), 
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+
+scale_fill_compendia <- function() {
+  scale_fill_manual(values = c(
+    "riboD" = "#E69F00",  # yellow
+    "polyA" = "#0072B2"   # blue
+  ))
+}
+scale_color_compendia <- function() {
+  scale_color_manual(values = c( 
+    "riboD" = "#E69F00", 
+    "polyA" = "#0072B2" ))
+  }
+```
+
+```{r median_gene_map}
+# Map of median-ratio genes
+median_gene_map <- list(
+  DIPGIV = THR13_most_average_gene$HugoID.x
+)
+median_gene_map_df <- as.data.frame(median_gene_map)
+
+
+diseases <- unique(combined_labeled$Disease)
+```
+
+statistical significance test
+
+```{r choose_test}
+choose_test <- function(poly, ribo) {
+  
+  # Shapiro tests
+  p_norm_poly  <- shapiro.test(poly)$p.value
+  p_norm_ribo  <- shapiro.test(ribo)$p.value
+  
+  poly_normal <- p_norm_poly  > 0.05
+  ribo_normal <- p_norm_ribo  > 0.05
+  
+  # Both normal → variance test
+  if (poly_normal & ribo_normal) {
+    
+    p_var <- var.test(poly, ribo)$p.value
+    equal_var <- p_var > 0.05
+    
+    # Normal + equal variance → Student t-test
+    if (equal_var) {
+      return(list(
+        p_value = t.test(poly, ribo, var.equal = TRUE)$p.value,
+        test_used = "student_t"
+      ))
+    }
+    
+    # Normal + unequal variance → Welch t-test
+    else {
+      return(list(
+        p_value = t.test(poly, ribo, var.equal = FALSE)$p.value,
+        test_used = "welch_t"
+      ))
+    }
+  }
+  
+  # Non-normal → Mann–Whitney U test
+  return(list(
+    p_value = wilcox.test(poly, ribo, exact = FALSE)$p.value,
+    test_used = "mann_whitney"
+  ))
+}
+```
+
+P-value to significance star
+
+```{r p_to_stars}
+p_to_stars <- function(p) 
+{ vapply(p, function(x) 
+{ if (is.na(x)) return("NA") 
+  if (x < 0.0001) return("****") 
+  if (x < 0.001) return("***") 
+  if (x < 0.01) return("**") 
+  if (x < 0.05) return("*") 
+  "ns" 
+  }, FUN.VALUE = character(1)) }
+```
+
+```{r compute_significance_table}
+compute_significance_table <- function(df) {
+  
+  # 1. Clean and deduplicate input
+  df_clean <- df %>%
+    select(Disease, ensembl_gene_ID, lib_prep, Expression, HugoID) %>%
+    distinct()
+  
+  # 2. Collapse to one row per Disease × Gene × Compendia
+  df_collapsed <- df_clean %>%
+    group_by(Disease, ensembl_gene_ID, lib_prep) %>%
+    summarise(Expression = list(Expression), .groups = "drop")
+  
+  # 3. Pivot to wide: polyA and riboD in separate columns
+  df_wide <- df_collapsed %>%
+    tidyr::pivot_wider(
+      names_from = lib_prep,
+      values_from = Expression
+    )
+  
+  # 4. Apply statistical test to each row
+  df_results <- df_wide %>%
+    rowwise() %>%
+    mutate(
+      # wrap the returned list so mutate() treats it as a single object
+      test = list(choose_test(unlist(polyA), unlist(riboD))),
+      p_value = test$p_value,
+      test_used = test$test_used,
+      stars = p_to_stars(p_value)
+    ) %>%
+    ungroup() %>%
+    select(-test)
+  
+    # Benjamini–Hochberg FDR correction
+  df_results2 <- df_results %>%
+    group_by(Disease) %>%
+    mutate(padj = p.adjust(p_value, method = "BH")) %>%
+    ungroup() %>%
+    mutate(stars_adj = p_to_stars(padj))
+  
+  df_results2
+}
+
+sig_results <- compute_significance_table(combined_labeled)
+
+sig_results_hugo <- sig_results %>%
+  left_join(gene_names, by=c("ensembl_gene_ID" = "EnsGeneID")) %>%
+  mutate(PlotType = case_when(
+    HugoID == "HIST1H1B" ~ "HIST1H1B (PolyA-)",
+    HugoID == "NUDT5" ~ "Median Ratio Gene (PolyA+)"
+  ))
+
+sig_results_hugo_long <- sig_results_hugo %>%
+  pivot_longer(cols = c(polyA, riboD),
+               names_to = "lib_prep",
+               values_to = "log2TPM1") %>%
+  semi_join(
+    combined_labeled %>% distinct(PlotType, HugoID),
+    by = c("PlotType", "HugoID")
+  )
+```
+
+```{r rep_genes_plot2}
+y_star <- max(combined_labeled$Expression, na.rm = TRUE) * 1.05
+
+rep_genes_plot2 <- ggplot(combined_labeled, aes(x = HugoID, y = Expression, fill = lib_prep)) +
+  geom_boxplot(
+    alpha = 0.7,
+    position = position_dodge(width = 0.8),
+    outlier.shape = NA,
+    linewidth = 0.4
+  ) +
+  geom_jitter(
+    aes(color = lib_prep),
+    position = position_jitterdodge(jitter.width = 0.2,
+                                    dodge.width = 0.8),
+    size = 1.2,
+    alpha = 0.6
+  ) +
+  # add stars
+  geom_text(
+    data = sig_results_hugo_long,
+    aes(x = HugoID, y = y_star, label = stars_adj),
+    inherit.aes = FALSE,
+    size = 12
+  ) +
+  scale_fill_compendia() +
+  scale_color_compendia() +
+  coord_cartesian(ylim = c(0, 15)) +
+  facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
+  # scale_x_discrete(drop = TRUE) +
+  labs(
+    title = paste("matched DIPGIV"),
+    x = NULL,
+  ) +
+  ylab(bquote(log[2](TPM+1))) +
+  color_theme() +
+  theme(
+    axis.title.y = element_text(size = 20),
+    axis.text.y = element_text(size = 14),
+    axis.text.x = element_text(size = 20),
+    strip.text = element_blank(),
+    plot.title = element_text(vjust = -2),
+    legend.position = "bottom",
+    legend.text = element_text(size = 16),
+    legend.title = element_text(size = 18),
+    legend.key.size = unit(1, "cm"),
+    legend.margin = margin(t = -2)
+  )
+rep_genes_plot2
+```
+
+Session Info
+
+```{r sessioninfo}
+sessioninfo::session_info()
+```
