@@ -38,14 +38,14 @@ library(cowplot)
         stamp
 
 ``` r
-rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_log2TPM1_THR13_0970_S12-S17.tsv.gz")
+rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
 ```
 
-    Rows: 351486 Columns: 8
+    Rows: 362988 Columns: 8
     ── Column specification ────────────────────────────────────────────────────────
     Delimiter: "\t"
-    chr (4): full_sample, HugoID, lib_prep, sample
-    dbl (3): max_length, TPM, log2TPM1
+    chr (5): full_sample, ensembl_gene_ID, HugoID, lib_prep, sample
+    dbl (2): TPM, log2TPM1
     lgl (1): is_treehouse_druggable_gene
 
     ℹ Use `spec()` to retrieve the full column specification for this data.
@@ -182,12 +182,12 @@ print(stats_THR13)
     # A tibble: 6 × 6
       Disease Bin      Shapiro_polyA_p Shapiro_riboD_p VarTest_p    TTest_p
       <chr>   <fct>              <dbl>           <dbl>     <dbl>      <dbl>
-    1 DIPG4   0                 0.259            0.522    0.233  0.00565   
-    2 DIPG4   0-0.09            0.329            0.677    0.146  0.0170    
-    3 DIPG4   0.1-0.99          0.0866           0.677    0.800  0.0000131 
-    4 DIPG4   1-2.99            0.831            0.336    0.0698 0.0000125 
-    5 DIPG4   3-4.99            0.578            0.500    0.103  0.000864  
-    6 DIPG4   >5                0.363            0.311    0.151  0.00000285
+    1 DIPG4   0                  0.261           0.536    0.244  0.00556   
+    2 DIPG4   0-0.09             0.337           0.678    0.147  0.0169    
+    3 DIPG4   0.1-0.99           0.176           0.703    0.824  0.0000145 
+    4 DIPG4   1-2.99             0.637           0.370    0.113  0.00000858
+    5 DIPG4   3-4.99             0.843           0.489    0.0900 0.000973  
+    6 DIPG4   >5                 0.269           0.291    0.165  0.00000280
 
 Selecting test
 
@@ -307,12 +307,12 @@ sig_bins_THR13
 
 | Disease | Bin | polyA | riboD | p_value | test_used | padj | stars_adj |
 |:---|:---|:---|:---|---:|:---|---:|:---|
-| DIPG4 | 0 | 31846, 33790, 32130 | 28989, 29522, 28783 | 0.0056468 | student_t | 0.0067762 | \*\* |
-| DIPG4 | 0-0.09 | 4335, 2588, 4016 | 6076, 5562, 5895 | 0.0169543 | student_t | 0.0169543 | \* |
-| DIPG4 | 0.1-0.99 | 7817, 7594, 7829 | 10286, 10211, 10424 | 0.0000131 | student_t | 0.0000262 | \*\*\*\* |
-| DIPG4 | 1-2.99 | 4368, 4353, 4379 | 5476, 5452, 5347 | 0.0000125 | student_t | 0.0000262 | \*\*\*\* |
-| DIPG4 | 3-4.99 | 5107, 5096, 5132 | 5467, 5508, 5620 | 0.0008636 | student_t | 0.0012954 | \*\* |
-| DIPG4 | \>5 | 5108, 5160, 5095 | 2287, 2326, 2512 | 0.0000029 | student_t | 0.0000171 | \*\*\*\* |
+| DIPG4 | 0 | 33658, 35619, 33946 | 30751, 31299, 30532 | 0.0055581 | student_t | 0.0066697 | \*\* |
+| DIPG4 | 0-0.09 | 4350, 2595, 4022 | 6097, 5578, 5914 | 0.0169107 | student_t | 0.0169107 | \* |
+| DIPG4 | 0.1-0.99 | 7854, 7632, 7879 | 10356, 10274, 10499 | 0.0000145 | student_t | 0.0000291 | \*\*\*\* |
+| DIPG4 | 1-2.99 | 4398, 4378, 4408 | 5512, 5488, 5394 | 0.0000086 | student_t | 0.0000257 | \*\*\*\* |
+| DIPG4 | 3-4.99 | 5131, 5111, 5146 | 5478, 5519, 5634 | 0.0009731 | student_t | 0.0014597 | \*\* |
+| DIPG4 | \>5 | 5107, 5163, 5097 | 2304, 2340, 2525 | 0.0000028 | student_t | 0.0000168 | \*\*\*\* |
 
 Plot with stars
 
@@ -392,7 +392,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-16
+     date     2026-09-17
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
