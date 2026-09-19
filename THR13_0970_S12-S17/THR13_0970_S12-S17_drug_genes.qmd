@@ -1,0 +1,130 @@
+---
+title: "THR13_0970_S12-S17_drug_genes"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## THR13_0970 matched PolyA / RiboD
+
+Median expression of Treehouse Druggable Genes.
+
+```{r load library}
+library(tidyverse)
+```
+
+```{r load in file}
+rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
+
+# treehouse druggable gene list
+drug_genes <- read_tsv("../input_data/treehouseDruggableGenes_2019-06-12.txt") %>%
+  select(gene)
+```
+
+```{r polyA riboD}
+# separating PolyA and RiboD
+THR13_polyA <- rsem_log2TPM1_THR13 %>%
+  filter(lib_prep == "polyA") %>%
+  mutate(Disease = "DIPG4")
+
+THR13_polyA_wide <- THR13_polyA %>%
+  select(full_sample, ensembl_gene_ID, HugoID, log2TPM1) %>%
+  pivot_wider(names_from = full_sample, values_from = log2TPM1)
+
+THR13_riboD <- rsem_log2TPM1_THR13 %>%
+  filter(lib_prep == "riboD") %>%
+  mutate(Disease = "DIPG4")
+
+THR13_riboD_wide <- THR13_riboD %>%
+  select(full_sample, ensembl_gene_ID, HugoID, log2TPM1) %>%
+  pivot_wider(names_from = full_sample, values_from = log2TPM1)
+```
+
+```{r polyA medians riboD medians}
+# Find gene medians in polyA
+THR13_polyA_medians <- THR13_polyA_wide %>%
+  rowwise() %>%
+  mutate(median_expr = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(ensembl_gene_ID, HugoID, median_expr)
+
+# Find gene medians in riboD
+THR13_riboD_medians <- THR13_riboD_wide %>%
+  rowwise() %>%
+  mutate(median_expr = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(ensembl_gene_ID, HugoID, median_expr)
+```
+
+```{r filtering drug genes}
+THR13_polyA_medians_drug <- THR13_polyA_medians %>%
+  filter(HugoID %in% drug_genes$gene) %>%
+  mutate(Disease = "DIPGIV", lib_prep = "PolyA")
+
+THR13_riboD_medians_drug <- THR13_riboD_medians %>%
+  filter(HugoID %in% drug_genes$gene) %>%
+  mutate(Disease = "DIPGIV", lib_prep = "RiboD")
+
+THR13_drug <- bind_rows(
+  THR13_polyA_medians_drug,
+  THR13_riboD_medians_drug
+)
+```
+
+```{r THR13_drug_form}
+THR13_drug_form <- THR13_drug %>%
+  mutate(HugoID = factor(HugoID, levels = THR13_drug %>%
+                           group_by(HugoID) %>%
+                           summarize(med_expr = median(median_expr), .groups = "drop") %>%
+                           arrange(med_expr) %>%
+                           pull(HugoID)))
+```
+
+Color theme
+
+```{r color theme}
+# Define consistent color-blind–safe palette
+scale_color_compendia <- function() {
+  scale_color_manual(values = c(
+    "RiboD" = "#E69F00",  # yellow
+    "PolyA" = "#0072B2"   # blue
+  ))
+}
+```
+
+```{r drug_genes_plot}
+drug_genes_plot <- ggplot(THR13_drug_form, aes(x = HugoID, y = median_expr, color = lib_prep)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
+  geom_vline(aes(xintercept = as.numeric(HugoID)), color = "grey85", linewidth = 0.3) + 
+  geom_point(size = 1.4, alpha = 0.75) +
+  scale_x_discrete(expand = expansion(mult = c(0.01, 0.01))) +
+  scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
+    scale_color_compendia() +
+    labs(
+      title = "matched DIPGIV",
+      x = "Treehouse Druggable Genes",
+      # y = "Expression log2(TPM+1)",
+      color = "Library Prep"
+    ) +
+    ylab(bquote(Median~log[2](TPM+1))) +
+    theme(
+      # axis.text.x = element_blank(),
+      # axis.title.x = element_blank(), 
+      # axis.ticks.x = element_blank(),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8),
+      panel.grid.major.x = element_blank(),
+      axis.text.y = element_text(angle = 0, hjust = 1, size = 12),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+      legend.position = "bottom"
+    )
+drug_genes_plot
+```
+
+Session Info
+
+```{r SessionInfo}
+sessioninfo::session_info()
+```
