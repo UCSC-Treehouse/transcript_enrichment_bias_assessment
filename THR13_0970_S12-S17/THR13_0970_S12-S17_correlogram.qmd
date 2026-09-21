@@ -75,21 +75,21 @@ cor_color_fn <- function(data, mapping, ...) {
 ```
 
 ```{r rsem_ggpairs_plot}
-rsem_ggpairs_plot <- ggpairs(
-  rsem_matrix,
-  # upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
-  lower = list(continuous = "blank"),
-  upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
-  diag = list(continuous = wrap("densityDiag"))
-  # diag = list(continuous = "blank")
-) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  theme(
-    strip.text.y = element_text(angle = 0, size = 9),
-    strip.text.x = element_text(angle = 45, size = 9)
-  ) +
-  theme(panel.grid = element_blank())
-rsem_ggpairs_plot
+# rsem_ggpairs_plot <- ggpairs(
+#   rsem_matrix,
+#   # upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
+#   lower = list(continuous = "blank"),
+#   upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
+#   diag = list(continuous = wrap("densityDiag"))
+#   # diag = list(continuous = "blank")
+# ) +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+#   theme(
+#     strip.text.y = element_text(angle = 0, size = 9),
+#     strip.text.x = element_text(angle = 45, size = 9)
+#   ) +
+#   theme(panel.grid = element_blank())
+# rsem_ggpairs_plot
 ```
 
 ```{r}
@@ -101,21 +101,21 @@ rsem_ggpairs_plot
 ```
 
 ```{r rsem_ggpairs_plot_scatter}
-# with scatterplot
-rsem_ggpairs_plot_scatter <- ggpairs(
-  rsem_matrix,
-  lower = list(continuous = wrap("points", alpha = 0.3, size = 0.5)),
-  upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
-  diag = list(continuous = wrap("densityDiag"))
-  # diag = list(continuous = "blank")
-) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  theme(
-    strip.text.y = element_text(angle = 0, size = 9),
-    strip.text.x = element_text(angle = 45, size = 9)
-  ) +
-  theme(panel.grid = element_blank())
-rsem_ggpairs_plot_scatter
+# # with scatterplot
+# rsem_ggpairs_plot_scatter <- ggpairs(
+#   rsem_matrix,
+#   lower = list(continuous = wrap("points", alpha = 0.3, size = 0.5)),
+#   upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
+#   diag = list(continuous = wrap("densityDiag"))
+#   # diag = list(continuous = "blank")
+# ) +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+#   theme(
+#     strip.text.y = element_text(angle = 0, size = 9),
+#     strip.text.x = element_text(angle = 45, size = 9)
+#   ) +
+#   theme(panel.grid = element_blank())
+# rsem_ggpairs_plot_scatter
 ```
 
 ```{r}
@@ -182,7 +182,9 @@ scatter_fixed_axes <- function(data, mapping, ...) {
   ggplot(data, mapping) +
     geom_point(alpha = 0.3, size = 0.5) +
     xlim(global_min, global_max) +
-    ylim(global_min, global_max)
+    ylim(global_min, global_max) +
+    geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", color = "green4") # with y=x slope intercept line
 }
 ```
 

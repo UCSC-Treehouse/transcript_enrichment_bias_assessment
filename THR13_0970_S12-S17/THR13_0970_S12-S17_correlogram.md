@@ -95,55 +95,22 @@ cor_color_fn <- function(data, mapping, ...) {
 ```
 
 ``` r
-rsem_ggpairs_plot <- ggpairs(
-  rsem_matrix,
-  # upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
-  lower = list(continuous = "blank"),
-  upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
-  diag = list(continuous = wrap("densityDiag"))
-  # diag = list(continuous = "blank")
-) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  theme(
-    strip.text.y = element_text(angle = 0, size = 9),
-    strip.text.x = element_text(angle = 45, size = 9)
-  ) +
-  theme(panel.grid = element_blank())
-rsem_ggpairs_plot
+# rsem_ggpairs_plot <- ggpairs(
+#   rsem_matrix,
+#   # upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
+#   lower = list(continuous = "blank"),
+#   upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
+#   diag = list(continuous = wrap("densityDiag"))
+#   # diag = list(continuous = "blank")
+# ) +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+#   theme(
+#     strip.text.y = element_text(angle = 0, size = 9),
+#     strip.text.x = element_text(angle = 45, size = 9)
+#   ) +
+#   theme(panel.grid = element_blank())
+# rsem_ggpairs_plot
 ```
-
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-
-![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/rsem_ggpairs_plot-1.png)
 
 ``` r
 # ggsave(
@@ -154,55 +121,22 @@ rsem_ggpairs_plot
 ```
 
 ``` r
-# with scatterplot
-rsem_ggpairs_plot_scatter <- ggpairs(
-  rsem_matrix,
-  lower = list(continuous = wrap("points", alpha = 0.3, size = 0.5)),
-  upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
-  diag = list(continuous = wrap("densityDiag"))
-  # diag = list(continuous = "blank")
-) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  theme(
-    strip.text.y = element_text(angle = 0, size = 9),
-    strip.text.x = element_text(angle = 45, size = 9)
-  ) +
-  theme(panel.grid = element_blank())
-rsem_ggpairs_plot_scatter
+# # with scatterplot
+# rsem_ggpairs_plot_scatter <- ggpairs(
+#   rsem_matrix,
+#   lower = list(continuous = wrap("points", alpha = 0.3, size = 0.5)),
+#   upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
+#   diag = list(continuous = wrap("densityDiag"))
+#   # diag = list(continuous = "blank")
+# ) +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+#   theme(
+#     strip.text.y = element_text(angle = 0, size = 9),
+#     strip.text.x = element_text(angle = 45, size = 9)
+#   ) +
+#   theme(panel.grid = element_blank())
+# rsem_ggpairs_plot_scatter
 ```
-
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-
-![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/rsem_ggpairs_plot_scatter-1.png)
 
 ``` r
 # ggsave(
@@ -302,7 +236,9 @@ scatter_fixed_axes <- function(data, mapping, ...) {
   ggplot(data, mapping) +
     geom_point(alpha = 0.3, size = 0.5) +
     xlim(global_min, global_max) +
-    ylim(global_min, global_max)
+    ylim(global_min, global_max) +
+    geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", color = "green4") # with y=x slope intercept line
 }
 ```
 
@@ -456,7 +392,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-17
+     date     2026-09-21
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
