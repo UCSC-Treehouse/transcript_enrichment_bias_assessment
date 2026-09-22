@@ -447,6 +447,7 @@ ratio_hist_plot <- ggplot(THR13_ratios, aes(x = THR13_median_ratio)) +
   geom_vline(xintercept = 0.08042886, color = "#E69F00", linetype = "dashed") +
   geom_text(aes(x = 1.15, y = 4500, label = "HIST1H1B"), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
   coord_cartesian(xlim = c(0, 10)) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   labs(
     title = "Distribution of polyA / riboD Median Ratios in \nmatched DIPGIV Samples",
     x = "Median Expression Ratio (polyA / riboD)",
@@ -485,7 +486,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-18
+     date     2026-09-22
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
