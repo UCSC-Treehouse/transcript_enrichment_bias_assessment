@@ -453,6 +453,9 @@ ratio_hist_plot <- ggplot(THR13_ratios, aes(x = THR13_median_ratio)) +
     x = "Median Expression Ratio (polyA / riboD)",
     y = "Number of Genes"
   ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+  ) +
   theme_ratio()
 ratio_hist_plot
 ```
