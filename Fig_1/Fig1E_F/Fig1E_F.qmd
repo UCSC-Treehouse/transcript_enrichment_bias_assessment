@@ -22,42 +22,42 @@ library(scales)
 
 ```{r load in files}
 # expression files
-SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv")
-SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv")
+SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv", show_col_types = FALSE)
+SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
-aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv")
-aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv")
+aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv", show_col_types = FALSE)
+aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
-WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv")
-WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv")
+WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv", show_col_types = FALSE)
+WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
-NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv")
-NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv")
+NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv", show_col_types = FALSE)
+NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
-ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv")
-ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv")
+ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv", show_col_types = FALSE)
+ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
-AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv")
-AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv")
+AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv", show_col_types = FALSE)
+AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
 # sample ID files, from correlation_analysis
-SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv")
-SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv")
+SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv", show_col_types = FALSE)
+SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv", show_col_types = FALSE)
 
-aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv")
-aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv")
+aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv", show_col_types = FALSE)
+aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv", show_col_types = FALSE)
 
-WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv")
-WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv")
+WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv", show_col_types = FALSE)
+WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv", show_col_types = FALSE)
 
-NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv")
-NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv")
+NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv", show_col_types = FALSE)
+NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv", show_col_types = FALSE)
 
-ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv")
-ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv")
+ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv", show_col_types = FALSE)
+ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv", show_col_types = FALSE)
 
-AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv")
-AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv")
+AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv", show_col_types = FALSE)
+AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv", show_col_types = FALSE)
 
 # to convert EnsemblIDs to HugoIDs
 gene_names <- read.table("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt",
@@ -113,7 +113,7 @@ SS_most_average_gene <- SS_gene_medians_filtered %>%
 SS_most_average_gene_hugo <- SS_most_average_gene %>%
   convert_to_hugo()
 SS_most_average_gene_hugo
-write_tsv(SS_most_average_gene_hugo, "../../output_data/Fig1E_F/SS_most_average_gene_hugo.tsv.gz")
+# write_tsv(SS_most_average_gene_hugo, "../../output_data/Fig1E_F/SS_most_average_gene_hugo.tsv.gz")
 ```
 
 ```{r median expression gene - aRMS}
@@ -642,7 +642,7 @@ combined_long <- bind_rows(
   avg_AML_riboD_long %>%
     mutate(Disease = "AML"),
 )
-write_tsv(combined_long, "../../output_data/Fig1E_F/combined_long.tsv.gz")
+# write_tsv(combined_long, "../../output_data/Fig1E_F/combined_long.tsv.gz")
 ```
 
 Custom color theme
@@ -801,7 +801,7 @@ compute_significance_table <- function(df) {
 
 
 sig_results <- compute_significance_table(combined_long)
-write_tsv(sig_results, "../../output_data/Fig1E_F/sig_results.tsv.gz")
+# write_tsv(sig_results, "../../output_data/Fig1E_F/sig_results.tsv.gz")
 
 sig_results
 ```
@@ -888,9 +888,9 @@ Fig1E_SS[[1]]
 ```
 
 ```{r save Fig1E}
-ggsave("../../Figures/Fig1E.png", plot = Fig1E_SS[[1]])
-ggsave("../../Figures/Fig1E.tif", plot = Fig1E_SS[[1]])
-saveRDS(Fig1E_SS[[1]],"../../Figures/Fig1E.rds")
+# ggsave("../../Figures/Fig1E.png", plot = Fig1E_SS[[1]])
+# ggsave("../../Figures/Fig1E.tif", plot = Fig1E_SS[[1]])
+# saveRDS(Fig1E_SS[[1]],"../../Figures/Fig1E.rds")
 ```
 
 ```{r Fig1E}
@@ -994,8 +994,8 @@ FigS4
 ```
 
 ```{r save figs4}
-ggsave("../../Figures/FigS4.png", FigS4, width = 20, height = 30, dpi = 300)
-ggsave("../../Figures/FigS4.tif", FigS4, width = 20, height = 30, dpi = 300)
+# ggsave("../../Figures/FigS4.png", FigS4, width = 20, height = 30, dpi = 300)
+# ggsave("../../Figures/FigS4.tif", FigS4, width = 20, height = 30, dpi = 300)
 ```
 
 ## Fig 1F
@@ -1006,7 +1006,7 @@ Histogram of median ratio distributions, calculated as the median expression lev
 ss_ratios <- SS_gene_medians %>%
   select(Gene, Ratio = SS_median_ratio) %>%
   mutate(Disease = "SS")
-write_tsv(ss_ratios, "../../output_data/Fig1E_F/ss_ratios.tsv.gz")
+# write_tsv(ss_ratios, "../../output_data/Fig1E_F/ss_ratios.tsv.gz")
 
 
 arms_ratios <- aRMS_gene_medians %>%
@@ -1054,7 +1054,7 @@ theme_Fig1F <- function(base_size = 14) {
 ```{r finding HIST1H1B expression}
 SS_HIST1H1B <- SS_gene_medians_hugo %>%
   filter(Gene %in% c("HIST1H1B"))
-write_tsv(SS_HIST1H1B, "../../output_data/Fig1E_F/SS_HIST1H1B.tsv.gz")
+# write_tsv(SS_HIST1H1B, "../../output_data/Fig1E_F/SS_HIST1H1B.tsv.gz")
 
 aRMS_HIST1H1B <- aRMS_gene_median_hugo %>%
   filter(Gene %in% c("HIST1H1B"))
@@ -1098,6 +1098,7 @@ Fig1F <- ggplot(ss_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 22),
@@ -1112,9 +1113,9 @@ Fig1F
 ```
 
 ```{r save Fig1F}
-ggsave("../../Figures/Fig1F.png", plot = Fig1F)
-ggsave("../../Figures/Fig1F.tif", plot = Fig1F)
-saveRDS(Fig1F, "../../Figures/Fig1F.rds")
+# ggsave("../../Figures/Fig1F.png", plot = Fig1F)
+# ggsave("../../Figures/Fig1F.tif", plot = Fig1F)
+# saveRDS(Fig1F, "../../Figures/Fig1F.rds")
 ```
 
 ```{r fig1F_aRMS}
@@ -1136,6 +1137,7 @@ Fig1F_aRMS <- ggplot(arms_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1170,6 +1172,7 @@ Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1204,6 +1207,7 @@ Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1238,6 +1242,7 @@ Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1272,6 +1277,7 @@ Fig1F_ALL <- ggplot(all_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1306,6 +1312,7 @@ Fig1F_AML <- ggplot(aml_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1336,8 +1343,8 @@ FigS5
 ```
 
 ```{r save figs5}
-ggsave("../../Figures/FigS5.png", FigS5, width = 20, height = 30, dpi = 300)
-ggsave("../../Figures/FigS5.tif", FigS5, width = 20, height = 30, dpi = 300)
+# ggsave("../../Figures/FigS5.png", FigS5, width = 20, height = 30, dpi = 300)
+# ggsave("../../Figures/FigS5.tif", FigS5, width = 20, height = 30, dpi = 300)
 ```
 
 Session Info

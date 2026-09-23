@@ -58,307 +58,43 @@ library(scales)
 
 ``` r
 # expression files
-SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv")
-```
+SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv", show_col_types = FALSE)
+SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR39_1373_S01, TCGA-WK-A8XT-01, TH40_2281_S01, THR39_1375_S01, TH...
+aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv", show_col_types = FALSE)
+aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv", show_col_types = FALSE)
+WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
-``` r
-SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv")
-```
+NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv", show_col_types = FALSE)
+NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR51_4556_S01, THR51_4558_S01, THR51_4554_S01, THR24_3992_S01, TH...
+ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv", show_col_types = FALSE)
+ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv", show_col_types = FALSE)
+AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv", show_col_types = FALSE)
 
-``` r
-aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR29_0788_S01, THR29_0775_S01, THR29_0757_S01, THR29_0762_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR24_3244_S01, THR24_3371_S01, THR24_3181_S01, THR24_3178_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): TARGET-50-PAJNCZ-01, TARGET-50-PAEBXA-01, TARGET-50-PALERC-01, TAR...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR24_3218_S01, THR24_4194_S01, THR24_4284_S01, THR24_4369_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): TARGET-30-PASUML-01, TARGET-30-PASEGA-01, TARGET-30-PAPUAR-01, TAR...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR24_4310_S01, THR24_2779_S01, THR24_3516_S01, THR24_4114_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 21
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (20): THR24_1667_S01, THR24_2131_S01, THR24_2119_S01, THR24_1921_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 21
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (20): THR24_4203_S01, THR24_3471_S01, THR24_3688_S01, THR24_4235_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 21
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (20): TCGA-AB-2889-03, TCGA-AB-2844-03, TCGA-AB-2846-03, TCGA-AB-2881-03...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 21
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (20): THR24_4050_S01, THR24_4356_S01, THR24_4265_S01, THR24_4263_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
 # sample ID files, from correlation_analysis
-SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv")
-```
+SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv", show_col_types = FALSE)
+SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv", show_col_types = FALSE)
 
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
+aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv", show_col_types = FALSE)
+aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv", show_col_types = FALSE)
 
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv", show_col_types = FALSE)
+WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv", show_col_types = FALSE)
 
-``` r
-SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv")
-```
+NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv", show_col_types = FALSE)
+NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv", show_col_types = FALSE)
 
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
+ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv", show_col_types = FALSE)
+ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv", show_col_types = FALSE)
 
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv", show_col_types = FALSE)
+AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv", show_col_types = FALSE)
 
-``` r
-aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv")
-```
-
-    Rows: 20 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv")
-```
-
-    Rows: 20 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv")
-```
-
-    Rows: 20 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv")
-```
-
-    Rows: 20 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
 # to convert EnsemblIDs to HugoIDs
 gene_names <- read.table("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt",
 header = TRUE, sep = "\t", stringsAsFactors = FALSE )
@@ -420,7 +156,7 @@ SS_most_average_gene_hugo
 | MTMR2 |        4.797532 |        2.954196 |        1.623972 | 5e-07 |
 
 ``` r
-write_tsv(SS_most_average_gene_hugo, "../../output_data/Fig1E_F/SS_most_average_gene_hugo.tsv.gz")
+# write_tsv(SS_most_average_gene_hugo, "../../output_data/Fig1E_F/SS_most_average_gene_hugo.tsv.gz")
 ```
 
 ``` r
@@ -969,7 +705,7 @@ combined_long <- bind_rows(
   avg_AML_riboD_long %>%
     mutate(Disease = "AML"),
 )
-write_tsv(combined_long, "../../output_data/Fig1E_F/combined_long.tsv.gz")
+# write_tsv(combined_long, "../../output_data/Fig1E_F/combined_long.tsv.gz")
 ```
 
 Custom color theme
@@ -1127,7 +863,7 @@ compute_significance_table <- function(df) {
 
 
 sig_results <- compute_significance_table(combined_long)
-write_tsv(sig_results, "../../output_data/Fig1E_F/sig_results.tsv.gz")
+# write_tsv(sig_results, "../../output_data/Fig1E_F/sig_results.tsv.gz")
 
 sig_results
 ```
@@ -1231,19 +967,9 @@ Fig1E_SS[[1]]
 ![](Fig1E_F_files/figure-commonmark/Fig1E_SS-1.png)
 
 ``` r
-ggsave("../../Figures/Fig1E.png", plot = Fig1E_SS[[1]])
-```
-
-    Saving 7 x 5 in image
-
-``` r
-ggsave("../../Figures/Fig1E.tif", plot = Fig1E_SS[[1]])
-```
-
-    Saving 7 x 5 in image
-
-``` r
-saveRDS(Fig1E_SS[[1]],"../../Figures/Fig1E.rds")
+# ggsave("../../Figures/Fig1E.png", plot = Fig1E_SS[[1]])
+# ggsave("../../Figures/Fig1E.tif", plot = Fig1E_SS[[1]])
+# saveRDS(Fig1E_SS[[1]],"../../Figures/Fig1E.rds")
 ```
 
 ``` r
@@ -1377,8 +1103,8 @@ FigS4
 ![](Fig1E_F_files/figure-commonmark/FigS4-1.png)
 
 ``` r
-ggsave("../../Figures/FigS4.png", FigS4, width = 20, height = 30, dpi = 300)
-ggsave("../../Figures/FigS4.tif", FigS4, width = 20, height = 30, dpi = 300)
+# ggsave("../../Figures/FigS4.png", FigS4, width = 20, height = 30, dpi = 300)
+# ggsave("../../Figures/FigS4.tif", FigS4, width = 20, height = 30, dpi = 300)
 ```
 
 ## Fig 1F
@@ -1391,7 +1117,7 @@ in RiboD samples
 ss_ratios <- SS_gene_medians %>%
   select(Gene, Ratio = SS_median_ratio) %>%
   mutate(Disease = "SS")
-write_tsv(ss_ratios, "../../output_data/Fig1E_F/ss_ratios.tsv.gz")
+# write_tsv(ss_ratios, "../../output_data/Fig1E_F/ss_ratios.tsv.gz")
 
 
 arms_ratios <- aRMS_gene_medians %>%
@@ -1439,7 +1165,7 @@ theme_Fig1F <- function(base_size = 14) {
 ``` r
 SS_HIST1H1B <- SS_gene_medians_hugo %>%
   filter(Gene %in% c("HIST1H1B"))
-write_tsv(SS_HIST1H1B, "../../output_data/Fig1E_F/SS_HIST1H1B.tsv.gz")
+# write_tsv(SS_HIST1H1B, "../../output_data/Fig1E_F/SS_HIST1H1B.tsv.gz")
 
 aRMS_HIST1H1B <- aRMS_gene_median_hugo %>%
   filter(Gene %in% c("HIST1H1B"))
@@ -1483,6 +1209,7 @@ Fig1F <- ggplot(ss_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 22),
@@ -1510,41 +1237,9 @@ Fig1F
 ![](Fig1E_F_files/figure-commonmark/Fig1F-1.png)
 
 ``` r
-ggsave("../../Figures/Fig1F.png", plot = Fig1F)
-```
-
-    Saving 7 x 5 in image
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 29257 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-``` r
-ggsave("../../Figures/Fig1F.tif", plot = Fig1F)
-```
-
-    Saving 7 x 5 in image
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 29257 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-``` r
-saveRDS(Fig1F, "../../Figures/Fig1F.rds")
+# ggsave("../../Figures/Fig1F.png", plot = Fig1F)
+# ggsave("../../Figures/Fig1F.tif", plot = Fig1F)
+# saveRDS(Fig1F, "../../Figures/Fig1F.rds")
 ```
 
 ``` r
@@ -1566,6 +1261,7 @@ Fig1F_aRMS <- ggplot(arms_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1613,6 +1309,7 @@ Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1660,6 +1357,7 @@ Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1707,6 +1405,7 @@ Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1754,6 +1453,7 @@ Fig1F_ALL <- ggplot(all_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1805,6 +1505,7 @@ Fig1F_AML <- ggplot(aml_ratios, aes(x = Ratio)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
   ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   theme_Fig1F() +
       theme(
       axis.title.y = element_text(size = 32),
@@ -1916,144 +1617,9 @@ FigS5
 ![](Fig1E_F_files/figure-commonmark/FigS5-1.png)
 
 ``` r
-ggsave("../../Figures/FigS5.png", FigS5, width = 20, height = 30, dpi = 300)
+# ggsave("../../Figures/FigS5.png", FigS5, width = 20, height = 30, dpi = 300)
+# ggsave("../../Figures/FigS5.tif", FigS5, width = 20, height = 30, dpi = 300)
 ```
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 29257 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 27707 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 26797 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 25112 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 31150 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 30953 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-``` r
-ggsave("../../Figures/FigS5.tif", FigS5, width = 20, height = 30, dpi = 300)
-```
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 29257 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 27707 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 26797 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 25112 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 31150 rows containing non-finite outside the scale range
-    (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning: Removed 30953 rows containing non-finite outside the scale range
-    (`stat_bin()`).
 
 Session Info
 
@@ -2071,7 +1637,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-07-07
+     date     2026-09-22
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
@@ -2105,7 +1671,6 @@ sessioninfo::session_info()
      pkgconfig      2.0.3   2019-09-22 [1] CRAN (R 4.5.0)
      purrr        * 1.1.0   2025-07-10 [1] CRAN (R 4.5.0)
      R6             2.6.1   2025-02-15 [1] CRAN (R 4.5.0)
-     ragg           1.5.0   2025-09-02 [1] CRAN (R 4.5.0)
      RColorBrewer   1.1-3   2022-04-03 [1] CRAN (R 4.5.0)
      readr        * 2.1.5   2024-01-10 [1] CRAN (R 4.5.0)
      rlang          1.2.0   2026-04-06 [1] CRAN (R 4.5.2)
@@ -2116,8 +1681,6 @@ sessioninfo::session_info()
      sessioninfo    1.2.3   2025-02-05 [1] CRAN (R 4.5.0)
      stringi        1.8.7   2025-03-27 [1] CRAN (R 4.5.0)
      stringr      * 1.5.2   2025-09-08 [1] CRAN (R 4.5.0)
-     systemfonts    1.3.1   2025-10-01 [1] CRAN (R 4.5.0)
-     textshaping    1.0.4   2025-10-10 [1] CRAN (R 4.5.0)
      tibble       * 3.3.0   2025-06-08 [1] CRAN (R 4.5.0)
      tidyr        * 1.3.1   2024-01-24 [1] CRAN (R 4.5.0)
      tidyselect     1.2.1   2024-03-11 [1] CRAN (R 4.5.0)
