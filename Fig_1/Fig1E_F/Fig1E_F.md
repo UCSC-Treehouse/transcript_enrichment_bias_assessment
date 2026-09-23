@@ -1621,6 +1621,185 @@ FigS5
 # ggsave("../../Figures/FigS5.tif", FigS5, width = 20, height = 30, dpi = 300)
 ```
 
+## Misc
+
+How many genes have a median ratio above, below, or equal to 1 for each
+disease?
+
+``` r
+# SS
+ss_ratios_great1 <- ss_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(ss_ratios_great1)
+```
+
+    [1] 21620
+
+``` r
+ss_ratios_less1 <- ss_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(ss_ratios_less1)
+```
+
+    [1] 4015
+
+``` r
+ss_ratios_equal1 <- ss_ratios %>%
+  filter(Ratio == 1)
+nrow(ss_ratios_equal1)
+```
+
+    [1] 275
+
+``` r
+# aRMS
+arms_ratios_great1 <- arms_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(arms_ratios_great1)
+```
+
+    [1] 22531
+
+``` r
+arms_ratios_less1 <- arms_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(arms_ratios_less1)
+```
+
+    [1] 5517
+
+``` r
+arms_ratios_equal1 <- arms_ratios %>%
+  filter(Ratio == 1)
+nrow(arms_ratios_equal1)
+```
+
+    [1] 669
+
+``` r
+# WT
+wt_ratios_great1 <- wt_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(wt_ratios_great1)
+```
+
+    [1] 22955
+
+``` r
+wt_ratios_less1 <- wt_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(wt_ratios_less1)
+```
+
+    [1] 5317
+
+``` r
+wt_ratios_equal1 <- wt_ratios %>%
+  filter(Ratio == 1)
+nrow(wt_ratios_equal1)
+```
+
+    [1] 0
+
+``` r
+# NB
+nb_ratios_great1 <- nb_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(nb_ratios_great1)
+```
+
+    [1] 24521
+
+``` r
+nb_ratios_less1 <- nb_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(nb_ratios_less1)
+```
+
+    [1] 4659
+
+``` r
+nb_ratios_equal1 <- nb_ratios %>%
+  filter(Ratio == 1)
+nrow(nb_ratios_equal1)
+```
+
+    [1] 0
+
+``` r
+# ALL
+all_ratios_great1 <- all_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(all_ratios_great1)
+```
+
+    [1] 24068
+
+``` r
+all_ratios_less1 <- all_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(all_ratios_less1)
+```
+
+    [1] 1967
+
+``` r
+all_ratios_equal1 <- all_ratios %>%
+  filter(Ratio == 1)
+nrow(all_ratios_equal1)
+```
+
+    [1] 123
+
+``` r
+# ALL
+aml_ratios_great1 <- aml_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(aml_ratios_great1)
+```
+
+    [1] 26508
+
+``` r
+aml_ratios_less1 <- aml_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(aml_ratios_less1)
+```
+
+    [1] 1042
+
+``` r
+aml_ratios_equal1 <- aml_ratios %>%
+  filter(Ratio == 1)
+nrow(aml_ratios_equal1)
+```
+
+    [1] 0
+
 Session Info
 
 ``` r
