@@ -96,7 +96,7 @@ cor_color_fn <- function(data, mapping, ...) {
   corr <- eval_data_col(data, mapping$x) %>%
     cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
   
-  ggally_cor(data, mapping, method = "spearman") +
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
     theme_bw() +
     theme(panel.background = element_rect(
       fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.8,1))(corr)
@@ -387,6 +387,234 @@ rsem_ggpairs_plot_nexpressed
 # )
 ```
 
+#### Applying a variance filter to correlogram
+
+First, remove all genes where, for that gene, more than 80% of samples
+have an expression of 0 (in this case, remove genes where 5 out of 6
+datasets have expression of 0).
+
+From the remaining genes, sort them by variance (or standard deviation,
+either way) of expression within the matrix – then remove the 20% of
+genes that are the least variant. (So if we had 30,000 genes after
+removing those that failed the expression filter, we would remove the
+bottom 6,000.)
+
+``` r
+DIPGIV_expr_filter_zero <- rsem_wide %>%
+  filter(rowSums(across(c(everything())) == 0) < 5)
+
+nrow(rsem_wide)
+```
+
+    [1] 60498
+
+``` r
+nrow(DIPGIV_expr_filter_zero)
+```
+
+    [1] 31588
+
+``` r
+DIPGIV_expr_filter_zero_variance <- DIPGIV_expr_filter_zero %>%
+  rowwise() %>%
+  mutate(row_sd = sd(c_across(-ensembl_gene_ID), na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(row_sd) %>%
+  slice_tail(prop = 0.8)
+
+nrow(DIPGIV_expr_filter_zero_variance)
+```
+
+    [1] 25270
+
+``` r
+# integrate density plot with coefficient value and color by coefficient value
+
+cor_color_fn2 <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+  
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.9,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+
+# with scatterplot
+DIPGIV_expr_filter_zero_variance_plot <- DIPGIV_expr_filter_zero_variance %>%
+  column_to_rownames("ensembl_gene_ID") %>%
+  select(-row_sd) %>%
+  ggpairs(
+  DIPGIV_expr_filter_zero_variance,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn2, method = "spearman")),
+  diag = list(continuous = wrap(diag_filtered_density))
+  # diag = list(continuous = "blank")
+) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9)
+  ) +
+  theme(panel.grid = element_blank())
+DIPGIV_expr_filter_zero_variance_plot
+```
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/DIPGIV_expr_filter_zero_variance_plot-1.png)
+
+``` r
+# ggsave(
+#   "DIPGIV_expr_filter_zero_variance_plot.png",
+#   DIPGIV_expr_filter_zero_variance_plot,
+#   width = 10, height = 10, units = "in", dpi = 300
+# )
+```
+
+Some genes have very low but not quite zero expression
+(i.e. ENSG00000000005.5 has values of
+0.02856915, 0.01435529, 0.05658353, 0.16349873, 0.04264434, and
+0.16349873). 
+
+Going to remove genes where 5 or more out of 6 samples have expression
+\< 1
+
+``` r
+DIPGIV_expr_filter_one <- rsem_wide %>%
+  filter(rowSums(across(c(everything())) < 1) < 5)
+
+nrow(rsem_wide)
+```
+
+    [1] 60498
+
+``` r
+nrow(DIPGIV_expr_filter_one)
+```
+
+    [1] 14946
+
+``` r
+DIPGIV_expr_filter_one_variance <- DIPGIV_expr_filter_one %>%
+  rowwise() %>%
+  mutate(row_sd = sd(c_across(-ensembl_gene_ID), na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(row_sd) %>%
+  slice_tail(prop = 0.8)
+
+nrow(DIPGIV_expr_filter_one_variance)
+```
+
+    [1] 11956
+
+``` r
+# integrate density plot with coefficient value and color by coefficient value
+
+cor_color_fn3 <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.88,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+
+# with scatterplot
+DIPGIV_expr_filter_one_variance_plot <- DIPGIV_expr_filter_one_variance %>%
+  column_to_rownames("ensembl_gene_ID") %>%
+  select(-row_sd) %>%
+  ggpairs(
+  DIPGIV_expr_filter_one_variance,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn3, method = "spearman")),
+  diag = list(continuous = wrap(diag_filtered_density))
+  # diag = list(continuous = "blank")
+) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9)
+  ) +
+  theme(panel.grid = element_blank())
+DIPGIV_expr_filter_one_variance_plot
+```
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/DIPGIV_expr_filter_one_variance_plot-1.png)
+
+``` r
+# ggsave(
+#   "DIPGIV_expr_filter_one_variance_plot.png",
+#   DIPGIV_expr_filter_one_variance_plot,
+#   width = 10, height = 10, units = "in", dpi = 300
+# )
+```
+
 Session Info
 
 ``` r
@@ -403,7 +631,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-21
+     date     2026-09-23
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
