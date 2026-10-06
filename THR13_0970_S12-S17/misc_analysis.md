@@ -33,6 +33,17 @@ library(cowplot)
         stamp
 
 ``` r
+library(patchwork)
+```
+
+
+    Attaching package: 'patchwork'
+
+    The following object is masked from 'package:cowplot':
+
+        align_plots
+
+``` r
 library(ggbeeswarm)
 ```
 
@@ -505,10 +516,11 @@ df <- combined_log2tpm1_ratio %>%
 
   ggplot(df, aes(x = Gene, y = Expression, color = lib_prep)) +
     geom_quasirandom(
+      shape = 1,
       dodge.width = 0.7,
       width = 0.15,
-      alpha = .8,
-      size = 1.2
+      # alpha = .8,
+      size = 2
   ) +
   #   geom_quasirandom(
   #     dodge.width = 0.7,
@@ -536,7 +548,7 @@ df <- combined_log2tpm1_ratio %>%
       # axis.text.x = element_blank(),
       # axis.title.x = element_blank(), 
       # axis.ticks.x = element_blank(),
-      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 14),
       panel.grid.major.x = element_blank(),
       axis.text.y = element_text(angle = 0, hjust = 1, size = 12),
       axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
@@ -587,6 +599,25 @@ log2tpm1_ratio_plot
 ![](misc_analysis_files/figure-commonmark/log2tpm1_ratio_plot-7.png)
 
 ``` r
+log2tpm1_ratio_plot_all <- wrap_plots(log2tpm1_ratio_plot, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 5, r = 5)
+    )
+
+log2tpm1_ratio_plot_all
+```
+
+![](misc_analysis_files/figure-commonmark/log2tpm1_ratio_plot_all-1.png)
+
+``` r
+# ggsave("log2tpm1_ratio_plot_all.png", log2tpm1_ratio_plot_all, width = 15, height = 24, dpi = 300)
+```
+
+``` r
 sessioninfo::session_info()
 ```
 
@@ -600,7 +631,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-22
+     date     2026-09-24
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
@@ -631,6 +662,7 @@ sessioninfo::session_info()
      lifecycle      1.0.4   2023-11-07 [1] CRAN (R 4.5.0)
      lubridate    * 1.9.4   2024-12-08 [1] CRAN (R 4.5.0)
      magrittr       2.0.4   2025-09-12 [1] CRAN (R 4.5.0)
+     patchwork    * 1.3.2   2025-08-25 [1] CRAN (R 4.5.0)
      pillar         1.11.1  2025-09-17 [1] CRAN (R 4.5.0)
      pkgconfig      2.0.3   2019-09-22 [1] CRAN (R 4.5.0)
      purrr        * 1.1.0   2025-07-10 [1] CRAN (R 4.5.0)

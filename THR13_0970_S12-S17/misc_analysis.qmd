@@ -14,6 +14,7 @@ Investigating the median ratio genes from each disease cohort in all diseases
 ```{r load library}
 library(tidyverse)
 library(cowplot)
+library(patchwork)
 library(ggbeeswarm)
 ```
 
@@ -452,10 +453,11 @@ df <- combined_log2tpm1_ratio %>%
 
   ggplot(df, aes(x = Gene, y = Expression, color = lib_prep)) +
     geom_quasirandom(
+      shape = 1,
       dodge.width = 0.7,
       width = 0.15,
-      alpha = .8,
-      size = 1.2
+      # alpha = .8,
+      size = 2
   ) +
   #   geom_quasirandom(
   #     dodge.width = 0.7,
@@ -483,7 +485,7 @@ df <- combined_log2tpm1_ratio %>%
       # axis.text.x = element_blank(),
       # axis.title.x = element_blank(), 
       # axis.ticks.x = element_blank(),
-      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 14),
       panel.grid.major.x = element_blank(),
       axis.text.y = element_text(angle = 0, hjust = 1, size = 12),
       axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
@@ -497,6 +499,21 @@ names(log2tpm1_ratio_plot) <- unique(combined_log2tpm1_ratio$Disease)
 
 # View plots
 log2tpm1_ratio_plot
+```
+
+```{r log2tpm1_ratio_plot_all}
+log2tpm1_ratio_plot_all <- wrap_plots(log2tpm1_ratio_plot, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 5, r = 5)
+    )
+
+log2tpm1_ratio_plot_all
+# ggsave("log2tpm1_ratio_plot_all.png", log2tpm1_ratio_plot_all, width = 15, height = 24, dpi = 300)
+
 ```
 
 ```{r sessioninfo}
