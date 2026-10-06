@@ -1,6 +1,8 @@
 # THR13_0970_S12-S17_correlogram
 
 
+- [THR13_0970 matched PolyA / RiboD](#thr13_0970-matched-polya--ribod)
+
 ## THR13_0970 matched PolyA / RiboD
 
 Correlogram showing similarity between datasets
@@ -29,7 +31,7 @@ library(corrplot)
     corrplot 0.95 loaded
 
 ``` r
-rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
+DIPGIV_log2TPM1 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
 ```
 
     Rows: 362988 Columns: 8
@@ -43,7 +45,7 @@ rsem_log2TPM1_THR13 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_l
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-rsem_log2TPM1_THR13_prepname <- rsem_log2TPM1_THR13 %>%
+DIPGIV_log2TPM1_prepname <- DIPGIV_log2TPM1 %>%
   mutate(
     prepname = case_when(
     full_sample == "THR13_0970_S12" ~ "PolyA_1",
@@ -55,38 +57,21 @@ rsem_log2TPM1_THR13_prepname <- rsem_log2TPM1_THR13 %>%
   ))
 
 # pivot to wide format
-rsem_wide <- rsem_log2TPM1_THR13_prepname %>%
+DIPGIV_log2TPM1_wide <- DIPGIV_log2TPM1_prepname %>%
   select(prepname, ensembl_gene_ID, log2TPM1) %>%
   pivot_wider(names_from = prepname, values_from = log2TPM1)
 ```
 
 ``` r
 # convert to matrix
-rsem_matrix <- rsem_wide %>%
+DIPGIV_log2TPM1_matrix <- DIPGIV_log2TPM1_wide %>%
   column_to_rownames("ensembl_gene_ID") %>%
   as.matrix()
 
 set.seed(123) # for reproducibility
 # Compute Spearman correlation 
-rsem_correlation <- cor(rsem_matrix, method = "spearman", use = "pairwise.complete.obs") #pairwise.complete.obs = the correlation between each pair of variables is computed using all complete pairs of those particular variables
-# ^ I think this means NAs will not be counted in calculation
-```
-
-``` r
-# prep_map <- c(
-#   "THR13_0970_S12" = "PolyA",
-#   "THR13_0970_S13" = "PolyA",
-#   "THR13_0970_S14" = "PolyA",
-#   "THR13_0970_S15" = "RiboD",
-#   "THR13_0970_S16" = "RiboD",
-#   "THR13_0970_S17" = "RiboD"
-# )
-# 
-# # Rename columns to include prep method, e.g. "S12 (PolyA)"
-# colnames(rsem_matrix) <- paste0(
-#   colnames(rsem_matrix),
-#   " (", prep_map[colnames(rsem_matrix)], ")"
-# )
+DIPGIV_log2TPM1_correlation <- cor(DIPGIV_log2TPM1_matrix, method = "spearman", use = "pairwise.complete.obs") #pairwise.complete.obs = the correlation between each pair of variables is computed using all complete pairs of those particular variables
+# ^ this means NAs will not be counted in calculation
 ```
 
 ``` r
@@ -105,60 +90,8 @@ cor_color_fn <- function(data, mapping, ...) {
 }
 ```
 
-``` r
-# rsem_ggpairs_plot <- ggpairs(
-#   rsem_matrix,
-#   # upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
-#   lower = list(continuous = "blank"),
-#   upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
-#   diag = list(continuous = wrap("densityDiag"))
-#   # diag = list(continuous = "blank")
-# ) +
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-#   theme(
-#     strip.text.y = element_text(angle = 0, size = 9),
-#     strip.text.x = element_text(angle = 45, size = 9)
-#   ) +
-#   theme(panel.grid = element_blank())
-# rsem_ggpairs_plot
-```
-
-``` r
-# ggsave(
-#   "rsem_ggpairs_plot.png",
-#   rsem_ggpairs_plot,
-#   width = 10, height = 12, units = "in", dpi = 300
-# )
-```
-
-``` r
-# # with scatterplot
-# rsem_ggpairs_plot_scatter <- ggpairs(
-#   rsem_matrix,
-#   lower = list(continuous = wrap("points", alpha = 0.3, size = 0.5)),
-#   upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
-#   diag = list(continuous = wrap("densityDiag"))
-#   # diag = list(continuous = "blank")
-# ) +
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-#   theme(
-#     strip.text.y = element_text(angle = 0, size = 9),
-#     strip.text.x = element_text(angle = 45, size = 9)
-#   ) +
-#   theme(panel.grid = element_blank())
-# rsem_ggpairs_plot_scatter
-```
-
-``` r
-# ggsave(
-#   "rsem_ggpairs_plot_scatter.png",
-#   rsem_ggpairs_plot_scatter,
-#   width = 10, height = 12, units = "in", dpi = 300
-# )
-```
-
 I want the diagonal density plot to only visualize genes that are
-expressed in that sample, rather than every gene.
+expressed in that sample.
 
 ``` r
 # function for diagonal density
@@ -176,71 +109,12 @@ diag_filtered_density <- function(data, mapping, ...) {
 }
 ```
 
-``` r
-# with scatterplot
-rsem_ggpairs_plot_scatter_diagfilter <- ggpairs(
-  rsem_matrix,
-  lower = list(continuous = wrap("points", alpha = 0.3, size = 0.5)),
-  upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
-  diag = list(continuous = wrap(diag_filtered_density))
-  # diag = list(continuous = "blank")
-) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  theme(
-    strip.text.y = element_text(angle = 0, size = 9),
-    strip.text.x = element_text(angle = 45, size = 9)
-  ) +
-  theme(panel.grid = element_blank())
-rsem_ggpairs_plot_scatter_diagfilter
-```
-
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-
-![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/rsem_ggpairs_plot_scatter_diagfilter-1.png)
-
-``` r
-# ggsave(
-#   "rsem_ggpairs_plot_scatter_diagfilter.png",
-#   rsem_ggpairs_plot_scatter_diagfilter,
-#   width = 10, height = 12, units = "in", dpi = 300
-# )
-```
-
 Making all scatterplot axes the same
 
 ``` r
 # calculating the max and min expression values
-global_min <- min(rsem_matrix, na.rm = TRUE)
-global_max <- max(rsem_matrix, na.rm = TRUE)
+global_min <- min(DIPGIV_log2TPM1_matrix, na.rm = TRUE)
+global_max <- max(DIPGIV_log2TPM1_matrix, na.rm = TRUE)
 
 # function for scatterplot with fixed axes
 scatter_fixed_axes <- function(data, mapping, ...) {
@@ -255,8 +129,8 @@ scatter_fixed_axes <- function(data, mapping, ...) {
 
 ``` r
 # with scatterplot
-rsem_ggpairs_plot_fixedaxes <- ggpairs(
-  rsem_matrix,
+DIPGIV_log2TPM1_correlogram_fixedaxes <- ggpairs(
+  DIPGIV_log2TPM1_matrix,
   lower = list(continuous = wrap(scatter_fixed_axes)),
   upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
   diag = list(continuous = wrap(diag_filtered_density))
@@ -268,7 +142,7 @@ rsem_ggpairs_plot_fixedaxes <- ggpairs(
     strip.text.x = element_text(angle = 45, size = 9)
   ) +
   theme(panel.grid = element_blank())
-rsem_ggpairs_plot_fixedaxes
+DIPGIV_log2TPM1_correlogram_fixedaxes
 ```
 
     Warning in cor.test.default(x, y, method = method): Cannot compute exact
@@ -304,89 +178,6 @@ rsem_ggpairs_plot_fixedaxes
 
 ![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/rsem_ggpairs_plot_fixedaxes-1.png)
 
-``` r
-# ggsave(
-#   "rsem_ggpairs_plot_fixedaxes.png",
-#   rsem_ggpairs_plot_fixedaxes,
-#   width = 10, height = 10, units = "in", dpi = 300
-# )
-```
-
-Plotting number of expressed genes instead of a density plot
-
-``` r
-diag_n_expressed <- function(data, mapping, ...) {
-  x <- eval_data_col(data, mapping$x)
-  n_expr <- sum(x > 0, na.rm = TRUE)
-  
-  ggplot() +
-    annotate("text", x = 0.5, y = 0.5, label = paste0("N =\n", n_expr), size = 3) +
-    xlim(0, 1) + ylim(0, 1) +
-    theme_bw() +
-    theme(panel.grid = element_blank(), axis.text = element_blank(),
-          axis.ticks = element_blank(), axis.title = element_blank())
-}
-```
-
-``` r
-# n expressed
-rsem_ggpairs_plot_nexpressed <- ggpairs(
-  rsem_matrix,
-  lower = list(continuous = wrap(scatter_fixed_axes)),
-  upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
-  diag = list(continuous = wrap(diag_n_expressed))
-  # diag = list(continuous = "blank")
-) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  theme(
-    strip.text.y = element_text(angle = 0, size = 9),
-    strip.text.x = element_text(angle = 45, size = 9)
-  ) +
-  theme(panel.grid = element_blank())
-rsem_ggpairs_plot_nexpressed
-```
-
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-    Warning in cor.test.default(x, y, method = method): Cannot compute exact
-    p-value with ties
-
-![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/rsem_ggpairs_plot_nexpressed-1.png)
-
-``` r
-# ggsave(
-#   "rsem_ggpairs_plot_nexpressed.png",
-#   rsem_ggpairs_plot_nexpressed,
-#   width = 10, height = 10, units = "in", dpi = 300
-# )
-```
-
 #### Applying a variance filter to correlogram
 
 First, remove all genes where, for that gene, more than 80% of samples
@@ -400,10 +191,10 @@ removing those that failed the expression filter, we would remove the
 bottom 6,000.)
 
 ``` r
-DIPGIV_expr_filter_zero <- rsem_wide %>%
+DIPGIV_expr_filter_zero <- DIPGIV_log2TPM1_wide %>%
   filter(rowSums(across(c(everything())) == 0) < 5)
 
-nrow(rsem_wide)
+nrow(DIPGIV_log2TPM1_wide)
 ```
 
     [1] 60498
@@ -426,6 +217,10 @@ nrow(DIPGIV_expr_filter_zero_variance)
 ```
 
     [1] 25270
+
+``` r
+write_tsv(DIPGIV_expr_filter_zero_variance, "../output_data/THR13_0970_S12-S17/DIPGIV_expr_filter_zero_variance.tsv.gz")
+```
 
 ``` r
 # integrate density plot with coefficient value and color by coefficient value
@@ -512,10 +307,10 @@ Going to remove genes where 5 or more out of 6 samples have expression
 \< 1
 
 ``` r
-DIPGIV_expr_filter_one <- rsem_wide %>%
+DIPGIV_expr_filter_one <- DIPGIV_log2TPM1_wide %>%
   filter(rowSums(across(c(everything())) < 1) < 5)
 
-nrow(rsem_wide)
+nrow(DIPGIV_log2TPM1_wide)
 ```
 
     [1] 60498
@@ -615,6 +410,103 @@ DIPGIV_expr_filter_one_variance_plot
 # )
 ```
 
+Removing genes where 5 or more out of 6 samples have expression \< 1
+
+``` r
+DIPGIV_expr_filter_3 <- DIPGIV_log2TPM1_wide %>%
+  filter(rowSums(across(c(everything())) < 3) < 5)
+
+nrow(DIPGIV_log2TPM1_wide)
+```
+
+    [1] 60498
+
+``` r
+nrow(DIPGIV_expr_filter_3)
+```
+
+    [1] 10446
+
+``` r
+DIPGIV_expr_filter_3_variance <- DIPGIV_expr_filter_3 %>%
+  rowwise() %>%
+  mutate(row_sd = sd(c_across(-ensembl_gene_ID), na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(row_sd) %>%
+  slice_tail(prop = 0.8)
+
+nrow(DIPGIV_expr_filter_3_variance)
+```
+
+    [1] 8356
+
+``` r
+# integrate density plot with coefficient value and color by coefficient value
+cor_color_fn3 <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.8,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+
+# with scatterplot
+DIPGIV_expr_filter_3_variance_plot <- DIPGIV_expr_filter_3_variance %>%
+  column_to_rownames("ensembl_gene_ID") %>%
+  select(-row_sd) %>%
+  ggpairs(
+  DIPGIV_expr_filter_3_variance,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn3, method = "spearman")),
+  diag = list(continuous = wrap(diag_filtered_density))
+  # diag = list(continuous = "blank")
+) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9)
+  ) +
+  theme(panel.grid = element_blank())
+DIPGIV_expr_filter_3_variance_plot
+```
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/DIPGIV_expr_filter_3_variance_plot-1.png)
+
 Session Info
 
 ``` r
@@ -631,7 +523,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-23
+     date     2026-10-06
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
