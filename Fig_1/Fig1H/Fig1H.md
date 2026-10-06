@@ -1,6 +1,8 @@
 # Fig1H
 
 
+- [Fig 1H](#fig-1h)
+
 ## Fig 1H
 
 Median expression of Treehouse Druggable Genes.
@@ -39,331 +41,100 @@ library(cowplot)
 ``` r
 # sample ID files
 # polyA
-SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv")
-```
+SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv", show_col_types = FALSE)
+aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv", show_col_types = FALSE)
+WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv", show_col_types = FALSE)
+NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv", show_col_types = FALSE)
+ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv", show_col_types = FALSE)
+AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv", show_col_types = FALSE)
 
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv")
-```
-
-    Rows: 20 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv")
-```
-
-    Rows: 20 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
 # riboD
-SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv")
-```
+SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv", show_col_types = FALSE)
+aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv", show_col_types = FALSE)
+WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv", show_col_types = FALSE)
+NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv", show_col_types = FALSE)
+ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv", show_col_types = FALSE)
+AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv", show_col_types = FALSE)
 
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv")
-```
-
-    Rows: 15 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv")
-```
-
-    Rows: 20 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv")
-```
-
-    Rows: 20 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): term, disease_and_prep
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
 # log2(TPM+1) expression files
-SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv")
-```
+SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
 
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR39_1373_S01, TCGA-WK-A8XT-01, TH40_2281_S01, THR39_1375_S01, TH...
+SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
 
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
 
-``` r
-SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv")
-```
+aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
 
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR51_4556_S01, THR51_4558_S01, THR51_4554_S01, THR24_3992_S01, TH...
+WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
 
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
 
-``` r
-aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv")
-```
+ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
 
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR29_0788_S01, THR29_0775_S01, THR29_0757_S01, THR29_0762_S01, TH...
+AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
 
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
-``` r
-aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR24_3244_S01, THR24_3371_S01, THR24_3181_S01, THR24_3178_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): TARGET-50-PAJNCZ-01, TARGET-50-PAEBXA-01, TARGET-50-PALERC-01, TAR...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR24_3218_S01, THR24_4194_S01, THR24_4284_S01, THR24_4369_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): TARGET-30-PASUML-01, TARGET-30-PASEGA-01, TARGET-30-PAPUAR-01, TAR...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 16
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (15): THR24_4310_S01, THR24_2779_S01, THR24_3516_S01, THR24_4114_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 21
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (20): THR24_1667_S01, THR24_2131_S01, THR24_2119_S01, THR24_1921_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 21
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (20): THR24_4203_S01, THR24_3471_S01, THR24_3688_S01, THR24_4235_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 21
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (20): TCGA-AB-2889-03, TCGA-AB-2844-03, TCGA-AB-2846-03, TCGA-AB-2881-03...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv")
-```
-
-    Rows: 60498 Columns: 21
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr  (1): Gene
-    dbl (20): THR24_4050_S01, THR24_4356_S01, THR24_4265_S01, THR24_4263_S01, TH...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
 # to convert EnsemblIDs to HugoIDs
 gene_names <- read.table("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt",
-header = TRUE, sep = "\t", stringsAsFactors = FALSE )
+header = TRUE, sep = "\t", stringsAsFactors = FALSE)
 
 # treehouse druggable gene list
-drug_genes <- read_tsv("../../input_data/treehouseDruggableGenes_2019-06-12.txt") %>%
+drug_genes <- read_tsv("../../input_data/treehouseDruggableGenes_2019-06-12.txt", show_col_types = FALSE) %>%
   select(gene)
 ```
 
-    Rows: 115 Columns: 2
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: "\t"
-    chr (2): gene, group
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+``` r
+# getting the EnsemblIDs for the Treehouse druggable gene list
+drug_gene_names <- drug_genes %>%
+  rename(HugoID = gene) %>%
+  left_join(gene_names, by = "HugoID")
+```
 
 Function for filtering for druggable genes
 
 ``` r
-filter_druggable <- function(df, drug_genes) {
-  df %>% filter(Gene %in% drug_genes$gene)
+filter_druggable <- function(df, drug_gene_names) {
+  df %>% filter(EnsGeneID %in% drug_gene_names$EnsGeneID)
+    # left_join(drug_gene_names, by = "EnsGeneID") %>%
+    # relocate(HugoID)
 }
+```
+
+``` r
+# filtering for TH druggable genes
+aRMS_polyA_drug <- filter_druggable(aRMS_polyA_log2tpm1, drug_gene_names)
+aRMS_riboD_drug <- filter_druggable(aRMS_riboD_log2tpm1, drug_gene_names)
+
+SS_polyA_drug <- filter_druggable(SS_polyA_log2tpm1, drug_gene_names)
+SS_riboD_drug <- filter_druggable(SS_riboD_log2tpm1, drug_gene_names)
+
+WT_polyA_drug <- filter_druggable(WT_polyA_log2tpm1, drug_gene_names)
+WT_riboD_drug <- filter_druggable(WT_riboD_log2tpm1, drug_gene_names)
+
+NB_polyA_drug <- filter_druggable(NB_polyA_log2tpm1, drug_gene_names)
+NB_riboD_drug <- filter_druggable(NB_riboD_log2tpm1, drug_gene_names)
+
+ALL_polyA_drug <- filter_druggable(ALL_polyA_log2tpm1, drug_gene_names)
+ALL_riboD_drug <- filter_druggable(ALL_riboD_log2tpm1, drug_gene_names)
+
+AML_polyA_drug <- filter_druggable(AML_polyA_log2tpm1, drug_gene_names)
+AML_riboD_drug <- filter_druggable(AML_riboD_log2tpm1, drug_gene_names)
 ```
 
 Function for calculating median expression across samples
@@ -372,135 +143,80 @@ Function for calculating median expression across samples
 compute_gene_medians_polyA <- function(polyA_df, disease_name, Compendia ) {
   polyA_medians <- polyA_df %>%
     rowwise() %>%
-    mutate(polyA_medians = median(c_across(-Gene), na.rm = TRUE)) %>%
+    mutate(Expression = median(c_across(-EnsGeneID), na.rm = TRUE)) %>%
     ungroup() %>%
-    select(Gene, polyA_medians)
+    select(EnsGeneID, Expression) %>%
+    left_join(drug_gene_names, by = "EnsGeneID") %>%
+    relocate(HugoID)
 }
+
 compute_gene_medians_riboD <- function(riboD_df, disease_name, Compendia) {
    riboD_medians <- riboD_df %>%
     rowwise() %>%
-    mutate(riboD_medians = median(c_across(-Gene), na.rm = TRUE)) %>%
+    mutate(Expression = median(c_across(-EnsGeneID), na.rm = TRUE)) %>%
     ungroup() %>%
-    select(Gene, riboD_medians)
+    select(EnsGeneID, Expression) %>%
+    left_join(drug_gene_names, by = "EnsGeneID") %>%
+    relocate(HugoID)     
 }
 ```
 
-Converting EnsemblID to HugoID for readability
-
 ``` r
-convert_to_hugo <- function(df) {
-  df %>%
-    left_join(gene_names, by = c("Gene" = "EnsGeneID")) %>%
-    mutate(Gene = ifelse(!is.na(HugoID), HugoID, Gene)) %>%
-    select(-HugoID)
-}
-```
+# calculating median expression of druggable genes per disease
+aRMS_polyA_drug_medians <- compute_gene_medians_polyA(aRMS_polyA_drug) %>%
+  mutate(Disease = "aRMS", Compendia = "PolyA", name = "polyA_medians")
 
-Applying gene medians function
+aRMS_riboD_drug_medians <- compute_gene_medians_riboD(aRMS_riboD_drug) %>%
+  mutate(Disease = "aRMS", Compendia = "RiboD", name = "riboD_medians")
 
-``` r
-aRMS_polyA_medians <- compute_gene_medians_polyA(aRMS_polyA_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "aRMS", Compendia = "PolyA") %>%
-  convert_to_hugo()
+SS_polyA_drug_medians <- compute_gene_medians_polyA(SS_polyA_drug) %>%
+  mutate(Disease = "SS", Compendia = "PolyA", name = "polyA_medians") 
 
-aRMS_riboD_medians <- compute_gene_medians_riboD(aRMS_riboD_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "aRMS", Compendia = "RiboD") %>%
-  convert_to_hugo()
+SS_riboD_drug_medians <- compute_gene_medians_riboD(SS_riboD_drug) %>%
+  mutate(Disease = "SS", Compendia = "RiboD", name = "riboD_medians") 
 
-SS_polyA_medians <- compute_gene_medians_polyA(SS_polyA_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "SS", Compendia = "PolyA") %>%
-  convert_to_hugo()
+WT_polyA_drug_medians <- compute_gene_medians_polyA(WT_polyA_drug) %>%
+  mutate(Disease = "WT", Compendia = "PolyA", name = "polyA_medians") 
 
-SS_riboD_medians <- compute_gene_medians_riboD(SS_riboD_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "SS", Compendia = "RiboD") %>%
-  convert_to_hugo()
+WT_riboD_drug_medians <- compute_gene_medians_riboD(WT_riboD_drug) %>%
+  mutate(Disease = "WT", Compendia = "RiboD", name = "riboD_medians")
 
-WT_polyA_medians <- compute_gene_medians_polyA(WT_polyA_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "WT", Compendia = "PolyA") %>%
-  convert_to_hugo()
+NB_polyA_drug_medians <- compute_gene_medians_polyA(NB_polyA_drug) %>%
+  mutate(Disease = "NB", Compendia = "PolyA", name = "polyA_medians") 
 
-WT_riboD_medians <- compute_gene_medians_riboD(WT_riboD_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "WT", Compendia = "RiboD") %>%
-  convert_to_hugo()
+NB_riboD_drug_medians <- compute_gene_medians_riboD(NB_riboD_drug) %>%
+  mutate(Disease = "NB", Compendia = "RiboD", name = "riboD_medians") 
 
-NB_polyA_medians <- compute_gene_medians_polyA(NB_polyA_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "NB", Compendia = "PolyA") %>%
-  convert_to_hugo()
+ALL_polyA_drug_medians <- compute_gene_medians_polyA(ALL_polyA_drug) %>%
+  mutate(Disease = "ALL", Compendia = "PolyA", name = "polyA_medians") 
 
-NB_riboD_medians <- compute_gene_medians_riboD(NB_riboD_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "NB", Compendia = "RiboD") %>%
-  convert_to_hugo()
+ALL_riboD_drug_medians <- compute_gene_medians_riboD(ALL_riboD_drug) %>%
+  mutate(Disease = "ALL", Compendia = "RiboD", name = "riboD_medians") 
 
-ALL_polyA_medians <- compute_gene_medians_polyA(ALL_polyA_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "ALL", Compendia = "PolyA") %>%
-  convert_to_hugo()
+AML_polyA_drug_medians <- compute_gene_medians_polyA(AML_polyA_drug) %>%
+  mutate(Disease = "AML", Compendia = "PolyA", name = "polyA_medians") 
 
-ALL_riboD_medians <- compute_gene_medians_riboD(ALL_riboD_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "ALL", Compendia = "RiboD") %>%
-  convert_to_hugo()
-
-AML_polyA_medians <- compute_gene_medians_polyA(AML_polyA_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "AML", Compendia = "PolyA") %>%
-  convert_to_hugo()
-
-AML_riboD_medians <- compute_gene_medians_riboD(AML_riboD_log2tpm1) %>%
-  pivot_longer(-Gene, values_to = "Expression") %>%
-  mutate(Disease = "AML", Compendia = "RiboD") %>%
-  convert_to_hugo()
-```
-
-Filtering for druggable genes
-
-``` r
-aRMS_polyA_medians_drug <- filter_druggable(aRMS_polyA_medians, drug_genes)
-aRMS_riboD_medians_drug <- filter_druggable(aRMS_riboD_medians, drug_genes)
-
-SS_polyA_medians_drug <- filter_druggable(SS_polyA_medians, drug_genes)
-SS_riboD_medians_drug <- filter_druggable(SS_riboD_medians, drug_genes)
-
-WT_polyA_medians_drug <- filter_druggable(WT_polyA_medians, drug_genes)
-WT_riboD_medians_drug <- filter_druggable(WT_riboD_medians, drug_genes)
-
-NB_polyA_medians_drug <- filter_druggable(NB_polyA_medians, drug_genes)
-NB_riboD_medians_drug <- filter_druggable(NB_riboD_medians, drug_genes)
-
-ALL_polyA_medians_drug <- filter_druggable(ALL_polyA_medians, drug_genes)
-ALL_riboD_medians_drug <- filter_druggable(ALL_riboD_medians, drug_genes)
-
-AML_polyA_medians_drug <- filter_druggable(AML_polyA_medians, drug_genes)
-AML_riboD_medians_drug <- filter_druggable(AML_riboD_medians, drug_genes)
+AML_riboD_drug_medians <- compute_gene_medians_riboD(AML_riboD_drug) %>%
+  mutate(Disease = "AML", Compendia = "RiboD", name = "riboD_medians") 
 ```
 
 ``` r
-combined_medians_drug <- bind_rows(
-  aRMS_polyA_medians_drug,
-  aRMS_riboD_medians_drug,
-  SS_polyA_medians_drug,
-  SS_riboD_medians_drug,
-  WT_polyA_medians_drug,
-  WT_riboD_medians_drug,
-  NB_polyA_medians_drug,
-  NB_riboD_medians_drug,
-  ALL_polyA_medians_drug,
-  ALL_riboD_medians_drug,
-  AML_polyA_medians_drug,
-  AML_riboD_medians_drug
+combined_drug_medians <- bind_rows(
+  aRMS_polyA_drug_medians,
+  aRMS_riboD_drug_medians,
+  SS_polyA_drug_medians,
+  SS_riboD_drug_medians,
+  NB_polyA_drug_medians,
+  NB_riboD_drug_medians,
+  WT_polyA_drug_medians,
+  WT_riboD_drug_medians,
+  ALL_polyA_drug_medians,
+  ALL_riboD_drug_medians,
+  AML_polyA_drug_medians,
+  AML_riboD_drug_medians
 )
-write_tsv(combined_medians_drug, "../../output_data/Fig1H/combined_medians_drug.tsv.gz")
+# write_tsv(combined_drug_medians, "../../output_data/Fig1H/combined_drug_medians.tsv.gz")
 ```
-
-Define palette
 
 ``` r
 # Define consistent color-blind–safe palette
@@ -512,27 +228,26 @@ scale_color_compendia <- function() {
 }
 ```
 
-Generate plots
-
 ``` r
 # Loop through diseases and generate plots
-Fig1H_SS <- map(unique(combined_medians_drug$Disease), function(d) {
+Fig1H_SS_ensembl <- map(unique(combined_drug_medians$Disease), function(d) {
 
- df <- combined_medians_drug %>% 
+ df <- combined_drug_medians %>% 
   filter(Disease == d)
 
-df <- combined_medians_drug %>% 
+# order ensemblIDs by median expression
+df <- combined_drug_medians %>% 
   filter(Disease == d) %>%
-  mutate(Gene = factor(Gene, levels = df %>% 
-                         group_by(Gene) %>% 
+  mutate(EnsGeneID = factor(EnsGeneID, levels = df %>% 
+                         group_by(EnsGeneID) %>% 
                          summarize(median_expr = median(Expression), .groups = "drop") %>% 
                          arrange(median_expr) %>% 
-                         pull(Gene)))
+                         pull(EnsGeneID)))
 
-  ggplot(df, aes(x = Gene, y = Expression, color = Compendia)) +
+  ggplot(df, aes(x = EnsGeneID, y = Expression, color = Compendia)) +
     geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
     # 1. vertical lines for each gene 
-    geom_vline(aes(xintercept = as.numeric(Gene)), color = "grey85", linewidth = 0.3) + 
+    geom_vline(aes(xintercept = as.numeric(EnsGeneID)), color = "grey85", linewidth = 0.3) + 
     # 2. points that stay centered on those lines 
     geom_point(size = 1.4, alpha = 0.75) +
     scale_x_discrete(expand = expansion(mult = c(0.01, 0.01))) +
@@ -559,48 +274,46 @@ df <- combined_medians_drug %>%
 })
 
 # Assign names for easy access
-names(Fig1H_SS) <- unique(combined_medians_drug$Disease)
+names(Fig1H_SS_ensembl) <- unique(combined_drug_medians$Disease)
 
 # View plots
-Fig1H_SS$SS
+Fig1H_SS_ensembl$SS
 ```
 
-![](Fig1H_files/figure-commonmark/Fig1H-1.png)
+![](Fig1H_files/figure-commonmark/Fig1H_SS-1.png)
 
 ``` r
-ggsave("../../Figures/Fig1H.png", Fig1H_SS$SS, width = 11)
+ggsave("../../Figures/Fig1H_SS_ensembl.png", Fig1H_SS_ensembl$SS, width = 11)
 ```
 
     Saving 11 x 5 in image
 
 ``` r
-ggsave("../../Figures/Fig1H.tif", Fig1H_SS$SS, width = 11)
+# ggsave("../../Figures/Fig1H.tif", Fig1H_SS$SS, width = 11)
 ```
 
-    Saving 11 x 5 in image
-
-## Fig S7
+Fig S7
 
 ``` r
 # Loop through diseases and generate plots
-Fig1H <- map(unique(combined_medians_drug$Disease), function(d) {
+Fig1H_ensembl <- map(unique(combined_drug_medians$Disease), function(d) {
 
- df <- combined_medians_drug %>% 
+ df <- combined_drug_medians %>%
   filter(Disease == d)
 
-df <- combined_medians_drug %>% 
+df <- combined_drug_medians %>%
   filter(Disease == d) %>%
-  mutate(Gene = factor(Gene, levels = df %>% 
-                         group_by(Gene) %>% 
-                         summarize(median_expr = median(Expression), .groups = "drop") %>% 
-                         arrange(median_expr) %>% 
-                         pull(Gene)))
+  mutate(EnsGeneID = factor(EnsGeneID, levels = df %>%
+                         group_by(EnsGeneID) %>%
+                         summarize(median_expr = median(Expression), .groups = "drop") %>%
+                         arrange(median_expr) %>%
+                         pull(EnsGeneID)))
 
-  ggplot(df, aes(x = Gene, y = Expression, color = Compendia)) +
+  ggplot(df, aes(x = EnsGeneID, y = Expression, color = Compendia)) +
     geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
-    # 1. vertical lines for each gene 
-    geom_vline(aes(xintercept = as.numeric(Gene)), color = "grey85", linewidth = 0.3) + 
-    # 2. points that stay centered on those lines 
+    # 1. vertical lines for each gene
+    geom_vline(aes(xintercept = as.numeric(EnsGeneID)), color = "grey85", linewidth = 0.3) +
+    # 2. points that stay centered on those lines
     geom_point(size = 3, alpha = 0.75) +
     scale_x_discrete(expand = expansion(mult = c(0.01, 0.01))) +
     scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
@@ -614,13 +327,13 @@ df <- combined_medians_drug %>%
     ylab(bquote(Median~log[2](TPM+1))) +
     theme(
       # axis.text.x = element_blank(),
-      # axis.title.x = element_blank(), 
+      # axis.title.x = element_blank(),
       # axis.ticks.x = element_blank(),
-      panel.grid.major.x = element_blank(),      
-      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 28),
+      panel.grid.major.x = element_blank(),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 20),
       axis.text.y = element_text(angle = 0, hjust = 1, size = 28),
-      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 30, face = "bold"), 
-      axis.title.x = element_text(angle = 0, hjust = 1, size = 30), 
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 30, face = "bold"),
+      axis.title.x = element_text(angle = 0, hjust = 1, size = 30),
       strip.text = element_blank(),
       plot.title = element_text(hjust = 0.5, face = "bold", size = 32),
       legend.position = "bottom",
@@ -630,20 +343,25 @@ df <- combined_medians_drug %>%
 })
 
 # Assign names for easy access
-names(Fig1H) <- unique(combined_medians_drug$Disease)
+names(Fig1H_ensembl) <- unique(combined_drug_medians$Disease)
 
 # View plots
-Fig1H
+Fig1H_ensembl
 ```
 
     $aRMS
 
-![](Fig1H_files/figure-commonmark/Fig1H_tocombine-1.png)
+![](Fig1H_files/figure-commonmark/Fig1H_ensembl-1.png)
 
 
     $SS
 
-![](Fig1H_files/figure-commonmark/Fig1H_tocombine-2.png)
+![](Fig1H_files/figure-commonmark/Fig1H_ensembl-2.png)
+
+
+    $NB
+
+![](Fig1H_files/figure-commonmark/Fig1H_ensembl-3.png)
 
 
     $WT
@@ -651,25 +369,20 @@ Fig1H
     Warning: Removed 1 row containing missing values or values outside the scale range
     (`geom_point()`).
 
-![](Fig1H_files/figure-commonmark/Fig1H_tocombine-3.png)
-
-
-    $NB
-
-![](Fig1H_files/figure-commonmark/Fig1H_tocombine-4.png)
+![](Fig1H_files/figure-commonmark/Fig1H_ensembl-4.png)
 
 
     $ALL
 
-![](Fig1H_files/figure-commonmark/Fig1H_tocombine-5.png)
+![](Fig1H_files/figure-commonmark/Fig1H_ensembl-5.png)
 
 
     $AML
 
-![](Fig1H_files/figure-commonmark/Fig1H_tocombine-6.png)
+![](Fig1H_files/figure-commonmark/Fig1H_ensembl-6.png)
 
 ``` r
-FigS7 <- wrap_plots(Fig1H, ncol = 1) +
+FigS7_ensembl <- wrap_plots(Fig1H_ensembl, ncol = 1) +
   plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
   plot_annotation(
     theme = theme(legend.position = "bottom")
@@ -678,27 +391,204 @@ FigS7 <- wrap_plots(Fig1H, ncol = 1) +
     plot.margin = margin(t = 2, b = 2, l = 5, r = 5)
     )
 
-FigS7
+FigS7_ensembl
 ```
 
     Warning: Removed 1 row containing missing values or values outside the scale range
     (`geom_point()`).
 
-![](Fig1H_files/figure-commonmark/FigS7-1.png)
+![](Fig1H_files/figure-commonmark/FigS7_ensembl-1.png)
 
 ``` r
-ggsave("../../Figures/FigS7.png", FigS7, width = 36, height = 36, dpi = 300, scale = 0.75)
+# ggsave("../../Figures/FigS7_ensembl.png", FigS7_ensembl, width = 30, height = 40, dpi = 300)
+# ggsave("../../Figures/FigS7_ensembl.png.tif", FigS7_ensembl.png, width = 36, height = 36, dpi = 300, scale = 0.75)
 ```
-
-    Warning: Removed 1 row containing missing values or values outside the scale range
-    (`geom_point()`).
 
 ``` r
-ggsave("../../Figures/FigS7.tif", FigS7, width = 36, height = 36, dpi = 300, scale = 0.75)
+# labeling x-axis based on hugoID
+# Loop through diseases and generate plots
+Fig1H_SS_hugo <- map(unique(combined_drug_medians$Disease), function(d) {
+
+ df <- combined_drug_medians %>% 
+  filter(Disease == d)
+
+# order ensemblIDs by median expression
+  gene_order <- df %>% 
+    group_by(EnsGeneID) %>%
+    summarize(median_expr = median(Expression), .groups = "drop") %>%
+    arrange(median_expr) %>%
+    pull(EnsGeneID)
+
+  df <- df %>% mutate(EnsGeneID = factor(EnsGeneID, levels = gene_order))
+  
+  # named lookup: names = EnsGeneID, values = HugoID
+  label_lookup <- df %>%
+    distinct(EnsGeneID, HugoID) %>%
+    { setNames(.$HugoID, as.character(.$EnsGeneID)) }
+
+  ggplot(df, aes(x = EnsGeneID, y = Expression, color = Compendia)) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
+    # 1. vertical lines for each gene 
+    geom_vline(aes(xintercept = as.numeric(EnsGeneID)), color = "grey85", linewidth = 0.3) + 
+    # 2. points that stay centered on those lines 
+    geom_point(size = 1.4, alpha = 0.75) +
+    scale_x_discrete(
+      labels = label_lookup,
+      expand = expansion(mult = c(0.01, 0.01))
+      ) +
+    scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
+    scale_color_compendia() +
+    labs(
+      title = paste(d),
+      x = "Treehouse Druggable Genes",
+      # y = "Expression log2(TPM+1)",
+      color = "Library Prep"
+    ) +
+    ylab(bquote(Median~log[2](TPM+1))) +
+    theme(
+      # axis.text.x = element_blank(),
+      # axis.title.x = element_blank(), 
+      # axis.ticks.x = element_blank(),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8),
+      panel.grid.major.x = element_blank(),
+      axis.text.y = element_text(angle = 0, hjust = 1, size = 12),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+      legend.position = "bottom"
+    )
+})
+
+# Assign names for easy access
+names(Fig1H_SS_hugo) <- unique(combined_drug_medians$Disease)
+
+# View plots
+Fig1H_SS_hugo$SS
+```
+
+![](Fig1H_files/figure-commonmark/Fig1H_SS_hugo-1.png)
+
+``` r
+# ggsave("../../Figures/Fig1H_SS_hugo.png", Fig1H_SS_hugo$SS, width = 11)
+```
+
+``` r
+# labeling x-axis based on hugoID
+# Loop through diseases and generate plots
+Fig1H_hugo <- map(unique(combined_drug_medians$Disease), function(d) {
+
+ df <- combined_drug_medians %>% 
+  filter(Disease == d)
+
+# order ensemblIDs by median expression
+  gene_order <- df %>% 
+    group_by(EnsGeneID) %>%
+    summarize(median_expr = median(Expression), .groups = "drop") %>%
+    arrange(median_expr) %>%
+    pull(EnsGeneID)
+
+  df <- df %>% mutate(EnsGeneID = factor(EnsGeneID, levels = gene_order))
+  
+  # named lookup: names = EnsGeneID, values = HugoID
+  label_lookup <- df %>%
+    distinct(EnsGeneID, HugoID) %>%
+    { setNames(.$HugoID, as.character(.$EnsGeneID)) }
+
+  ggplot(df, aes(x = EnsGeneID, y = Expression, color = Compendia)) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
+    # 1. vertical lines for each gene 
+    geom_vline(aes(xintercept = as.numeric(EnsGeneID)), color = "grey85", linewidth = 0.3) + 
+    # 2. points that stay centered on those lines 
+    geom_point(size = 3, alpha = 0.75) +
+    scale_x_discrete(
+      labels = label_lookup,
+      expand = expansion(mult = c(0.01, 0.01))
+      ) +
+    scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
+    scale_color_compendia() +
+    labs(
+      title = paste(d),
+      x = NULL,
+      # y = "Expression log2(TPM+1)",
+      color = "Library Prep"
+    ) +
+    ylab(bquote(Median~log[2](TPM+1))) +
+    theme(
+      # axis.text.x = element_blank(),
+      # axis.title.x = element_blank(), 
+      # axis.ticks.x = element_blank(),
+      panel.grid.major.x = element_blank(),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 28),
+      axis.text.y = element_text(angle = 0, hjust = 1, size = 28),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 30, face = "bold"),
+      axis.title.x = element_text(angle = 0, hjust = 1, size = 30),
+      strip.text = element_blank(),
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 32),
+      legend.position = "bottom",
+      legend.text = element_text(face = "bold", size = 26),
+      legend.title = element_text(face = "bold", size = 26)
+    )
+})
+
+# Assign names for easy access
+names(Fig1H_hugo) <- unique(combined_drug_medians$Disease)
+
+# View plots
+Fig1H_hugo
+```
+
+    $aRMS
+
+![](Fig1H_files/figure-commonmark/Fig1H_hugo-1.png)
+
+
+    $SS
+
+![](Fig1H_files/figure-commonmark/Fig1H_hugo-2.png)
+
+
+    $NB
+
+![](Fig1H_files/figure-commonmark/Fig1H_hugo-3.png)
+
+
+    $WT
+
+    Warning: Removed 1 row containing missing values or values outside the scale range
+    (`geom_point()`).
+
+![](Fig1H_files/figure-commonmark/Fig1H_hugo-4.png)
+
+
+    $ALL
+
+![](Fig1H_files/figure-commonmark/Fig1H_hugo-5.png)
+
+
+    $AML
+
+![](Fig1H_files/figure-commonmark/Fig1H_hugo-6.png)
+
+``` r
+FigS7_hugo <- wrap_plots(Fig1H_hugo, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 5, r = 5)
+    )
+
+FigS7_hugo
 ```
 
     Warning: Removed 1 row containing missing values or values outside the scale range
     (`geom_point()`).
+
+![](Fig1H_files/figure-commonmark/FigS7_hugo-1.png)
+
+``` r
+# ggsave("../../Figures/FigS7_hugo.png", FigS7_hugo, width = 30, height = 40, dpi = 300)
+```
 
 ``` r
 sessioninfo::session_info()
@@ -714,7 +604,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-07-07
+     date     2026-10-06
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
