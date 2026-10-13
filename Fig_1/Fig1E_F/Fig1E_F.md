@@ -139,7 +139,12 @@ SS_gene_medians_filtered <- SS_gene_medians %>%
 
 # Recompute median ratio value
 SS_median_ratio_val <- median(SS_gene_medians_filtered$SS_median_ratio, na.rm = TRUE)
+SS_median_ratio_val
+```
 
+    [1] 1.623971
+
+``` r
 # Find gene closest to that median ratio
 SS_most_average_gene <- SS_gene_medians_filtered %>%
   mutate(dist = abs(SS_median_ratio - SS_median_ratio_val)) %>%
@@ -185,7 +190,12 @@ aRMS_gene_medians_filtered <- aRMS_gene_medians %>%
 
 # Recompute median ratio value
 aRMS_median_ratio_val <- median(aRMS_gene_medians_filtered$aRMS_median_ratio, na.rm = TRUE)
+aRMS_median_ratio_val
+```
 
+    [1] 1.634717
+
+``` r
 # Find gene closest to that median ratio
 aRMS_most_average_gene <- aRMS_gene_medians_filtered %>%
   mutate(dist = abs(aRMS_median_ratio - aRMS_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
@@ -227,7 +237,12 @@ WT_gene_medians_filtered <- WT_gene_medians %>%
 
 # Recompute median ratio value
 WT_median_ratio_val <- median(WT_gene_medians_filtered$WT_median_ratio, na.rm = TRUE)
+WT_median_ratio_val
+```
 
+    [1] 1.680591
+
+``` r
 # Find gene closest to that median ratio
 WT_most_average_gene <- WT_gene_medians_filtered %>%
   mutate(dist = abs(WT_median_ratio - WT_median_ratio_val)) %>%
@@ -269,7 +284,12 @@ NB_gene_medians_filtered <- NB_gene_medians %>%
 
 # Recompute median ratio value
 NB_median_ratio_val <- median(NB_gene_medians_filtered$NB_median_ratio, na.rm = TRUE)
+NB_median_ratio_val
+```
 
+    [1] 1.755689
+
+``` r
 # Find gene closest to that median ratio
 NB_most_average_gene <- NB_gene_medians_filtered %>%
   mutate(dist = abs(NB_median_ratio - NB_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
@@ -311,7 +331,12 @@ ALL_gene_medians_filtered <- ALL_gene_medians %>%
 
 # Recompute median ratio value
 ALL_median_ratio_val <- median(ALL_gene_medians_filtered$ALL_median_ratio, na.rm = TRUE)
+ALL_median_ratio_val
+```
 
+    [1] 2.489465
+
+``` r
 # Find gene closest to that median ratio
 ALL_most_average_gene <- ALL_gene_medians_filtered %>%
   mutate(dist = abs(ALL_median_ratio - ALL_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
@@ -353,7 +378,12 @@ AML_gene_medians_filtered <- AML_gene_medians %>%
 
 # Recompute median ratio value
 AML_median_ratio_val <- median(AML_gene_medians_filtered$AML_median_ratio, na.rm = TRUE)
+AML_median_ratio_val
+```
 
+    [1] 1.770378
+
+``` r
 # Find gene closest to that median ratio
 AML_most_average_gene <- AML_gene_medians_filtered %>%
   mutate(dist = abs(AML_median_ratio - AML_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
@@ -1816,7 +1846,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-22
+     date     2026-10-13
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
