@@ -103,6 +103,7 @@ THR13_riboD_counts <- THR13_riboD %>%
 combined_counts <- bind_rows(
   THR13_polyA_counts,
   THR13_riboD_counts)
+write_tsv(combined_counts, "../output_data/THR13_0970_S12-S17/THR13_combined_counts.tsv.gz")
 ```
 
 ``` r
@@ -433,7 +434,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-18
+     date     2026-10-15
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 

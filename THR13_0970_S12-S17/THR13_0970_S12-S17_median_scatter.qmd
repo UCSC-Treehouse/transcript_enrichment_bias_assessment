@@ -123,6 +123,7 @@ THR13_gene_medians_res <- THR13_gene_medians_res %>%
       TRUE ~ NA_character_
     )
   )
+write_tsv(THR13_gene_medians_res, "../output_data/THR13_0970_S12-S17/THR13_gene_medians_res.tsv.gz")
 ```
 
 Plot average expression across library prep methods

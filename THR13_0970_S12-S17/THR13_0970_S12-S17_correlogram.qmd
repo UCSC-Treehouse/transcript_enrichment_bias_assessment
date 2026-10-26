@@ -46,6 +46,9 @@ DIPGIV_log2TPM1_wide <- DIPGIV_log2TPM1_prepname %>%
 DIPGIV_log2TPM1_matrix <- DIPGIV_log2TPM1_wide %>%
   column_to_rownames("ensembl_gene_ID") %>%
   as.matrix()
+# write_tsv(DIPGIV_log2TPM1_matrix, "../output_data/THR13_0970_S12-S17/THR13_log2TPM1_matrix.tsv")
+write.table(DIPGIV_log2TPM1_matrix, file = "../output_data/THR13_0970_S12-S17/THR13_log2TPM1_matrix.tsv", sep = "\t", row.names = TRUE, col.names = TRUE)
+
 
 set.seed(123) # for reproducibility
 # Compute Spearman correlation 
@@ -145,7 +148,7 @@ DIPGIV_expr_filter_zero_variance <- DIPGIV_expr_filter_zero %>%
 
 nrow(DIPGIV_expr_filter_zero_variance)
 
-write_tsv(DIPGIV_expr_filter_zero_variance, "../output_data/THR13_0970_S12-S17/DIPGIV_expr_filter_zero_variance.tsv.gz")
+write_tsv(DIPGIV_expr_filter_zero_variance, "../output_data/THR13_0970_S12-S17/THR13_expr_filter_zero_variance.tsv.gz")
 ```
 
 ```{r DIPGIV_expr_filter_zero_variance_plot}
@@ -307,6 +310,43 @@ DIPGIV_expr_filter_3_variance_plot <- DIPGIV_expr_filter_3_variance %>%
   ) +
   theme(panel.grid = element_blank())
 DIPGIV_expr_filter_3_variance_plot
+```
+
+```{r hex_fixed_axes}
+plot_df <- DIPGIV_expr_filter_zero_variance %>%
+  as.data.frame() %>%
+  select(PolyA_1, PolyA_2, PolyA_3, RiboD_1, RiboD_2, RiboD_3)
+
+global_min <- min(plot_df, na.rm = TRUE)
+global_max <- max(plot_df, na.rm = TRUE)
+
+# function for hex plot with fixed axes
+hex_fixed_axes <- function(data, mapping, ...) {
+  ggplot(data, mapping) +
+    geom_hex(bins = 30) +
+    scale_fill_gradient(low = "darkgrey", high = "black") +
+    xlim(global_min, global_max) +
+    ylim(global_min, global_max) +
+    geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", color = "green4") # with y=x slope intercept line
+}
+```
+
+```{r DIPGIV_expr_filter_zero_variance_hexplot}
+DIPGIV_expr_filter_zero_variance_hexplot <- ggpairs(
+  plot_df,
+  columns = 1:6,
+  lower = list(continuous = wrap(hex_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn2, method = "spearman")),
+  diag  = list(continuous = wrap(diag_filtered_density))
+) +
+  theme(
+    axis.text.x  = element_text(angle = 45, hjust = 1),
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9),
+    panel.grid   = element_blank()
+  )
+DIPGIV_expr_filter_zero_variance_hexplot
 ```
 
 Session Info

@@ -70,6 +70,7 @@ THR13_riboD_counts <- THR13_riboD %>%
 combined_counts <- bind_rows(
   THR13_polyA_counts,
   THR13_riboD_counts)
+write_tsv(combined_counts, "../output_data/THR13_0970_S12-S17/THR13_combined_counts.tsv.gz")
 ```
 
 ```{r custom theme}

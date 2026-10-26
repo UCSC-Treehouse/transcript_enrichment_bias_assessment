@@ -67,6 +67,9 @@ DIPGIV_log2TPM1_wide <- DIPGIV_log2TPM1_prepname %>%
 DIPGIV_log2TPM1_matrix <- DIPGIV_log2TPM1_wide %>%
   column_to_rownames("ensembl_gene_ID") %>%
   as.matrix()
+# write_tsv(DIPGIV_log2TPM1_matrix, "../output_data/THR13_0970_S12-S17/THR13_log2TPM1_matrix.tsv")
+write.table(DIPGIV_log2TPM1_matrix, file = "../output_data/THR13_0970_S12-S17/THR13_log2TPM1_matrix.tsv", sep = "\t", row.names = TRUE, col.names = TRUE)
+
 
 set.seed(123) # for reproducibility
 # Compute Spearman correlation 
@@ -219,7 +222,7 @@ nrow(DIPGIV_expr_filter_zero_variance)
     [1] 25270
 
 ``` r
-write_tsv(DIPGIV_expr_filter_zero_variance, "../output_data/THR13_0970_S12-S17/DIPGIV_expr_filter_zero_variance.tsv.gz")
+write_tsv(DIPGIV_expr_filter_zero_variance, "../output_data/THR13_0970_S12-S17/THR13_expr_filter_zero_variance.tsv.gz")
 ```
 
 ``` r
@@ -507,6 +510,123 @@ DIPGIV_expr_filter_3_variance_plot
 
 ![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/DIPGIV_expr_filter_3_variance_plot-1.png)
 
+``` r
+plot_df <- DIPGIV_expr_filter_zero_variance %>%
+  as.data.frame() %>%
+  select(PolyA_1, PolyA_2, PolyA_3, RiboD_1, RiboD_2, RiboD_3)
+
+global_min <- min(plot_df, na.rm = TRUE)
+global_max <- max(plot_df, na.rm = TRUE)
+
+# function for hex plot with fixed axes
+hex_fixed_axes <- function(data, mapping, ...) {
+  ggplot(data, mapping) +
+    geom_hex(bins = 30) +
+    scale_fill_gradient(low = "darkgrey", high = "black") +
+    xlim(global_min, global_max) +
+    ylim(global_min, global_max) +
+    geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", color = "green4") # with y=x slope intercept line
+}
+```
+
+``` r
+DIPGIV_expr_filter_zero_variance_hexplot <- ggpairs(
+  plot_df,
+  columns = 1:6,
+  lower = list(continuous = wrap(hex_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn2, method = "spearman")),
+  diag  = list(continuous = wrap(diag_filtered_density))
+) +
+  theme(
+    axis.text.x  = element_text(angle = 45, hjust = 1),
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9),
+    panel.grid   = element_blank()
+  )
+DIPGIV_expr_filter_zero_variance_hexplot
+```
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+    Warning: Removed 13 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+    Warning: Removed 13 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 14 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+    Warning: Removed 25 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+    Removed 25 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 24 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+    Warning: Removed 27 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 26 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 25 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 14 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+    Warning: Removed 26 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+    Removed 26 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 24 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 12 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 14 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/DIPGIV_expr_filter_zero_variance_hexplot-1.png)
+
 Session Info
 
 ``` r
@@ -523,7 +643,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-10-06
+     date     2026-10-15
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
@@ -547,11 +667,13 @@ sessioninfo::session_info()
      ggstats        0.14.0  2026-09-02 [1] CRAN (R 4.5.2)
      glue           1.8.0   2024-09-30 [1] CRAN (R 4.5.0)
      gtable         0.3.6   2024-10-25 [1] CRAN (R 4.5.0)
+     hexbin         1.28.6  2026-07-28 [1] CRAN (R 4.5.2)
      hms            1.1.4   2025-10-17 [1] CRAN (R 4.5.0)
      htmltools      0.5.8.1 2024-04-04 [1] CRAN (R 4.5.0)
      jsonlite       2.0.0   2025-03-27 [1] CRAN (R 4.5.0)
      knitr          1.50    2025-03-16 [1] CRAN (R 4.5.0)
      labeling       0.4.3   2023-08-29 [1] CRAN (R 4.5.0)
+     lattice        0.22-7  2025-04-02 [1] CRAN (R 4.5.2)
      lifecycle      1.0.4   2023-11-07 [1] CRAN (R 4.5.0)
      lubridate    * 1.9.4   2024-12-08 [1] CRAN (R 4.5.0)
      magrittr       2.0.4   2025-09-12 [1] CRAN (R 4.5.0)

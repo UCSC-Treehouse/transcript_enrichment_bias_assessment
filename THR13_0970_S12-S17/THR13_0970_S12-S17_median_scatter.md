@@ -142,6 +142,7 @@ THR13_gene_medians_res <- THR13_gene_medians_res %>%
       TRUE ~ NA_character_
     )
   )
+write_tsv(THR13_gene_medians_res, "../output_data/THR13_0970_S12-S17/THR13_gene_medians_res.tsv.gz")
 ```
 
 Plot average expression across library prep methods
@@ -193,7 +194,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-18
+     date     2026-10-15
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 

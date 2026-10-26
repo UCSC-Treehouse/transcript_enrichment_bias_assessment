@@ -124,13 +124,23 @@ THR13_gene_medians_filtered <- THR13_gene_medians %>%
 
 # Recompute median ratio value
 THR13_median_ratio_val <- median(THR13_gene_medians_filtered$THR13_median_ratio, na.rm = TRUE)
+THR13_median_ratio_val
+```
 
+    [1] 1.338667
+
+``` r
 # Find gene closest to that median ratio
 THR13_most_average_gene <- THR13_gene_medians_filtered %>%
   mutate(dist = abs(THR13_median_ratio - THR13_median_ratio_val)) %>%
   arrange(dist) %>%
   slice(1)
+THR13_most_average_gene
 ```
+
+| ensembl_gene_ID | HugoID.x | THR13_polyA_median | HugoID.y | THR13_riboD_median | THR13_median_ratio | dist |
+|:---|:---|---:|:---|---:|---:|---:|
+| ENSG00000165609.12 | NUDT5 | 6.989139 | NUDT5 | 5.221104 | 1.338632 | 3.42e-05 |
 
 Filtering for HIST1H1B, a non-polyadenylated gene
 
@@ -201,6 +211,7 @@ avg_THR13 <- bind_rows(
   mutate(PlotType = "Median Ratio Gene (PolyA+)")
 
 combined_labeled <- bind_rows(H1B_THR13, avg_THR13)
+write_tsv(combined_labeled, "../output_data/THR13_0970_S12-S17/THR13_repgenes_combined_labeled.tsv.gz")
 ```
 
 Custom theme
@@ -416,6 +427,7 @@ expression level in RiboD samples
 THR13_ratios <- THR13_gene_medians %>%
   select(ensembl_gene_ID, THR13_median_ratio) %>%
   mutate(Disease = "DIPGIV")
+write_tsv(THR13_ratios, "../output_data/THR13_0970_S12-S17/THR13_ratios.tsv.gz")
 ```
 
 ``` r
@@ -489,7 +501,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-22
+     date     2026-10-15
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 

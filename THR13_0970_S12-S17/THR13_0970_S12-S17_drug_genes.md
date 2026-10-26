@@ -105,6 +105,8 @@ THR13_drug_form <- THR13_drug %>%
                            summarize(med_expr = median(median_expr), .groups = "drop") %>%
                            arrange(med_expr) %>%
                            pull(HugoID)))
+write_tsv(THR13_drug_form, "../output_data/THR13_0970_S12-S17/THR13_drug_form.tsv.gz")
+write_tsv(THR13_drug, "../output_data/THR13_0970_S12-S17/THR13_drug.tsv.gz")
 ```
 
 Color theme
@@ -166,7 +168,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-18
+     date     2026-10-15
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 

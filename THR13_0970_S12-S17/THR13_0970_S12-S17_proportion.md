@@ -110,6 +110,7 @@ all_expr_bins <- rsem_log2TPM1_THR13 %>%
       include.lowest = TRUE
     )
   )
+write_tsv(all_expr_bins, "../output_data/THR13_0970_S12-S17/THR13_all_expr_bins.tsv.gz")
 ```
 
 Compute proportion of genes in each bin per lib prep
@@ -130,6 +131,7 @@ bin_prop_libprep <- bin_prop %>%
     full_sample == "THR13_0970_S16" ~ "riboD",
     full_sample == "THR13_0970_S17" ~ "riboD"
   ))
+write_tsv(bin_prop_libprep, "../output_data/THR13_0970_S12-S17/THR13_bin_prop_libprep.tsv.gz")
 ```
 
 Custom color theme
@@ -285,7 +287,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-09-17
+     date     2026-10-15
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 

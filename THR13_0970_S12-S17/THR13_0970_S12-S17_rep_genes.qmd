@@ -77,12 +77,13 @@ THR13_gene_medians_filtered <- THR13_gene_medians %>%
 
 # Recompute median ratio value
 THR13_median_ratio_val <- median(THR13_gene_medians_filtered$THR13_median_ratio, na.rm = TRUE)
-
+THR13_median_ratio_val
 # Find gene closest to that median ratio
 THR13_most_average_gene <- THR13_gene_medians_filtered %>%
   mutate(dist = abs(THR13_median_ratio - THR13_median_ratio_val)) %>%
   arrange(dist) %>%
   slice(1)
+THR13_most_average_gene
 ```
 
 Filtering for HIST1H1B, a non-polyadenylated gene
@@ -154,6 +155,7 @@ avg_THR13 <- bind_rows(
   mutate(PlotType = "Median Ratio Gene (PolyA+)")
 
 combined_labeled <- bind_rows(H1B_THR13, avg_THR13)
+write_tsv(combined_labeled, "../output_data/THR13_0970_S12-S17/THR13_repgenes_combined_labeled.tsv.gz")
 ```
 
 Custom theme
@@ -365,6 +367,7 @@ Boxplot showing expression of average median ratio gene, calculated as the media
 THR13_ratios <- THR13_gene_medians %>%
   select(ensembl_gene_ID, THR13_median_ratio) %>%
   mutate(Disease = "DIPGIV")
+write_tsv(THR13_ratios, "../output_data/THR13_0970_S12-S17/THR13_ratios.tsv.gz")
 ```
 
 ```{r theme_ratio}
