@@ -1,0 +1,73 @@
+---
+title: "`r gsub('.rmarkdown', ' ', gsub('_', ' ', knitr::current_input()))`"
+author: "Holly Beale"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+format: 
+  gfm:
+    toc: true
+    df-print: kable
+---
+
+  
+
+
+```{r setup, include = FALSE}
+
+library(tidyverse)
+
+
+```
+
+```{r}
+
+gene_names <- read_tsv("EnsGeneID_Hugo_Observed_Conversions.txt.gz", show_col_types = FALSE)
+
+treehouse_druggable_genes <- read_tsv("treehouseDruggableGenes_2020-03_25.txt")
+
+meta <- read_tsv("UCSC in-house RNA-seq validation samples - assign thids.tsv")
+
+
+
+meta %>%
+  select(th_sampleid, `Library Slxn Method`, `File name`) %>%
+  filter(str_detect(`File name`, "_R1_")) 
+
+```
+
+# Import and groom gene expression levels
+
+```{r}
+
+rsem_pattern <- "_rsem_genes.results"
+rsem_files <- list.files(pattern = rsem_pattern)
+names(rsem_files) <- str_remove(rsem_files, rsem_pattern)
+
+rsem_raw_data <- rsem_files %>%
+  purrr::map_dfr(read_tsv, show_col_types = FALSE, .id="sample") %>%
+  select(-`transcript_id(s)`)
+
+rsem_ens_log2TPM1 <- rsem_raw_data %>%
+  left_join(gene_names, by=c("gene_id"= "EnsGeneID")) %>%
+  mutate(log2TPM1 = log2(TPM+1)) %>%
+  left_join(meta %>% 
+              select(th_sampleid, lib_prep = `Library Slxn Method`) %>%
+              distinct(),
+            by=c("sample" = "th_sampleid")) %>%
+  rename(full_sample = sample) %>%
+  mutate(sample = str_remove(full_sample, "THR13_0970_"),
+         is_treehouse_druggable_gene = HugoID %in% treehouse_druggable_genes$gene) %>% 
+  select(full_sample, ensembl_gene_ID = gene_id, HugoID,  TPM, 
+         log2TPM1, lib_prep, sample, is_treehouse_druggable_gene)
+  
+
+```
+
+
+```{r}
+write_tsv(rsem_ens_log2TPM1, "rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
+```
+```{r}
+nrow(rsem_ens_log2TPM1)/6
+```
+
+
