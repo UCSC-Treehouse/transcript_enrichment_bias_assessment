@@ -446,15 +446,29 @@ Fig1G_SS
 ### Fig1H
 
 ```{r Fig1H file}
-combined_medians_drug <- read_tsv("../../output_data/Fig1H/combined_medians_drug.tsv.gz") %>%
+combined_medians_drug <- read_tsv("../../output_data/Fig1H/combined_drug_medians.tsv.gz") %>%
   filter(Disease == "SS")
 
-combined_medians_drug <- combined_medians_drug %>%
-  mutate(Gene = factor(Gene, levels = combined_medians_drug %>% 
-                         group_by(Gene) %>% 
-                         summarize(median_expr = median(Expression), .groups = "drop") %>% 
-                         arrange(median_expr) %>% 
-                         pull(Gene)))
+# combined_medians_drug <- combined_medians_drug %>%
+#   mutate(EnsGeneID = factor(EnsGeneID, levels = combined_medians_drug %>% 
+#                          group_by(EnsGeneID) %>% 
+#                          summarize(median_expr = median(Expression), .groups = "drop") %>% 
+#                          arrange(median_expr) %>% 
+#                          pull(EnsGeneID)))
+
+gene_order <- combined_medians_drug %>%
+  group_by(EnsGeneID) %>%
+  summarise(median_expr = median(Expression), .groups = "drop") %>%
+  arrange(median_expr) %>%
+  pull(EnsGeneID)
+
+combined_medians_drug <- combined_medians_drug %>% mutate(EnsGeneID = factor(EnsGeneID, levels = gene_order))
+
+
+  # named lookup: names = EnsGeneID, values = HugoID
+label_lookup <- combined_medians_drug %>%
+  distinct(EnsGeneID, HugoID) %>%
+  { setNames(.$HugoID, as.character(.$EnsGeneID)) }
 ```
 
 ```{r Fig1H}
@@ -465,13 +479,16 @@ scale_color_compendia <- function() {
   ))
 }
 
-Fig1H_SS <- ggplot(combined_medians_drug, aes(x = Gene, y = Expression, color = Compendia)) +
+Fig1H_SS <- ggplot(combined_medians_drug, aes(x = EnsGeneID, y = Expression, color = Compendia)) +
     geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
     # 1. vertical lines for each gene 
-    geom_vline(aes(xintercept = as.numeric(Gene)), color = "grey85", linewidth = 0.3) + 
+    geom_vline(aes(xintercept = as.numeric(EnsGeneID)), color = "grey85", linewidth = 0.3) + 
     # 2. points that stay centered on those lines 
     geom_point(size = 1.6, alpha = 0.75) +
-    scale_x_discrete(expand = expansion(mult = c(0.01, 0.01))) +
+    scale_x_discrete(
+      labels = label_lookup,
+      expand = expansion(mult = c(0.01, 0.01))
+      ) +
     scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
     scale_color_compendia() +
     labs(
