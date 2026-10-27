@@ -503,7 +503,7 @@ all_medians_bins <- all_medians %>%
     )
   )
 
-write_tsv(all_medians_bins, "../../output_data/Fig1C/all_medians_bins.tsv.gz")
+write_tsv(all_medians_bins, "../../output_data/measured_proportion/all_medians_bins.tsv.gz")
 ```
 
 Compute proportion of genes in each bin per lib prep
@@ -514,7 +514,7 @@ bin_prop <- all_medians_bins %>%
   summarise(n = n(), .groups = "drop") %>%
   group_by(Disease, Compendia) %>%
   mutate(Proportion = n / sum(n))
-write_tsv(bin_prop, "../../output_data/Fig1C/bin_prop.tsv.gz")
+write_tsv(bin_prop, "../../output_data/measured_proportion/bin_prop.tsv.gz")
 ```
 
 Custom color theme
