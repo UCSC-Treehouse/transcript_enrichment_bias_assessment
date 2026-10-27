@@ -1,5 +1,5 @@
 ---
-title: "Fig2_all"
+title: "diff_expr_analysis_all"
 Date: "`r Sys.Date()`"
 format: 
   gfm:
@@ -7,7 +7,7 @@ format:
 editor: visual
 ---
 
-## **Fig2**
+## **Fig3**
 
 **Representative assessment of biases introduced in differential expression analysis when comparing two diseases across transcript enrichment methods**
 
@@ -19,22 +19,22 @@ library(VennDiagram)
 ```
 
 ```{r load in files}
-aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased <- read_rds("../../output_data/aRMS_SS/aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased.rds") #for fig 2A - venn diagram
+aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased <- read_rds("../output_data/aRMS_SS/aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased.rds") #for fig 2A - venn diagram
 
-aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased <- read_rds("../../output_data/aRMS_SS/aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased.rds") #for fig 2B - venn diagram
+aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased <- read_rds("../output_data/aRMS_SS/aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased.rds") #for fig 2B - venn diagram
 
-aRMS_SS_up_polyAbiased <- read_rds("../../output_data/aRMS_SS/aRMS_SS_up_polyAbiased.rds") #for fig 2C - histogram
+aRMS_SS_up_polyAbiased <- read_rds("../output_data/aRMS_SS/aRMS_SS_up_polyAbiased.rds") #for fig 2C - histogram
 
-aRMS_SS_up_riboDbiased <- read_rds("../../output_data/aRMS_SS/aRMS_SS_up_riboDbiased.rds") #for fig 2D - histogram
+aRMS_SS_up_riboDbiased <- read_rds("../output_data/aRMS_SS/aRMS_SS_up_riboDbiased.rds") #for fig 2D - histogram
 
-up_polyAbiased_all <- read_rds("../../output_data/all_disease_comparisons/up_polyAbiased_all.rds") #for fig 2E - venn diagram
+up_polyAbiased_all <- read_rds("../output_data/all_disease_comparisons/up_polyAbiased_all.rds") #for fig 2E - venn diagram
 
-up_riboDbiased_all <- read_rds("../../output_data/all_disease_comparisons/up_riboDbiased_all.rds") #for fig 2E - venn diagram
+up_riboDbiased_all <- read_rds("../output_data/all_disease_comparisons/up_riboDbiased_all.rds") #for fig 2E - venn diagram
 ```
 
-```{r Fig_2A}
-# for fig 2A
-Fig_2A <- venn.diagram(
+```{r Fig_3A}
+# for fig 3A
+Fig_3A <- venn.diagram(
   x = aRMS_SS_up_polyAunbiased_polyAbiased_riboDbiased,
   category.names = c(
     "PolyA unbiased",
@@ -62,12 +62,12 @@ Fig_2A <- venn.diagram(
   main.fontfamily = "sans",
   fontfamily = "sans"
 )
-Fig_2A
+Fig_3A
 ```
 
-```{r Fig_2B}
-# for fig 2B
-Fig_2B <- venn.diagram(
+```{r Fig_3B}
+# for fig 3B
+Fig_3B <- venn.diagram(
   x = aRMS_SS_up_riboDunbiased_polyAbiased_riboDbiased,
   category.names = c(
     "RiboD unbiased",
@@ -95,7 +95,7 @@ Fig_2B <- venn.diagram(
   main.fontfamily = "sans",
   fontfamily = "sans"
 )
-Fig_2B
+Fig_3B
 ```
 
 ```{r aRMS_SS_up_polyAbiased_median}
@@ -106,9 +106,9 @@ aRMS_SS_up_polyAbiased_median <- aRMS_SS_up_polyAbiased %>%
 aRMS_SS_up_polyAbiased_median
 ```
 
-```{r Fig_2C}
-# for fig 2C
-Fig_2C <- ggplot(aRMS_SS_up_polyAbiased, aes(x = log2FoldChange.x)) +
+```{r Fig_3C}
+# for fig 3C
+Fig_3C <- ggplot(aRMS_SS_up_polyAbiased, aes(x = log2FoldChange.x)) +
   geom_histogram(
     bins = 30, # 30 is default
     fill = "#0072B2",
@@ -130,7 +130,7 @@ Fig_2C <- ggplot(aRMS_SS_up_polyAbiased, aes(x = log2FoldChange.x)) +
   geom_vline(aes(xintercept = aRMS_SS_up_polyAbiased_median$median_value), color = "#004166", linetype = "dashed", linewidth = 0.5) +
   annotate("text", x=3.7, y=580, label= "Median = 1.32")
 
-Fig_2C
+Fig_3C
 ```
 
 ```{r aRMS_SS_up_riboDbiased_median}
@@ -141,9 +141,9 @@ aRMS_SS_up_riboDbiased_median <- aRMS_SS_up_riboDbiased %>%
 aRMS_SS_up_riboDbiased_median
 ```
 
-```{r Fig_2D}
-# for fig 2D
-Fig_2D <- ggplot(aRMS_SS_up_riboDbiased, aes(x = log2FoldChange.x)) +
+```{r Fig_3D}
+# for fig 3D
+Fig_3D <- ggplot(aRMS_SS_up_riboDbiased, aes(x = log2FoldChange.x)) +
   geom_histogram(
     bins = 30, # 30 is default
     fill = "#E69F00",
@@ -165,12 +165,12 @@ Fig_2D <- ggplot(aRMS_SS_up_riboDbiased, aes(x = log2FoldChange.x)) +
   geom_vline(aes(xintercept = aRMS_SS_up_riboDbiased_median$median_value), color = "#9a6a00", linetype = "dashed", linewidth = 0.5) +
   annotate("text", x=7, y=1200, label= "Median = 2.76")
 
-Fig_2D 
+Fig_3D 
 ```
 
-```{r Fig_2E}
-# for fig2E
-Fig_2E <- venn.diagram(
+```{r Fig_3E}
+# for fig3E
+Fig_3E <- venn.diagram(
   x = up_polyAbiased_all,
   category.names = c(
     "SS to aRMS",
@@ -198,12 +198,12 @@ Fig_2E <- venn.diagram(
   main.cex = 1.1, # Font size for main title
   disable.logging = TRUE
 )
-Fig_2E
+Fig_3E
 ```
 
-```{r Fig_2F}
-# for fig2F
-Fig_2F <- venn.diagram(
+```{r Fig_3F}
+# for fig3F
+Fig_3F <- venn.diagram(
   x = up_riboDbiased_all,
   category.names = c(
     "SS to aRMS",
@@ -231,25 +231,25 @@ Fig_2F <- venn.diagram(
   main.cex = 1.1, # Font size for main title
   disable.logging = TRUE
 )
-Fig_2F
+Fig_3F
 ```
 
-```{r Fig_2}
-Fig_2 <- plot_grid(
-  Fig_2A,
-  Fig_2B,
-  Fig_2C,
-  Fig_2D,
-  Fig_2E,
-  Fig_2F,
+```{r Fig_3}
+Fig_3 <- plot_grid(
+  Fig_3A,
+  Fig_3B,
+  Fig_3C,
+  Fig_3D,
+  Fig_3E,
+  Fig_3F,
   ncol = 2,
   labels = c('A', 'B', 'C', 'D', 'E', 'F'),
   label_size = 15)
 
-ggsave("../../Figures/Fig_2.png", Fig_2, width = 8, height = 12, dpi = 300)
-ggsave("../../Figures/Fig_2.tif", Fig_2, width = 8, height = 12, dpi = 300)
+ggsave("../Figures/Fig_3.png", Fig_3, width = 8, height = 12, dpi = 300)
+# ggsave("../Figures/Fig_3.tif", Fig_3, width = 8, height = 12, dpi = 300)
 
-Fig_2
+Fig_3
 ```
 
 Session Info
