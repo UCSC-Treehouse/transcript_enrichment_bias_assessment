@@ -1,4 +1,4 @@
-# Fig_1C
+# Measured_prop
 
 
 ## Fig 1C
@@ -584,32 +584,32 @@ Fig1C
 
     $ALL
 
-![](Fig_1C_files/figure-commonmark/Fig1C-1.png)
+![](measured_prop_files/figure-commonmark/Fig1C-1.png)
 
 
     $AML
 
-![](Fig_1C_files/figure-commonmark/Fig1C-2.png)
+![](measured_prop_files/figure-commonmark/Fig1C-2.png)
 
 
     $NB
 
-![](Fig_1C_files/figure-commonmark/Fig1C-3.png)
+![](measured_prop_files/figure-commonmark/Fig1C-3.png)
 
 
     $SS
 
-![](Fig_1C_files/figure-commonmark/Fig1C-4.png)
+![](measured_prop_files/figure-commonmark/Fig1C-4.png)
 
 
     $WT
 
-![](Fig_1C_files/figure-commonmark/Fig1C-5.png)
+![](measured_prop_files/figure-commonmark/Fig1C-5.png)
 
 
     $aRMS
 
-![](Fig_1C_files/figure-commonmark/Fig1C-6.png)
+![](measured_prop_files/figure-commonmark/Fig1C-6.png)
 
 Save plot
 
@@ -668,7 +668,7 @@ combined_figS2 <- wrap_plots(plots_subset, ncol = 6) +
 combined_figS2
 ```
 
-![](Fig_1C_files/figure-commonmark/FigS2-1.png)
+![](measured_prop_files/figure-commonmark/FigS2-1.png)
 
 ``` r
 ggsave("../../Figures/FigS2.png", plot = combined_figS2)
@@ -698,7 +698,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-07-07
+     date     2026-10-27
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 

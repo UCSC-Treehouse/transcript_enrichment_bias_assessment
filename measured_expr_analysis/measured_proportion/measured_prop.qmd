@@ -1,5 +1,5 @@
 ---
-title: "Fig_1C"
+title: "Measured_prop"
 Date: "`r Sys.Date()`"
 format: 
   gfm:
