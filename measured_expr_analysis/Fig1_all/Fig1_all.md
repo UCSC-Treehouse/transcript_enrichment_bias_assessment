@@ -80,7 +80,7 @@ Fig1B <- image_read("../../Figures/UMAPs/final/10_Most_Sampled_Diseases.svg") %>
 ### Fig1C
 
 ``` r
-all_medians_bins_1C <- read_tsv("../../output_data/Fig1C/all_medians_bins.tsv.gz") %>%
+all_medians_bins_1C <- read_tsv("../../output_data/measured_proportion/all_medians_bins.tsv.gz") %>%
   filter(Disease == "SS")
 ```
 
@@ -94,7 +94,7 @@ all_medians_bins_1C <- read_tsv("../../output_data/Fig1C/all_medians_bins.tsv.gz
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-bin_prop_1C <- read_tsv("../../output_data/Fig1C/bin_prop.tsv.gz") %>%
+bin_prop_1C <- read_tsv("../../output_data/measured_proportion/bin_prop.tsv.gz") %>%
   mutate(ExprBin = factor(ExprBin, levels = c("0", "0-0.09", "0.1-0.99", "1-2.99", "3-4.99", ">5"))) %>%
   filter(Disease == "SS")
 ```
@@ -171,7 +171,7 @@ Fig1C_SS
 ### Fig1D
 
 ``` r
-sig_bins_all_1D <- read_tsv("../../output_data/Fig1D/sig_bins_all.tsv.gz") %>%
+sig_bins_all_1D <- read_tsv("../../output_data/unique_genes/sig_bins_all.tsv.gz") %>%
   filter(Disease == "SS")  %>%
     select(Bin, stars_adj)
 ```
@@ -187,7 +187,7 @@ sig_bins_all_1D <- read_tsv("../../output_data/Fig1D/sig_bins_all.tsv.gz") %>%
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-combined_counts_1D <- read_tsv("../../output_data/Fig1D/combined_counts.tsv.gz") %>%
+combined_counts_1D <- read_tsv("../../output_data/unique_genes/combined_counts.tsv.gz") %>%
   filter(Disease == "SS")
 ```
 
@@ -201,7 +201,7 @@ combined_counts_1D <- read_tsv("../../output_data/Fig1D/combined_counts.tsv.gz")
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-all_stats_1D <- read_tsv("../../output_data/Fig1D/all_stats.tsv.gz") %>%
+all_stats_1D <- read_tsv("../../output_data/unique_genes/all_stats.tsv.gz") %>%
   filter(Disease == "SS")
 ```
 
@@ -314,7 +314,7 @@ Fig1D_SS
 ### Fig1E
 
 ``` r
-median_gene_map <- read_tsv("../../output_data/Fig1E_F/median_gene_map_df.tsv.gz")
+median_gene_map <- read_tsv("../../output_data/rep_genes_median_ratio/median_gene_map_df.tsv.gz")
 ```
 
     Rows: 1 Columns: 6
@@ -326,7 +326,7 @@ median_gene_map <- read_tsv("../../output_data/Fig1E_F/median_gene_map_df.tsv.gz
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-combined_long <- read_tsv("../../output_data/Fig1E_F/combined_long.tsv.gz") %>%
+combined_long <- read_tsv("../../output_data/rep_genes_median_ratio/combined_long.tsv.gz") %>%
   filter(Disease == "SS")
 ```
 
@@ -340,7 +340,7 @@ combined_long <- read_tsv("../../output_data/Fig1E_F/combined_long.tsv.gz") %>%
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-sig_results <- read_tsv("../../output_data/Fig1E_F/sig_results.tsv.gz") %>%
+sig_results <- read_tsv("../../output_data/rep_genes_median_ratio/sig_results.tsv.gz") %>%
   filter(Disease == "SS")
 ```
 
@@ -443,7 +443,7 @@ Fig1E_SS
 ### Fig1F
 
 ``` r
-ss_ratios <- read_tsv("../../output_data/Fig1E_F/ss_ratios.tsv.gz")
+ss_ratios <- read_tsv("../../output_data/rep_genes_median_ratio/ss_ratios.tsv.gz")
 ```
 
     Rows: 60498 Columns: 3
@@ -456,7 +456,7 @@ ss_ratios <- read_tsv("../../output_data/Fig1E_F/ss_ratios.tsv.gz")
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-SS_most_average_gene_hugo <- read_tsv("../../output_data/Fig1E_F/SS_most_average_gene_hugo.tsv.gz")
+SS_most_average_gene_hugo <- read_tsv("../../output_data/rep_genes_median_ratio/SS_most_average_gene_hugo.tsv.gz")
 ```
 
     Rows: 1 Columns: 5
@@ -469,7 +469,7 @@ SS_most_average_gene_hugo <- read_tsv("../../output_data/Fig1E_F/SS_most_average
     ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-SS_HIST1H1B <- read_tsv("../../output_data/Fig1E_F/SS_HIST1H1B.tsv.gz")
+SS_HIST1H1B <- read_tsv("../../output_data/rep_genes_median_ratio/SS_HIST1H1B.tsv.gz")
 ```
 
     Rows: 1 Columns: 4
@@ -549,7 +549,7 @@ Fig1F_SS
 ### Fig1G
 
 ``` r
-combined_medians_hugo_res <- read_tsv("../../output_data/Fig1G/combined_medians_hugo_res.tsv.gz") %>%
+combined_medians_hugo_res <- read_tsv("../../output_data/median_scatter/combined_medians_hugo_res.tsv.gz") %>%
   filter(Disease == "SS")
 ```
 
@@ -647,7 +647,7 @@ Fig1G_SS
 ### Fig1H
 
 ``` r
-combined_medians_drug <- read_tsv("../../output_data/Fig1H/combined_drug_medians.tsv.gz") %>%
+combined_medians_drug <- read_tsv("../../output_data/druggable_genes/combined_drug_medians.tsv.gz") %>%
   filter(Disease == "SS")
 ```
 
@@ -767,3 +767,93 @@ Fig1_all <- plot_grid(
 ``` r
 ggsave("../../Figures/Fig1_all.png", Fig1_all, width = 15, height = 15, dpi = 300)
 ```
+
+Session Info
+
+``` r
+sessioninfo::session_info()
+```
+
+    ─ Session info ───────────────────────────────────────────────────────────────
+     setting  value
+     version  R version 4.5.2 (2025-10-31)
+     os       macOS Tahoe 26.5
+     system   aarch64, darwin20
+     ui       X11
+     language (EN)
+     collate  en_US.UTF-8
+     ctype    en_US.UTF-8
+     tz       America/Los_Angeles
+     date     2026-10-27
+     pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
+     quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
+
+    ─ Packages ───────────────────────────────────────────────────────────────────
+     package      * version date (UTC) lib source
+     bit            4.6.0   2025-03-06 [1] CRAN (R 4.5.0)
+     bit64          4.6.0-1 2025-01-16 [1] CRAN (R 4.5.0)
+     cli            3.6.5   2025-04-23 [1] CRAN (R 4.5.0)
+     cowplot      * 1.2.0   2025-07-07 [1] CRAN (R 4.5.0)
+     crayon         1.5.3   2024-06-20 [1] CRAN (R 4.5.0)
+     digest         0.6.37  2024-08-19 [1] CRAN (R 4.5.0)
+     dplyr        * 1.1.4   2023-11-17 [1] CRAN (R 4.5.0)
+     evaluate       1.0.5   2025-08-27 [1] CRAN (R 4.5.0)
+     farver         2.1.2   2024-05-13 [1] CRAN (R 4.5.0)
+     fastmap        1.2.0   2024-05-15 [1] CRAN (R 4.5.0)
+     forcats      * 1.0.1   2025-09-25 [1] CRAN (R 4.5.0)
+     fs             1.6.6   2025-04-12 [1] CRAN (R 4.5.0)
+     generics       0.1.4   2025-05-09 [1] CRAN (R 4.5.0)
+     ggplot2      * 4.0.0   2025-09-11 [1] CRAN (R 4.5.0)
+     ggplotify    * 0.1.3   2025-09-20 [1] CRAN (R 4.5.0)
+     ggrepel      * 0.9.6   2024-09-07 [1] CRAN (R 4.5.0)
+     glue           1.8.0   2024-09-30 [1] CRAN (R 4.5.0)
+     gridGraphics   0.5-1   2020-12-13 [1] CRAN (R 4.5.0)
+     gtable         0.3.6   2024-10-25 [1] CRAN (R 4.5.0)
+     hms            1.1.4   2025-10-17 [1] CRAN (R 4.5.0)
+     htmltools      0.5.8.1 2024-04-04 [1] CRAN (R 4.5.0)
+     jsonlite       2.0.0   2025-03-27 [1] CRAN (R 4.5.0)
+     knitr          1.50    2025-03-16 [1] CRAN (R 4.5.0)
+     labeling       0.4.3   2023-08-29 [1] CRAN (R 4.5.0)
+     lifecycle      1.0.4   2023-11-07 [1] CRAN (R 4.5.0)
+     lubridate    * 1.9.4   2024-12-08 [1] CRAN (R 4.5.0)
+     magick       * 2.9.1   2026-02-28 [1] CRAN (R 4.5.2)
+     magrittr       2.0.4   2025-09-12 [1] CRAN (R 4.5.0)
+     patchwork    * 1.3.2   2025-08-25 [1] CRAN (R 4.5.0)
+     pillar         1.11.1  2025-09-17 [1] CRAN (R 4.5.0)
+     pkgconfig      2.0.3   2019-09-22 [1] CRAN (R 4.5.0)
+     purrr        * 1.1.0   2025-07-10 [1] CRAN (R 4.5.0)
+     R6             2.6.1   2025-02-15 [1] CRAN (R 4.5.0)
+     ragg           1.5.0   2025-09-02 [1] CRAN (R 4.5.0)
+     rappdirs       0.3.3   2021-01-31 [1] CRAN (R 4.5.0)
+     RColorBrewer   1.1-3   2022-04-03 [1] CRAN (R 4.5.0)
+     Rcpp           1.1.0   2025-07-02 [1] CRAN (R 4.5.0)
+     readr        * 2.1.5   2024-01-10 [1] CRAN (R 4.5.0)
+     rlang          1.2.0   2026-04-06 [1] CRAN (R 4.5.2)
+     rmarkdown      2.30    2025-09-28 [1] CRAN (R 4.5.0)
+     rstudioapi     0.17.1  2024-10-22 [1] CRAN (R 4.5.0)
+     rsvg         * 2.7.0   2025-09-08 [1] CRAN (R 4.5.0)
+     S7             0.2.0   2024-11-07 [1] CRAN (R 4.5.0)
+     scales       * 1.4.0   2025-04-24 [1] CRAN (R 4.5.0)
+     sessioninfo    1.2.3   2025-02-05 [1] CRAN (R 4.5.0)
+     stringi        1.8.7   2025-03-27 [1] CRAN (R 4.5.0)
+     stringr      * 1.5.2   2025-09-08 [1] CRAN (R 4.5.0)
+     systemfonts    1.3.1   2025-10-01 [1] CRAN (R 4.5.0)
+     textshaping    1.0.4   2025-10-10 [1] CRAN (R 4.5.0)
+     tibble       * 3.3.0   2025-06-08 [1] CRAN (R 4.5.0)
+     tidyr        * 1.3.1   2024-01-24 [1] CRAN (R 4.5.0)
+     tidyselect     1.2.1   2024-03-11 [1] CRAN (R 4.5.0)
+     tidyverse    * 2.0.0   2023-02-22 [1] CRAN (R 4.5.0)
+     timechange     0.3.0   2024-01-18 [1] CRAN (R 4.5.0)
+     tzdb           0.5.0   2025-03-15 [1] CRAN (R 4.5.0)
+     vctrs          0.6.5   2023-12-01 [1] CRAN (R 4.5.0)
+     viridisLite    0.4.2   2023-05-02 [1] CRAN (R 4.5.0)
+     vroom          1.6.6   2025-09-19 [1] CRAN (R 4.5.0)
+     withr          3.0.2   2024-10-28 [1] CRAN (R 4.5.0)
+     xfun           0.55    2025-12-16 [1] CRAN (R 4.5.2)
+     yaml           2.3.10  2024-07-26 [1] CRAN (R 4.5.0)
+     yulab.utils    0.2.3   2025-12-15 [1] CRAN (R 4.5.2)
+
+     [1] /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library
+     * ── Packages attached to the search path.
+
+    ──────────────────────────────────────────────────────────────────────────────
