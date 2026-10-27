@@ -385,7 +385,7 @@ combined_counts <- bind_rows(
   ALL_polyA_counts, 
   AML_riboD_counts, 
   AML_polyA_counts)
-#write_tsv(combined_counts, "../../output_data/Fig1D/combined_counts.tsv.gz")
+#write_tsv(combined_counts, "../../output_data/unique_genes/combined_counts.tsv.gz")
 ```
 
 ``` r
@@ -410,7 +410,7 @@ avg_counts <- combined_counts %>%
 
 ``` r
 avg_counts_wide <- pivot_wider(avg_counts, names_from = Bin, values_from = med_count)
-#write_tsv(avg_counts_wide, "../../output_data/Fig1D/avg_counts_wide.tsv.gz")
+#write_tsv(avg_counts_wide, "../../output_data/unique_genes/avg_counts_wide.tsv.gz")
 
 avg_counts_wide
 ```
@@ -537,7 +537,7 @@ print(all_stats)
     # ℹ 26 more rows
 
 ``` r
-#write_tsv(all_stats, "../../output_data/Fig1D/all_stats.tsv.gz")
+#write_tsv(all_stats, "../../output_data/unique_genes/all_stats.tsv.gz")
 ```
 
 selecting correct test
@@ -733,7 +733,7 @@ sig_bins_all
 | AML | \>5 | 4944, 4610, 4620, 4809, 4818, 5257, 4981, 4967, 4775, 5215, 4359, 4810, 4895, 4560, 3962, 4507, 4351, 4483, 4911 | 842, 1211, 1219, 1341, 927, 723, 1025, 672, 703, 1278, 1094, 954, 1063, 1433, 732, 791, 788, 824, 970, 972 | 0.0000000 | student_t | 0.0000000 | \*\*\*\* |
 
 ``` r
-write_tsv(sig_bins_all, "../../output_data/Fig1D/sig_bins_all.tsv.gz")
+# write_tsv(sig_bins_all, "../../output_data/unique_genes/sig_bins_all.tsv.gz")
 ```
 
 ``` r
@@ -814,32 +814,32 @@ Fig1D
 
     $SS
 
-![](Fig1D_files/figure-commonmark/Fig1D-1.png)
+![](unique_genes_files/figure-commonmark/Fig1D-1.png)
 
 
     $aRMS
 
-![](Fig1D_files/figure-commonmark/Fig1D-2.png)
+![](unique_genes_files/figure-commonmark/Fig1D-2.png)
 
 
     $NB
 
-![](Fig1D_files/figure-commonmark/Fig1D-3.png)
+![](unique_genes_files/figure-commonmark/Fig1D-3.png)
 
 
     $WT
 
-![](Fig1D_files/figure-commonmark/Fig1D-4.png)
+![](unique_genes_files/figure-commonmark/Fig1D-4.png)
 
 
     $ALL
 
-![](Fig1D_files/figure-commonmark/Fig1D-5.png)
+![](unique_genes_files/figure-commonmark/Fig1D-5.png)
 
 
     $AML
 
-![](Fig1D_files/figure-commonmark/Fig1D-6.png)
+![](unique_genes_files/figure-commonmark/Fig1D-6.png)
 
 ``` r
 ggsave("../../Figures/Fig1D.png", plot = Fig1D$SS)
@@ -848,12 +848,7 @@ ggsave("../../Figures/Fig1D.png", plot = Fig1D$SS)
     Saving 7 x 5 in image
 
 ``` r
-ggsave("../../Figures/Fig1D.tif", plot = Fig1D$SS)
-```
-
-    Saving 7 x 5 in image
-
-``` r
+# ggsave("../../Figures/Fig1D.tif", plot = Fig1D$SS)
 saveRDS(Fig1D$SS, "../../Figures/Fig1D.rds")
 ```
 
@@ -922,32 +917,32 @@ Fig1D_all
 
     $SS
 
-![](Fig1D_files/figure-commonmark/Fig1D_tocombine-1.png)
+![](unique_genes_files/figure-commonmark/Fig1D_tocombine-1.png)
 
 
     $aRMS
 
-![](Fig1D_files/figure-commonmark/Fig1D_tocombine-2.png)
+![](unique_genes_files/figure-commonmark/Fig1D_tocombine-2.png)
 
 
     $NB
 
-![](Fig1D_files/figure-commonmark/Fig1D_tocombine-3.png)
+![](unique_genes_files/figure-commonmark/Fig1D_tocombine-3.png)
 
 
     $WT
 
-![](Fig1D_files/figure-commonmark/Fig1D_tocombine-4.png)
+![](unique_genes_files/figure-commonmark/Fig1D_tocombine-4.png)
 
 
     $ALL
 
-![](Fig1D_files/figure-commonmark/Fig1D_tocombine-5.png)
+![](unique_genes_files/figure-commonmark/Fig1D_tocombine-5.png)
 
 
     $AML
 
-![](Fig1D_files/figure-commonmark/Fig1D_tocombine-6.png)
+![](unique_genes_files/figure-commonmark/Fig1D_tocombine-6.png)
 
 ``` r
 FigS3 <- wrap_plots(Fig1D_all, ncol = 1) +
@@ -963,11 +958,11 @@ FigS3 <- wrap_plots(Fig1D_all, ncol = 1) +
 FigS3
 ```
 
-![](Fig1D_files/figure-commonmark/FigS3-1.png)
+![](unique_genes_files/figure-commonmark/FigS3-1.png)
 
 ``` r
 ggsave("../../Figures/FigS3.png", FigS3, width = 20, height = 36, dpi = 300)
-ggsave("../../Figures/FigS3.tif", FigS3, width = 20, height = 36, dpi = 300)
+# ggsave("../../Figures/FigS3.tif", FigS3, width = 20, height = 36, dpi = 300)
 ```
 
 Session Info
@@ -986,7 +981,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-07-24
+     date     2026-10-27
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
