@@ -1,24 +1,44 @@
----
-title: "Fig1H"
-Date: "`r Sys.Date()`"
-format: 
-  gfm:
-    toc: true
-    df-print: kable
-editor: visual
----
+# druggable_genes
+
+
+- [Fig 1H](#fig-1h)
 
 ## Fig 1H
 
 Median expression of Treehouse Druggable Genes.
 
-```{r load library}
+``` r
 library(tidyverse)
+```
+
+    ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+    ✔ dplyr     1.1.4     ✔ readr     2.1.5
+    ✔ forcats   1.0.1     ✔ stringr   1.5.2
+    ✔ ggplot2   4.0.0     ✔ tibble    3.3.0
+    ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+    ✔ purrr     1.1.0     
+    ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ✖ dplyr::filter() masks stats::filter()
+    ✖ dplyr::lag()    masks stats::lag()
+    ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+``` r
 library(patchwork)
 library(cowplot)
 ```
 
-```{r load in files}
+
+    Attaching package: 'cowplot'
+
+    The following object is masked from 'package:patchwork':
+
+        align_plots
+
+    The following object is masked from 'package:lubridate':
+
+        stamp
+
+``` r
 # sample ID files
 # polyA
 SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv", show_col_types = FALSE)
@@ -79,7 +99,7 @@ drug_genes <- read_tsv("../../input_data/treehouseDruggableGenes_2019-06-12.txt"
   select(gene)
 ```
 
-```{r drug_gene_names}
+``` r
 # getting the EnsemblIDs for the Treehouse druggable gene list
 drug_gene_names <- drug_genes %>%
   rename(HugoID = gene) %>%
@@ -88,7 +108,7 @@ drug_gene_names <- drug_genes %>%
 
 Function for filtering for druggable genes
 
-```{r druggable genes function}
+``` r
 filter_druggable <- function(df, drug_gene_names) {
   df %>% filter(EnsGeneID %in% drug_gene_names$EnsGeneID)
     # left_join(drug_gene_names, by = "EnsGeneID") %>%
@@ -96,7 +116,7 @@ filter_druggable <- function(df, drug_gene_names) {
 }
 ```
 
-```{r filtering_druggable}
+``` r
 # filtering for TH druggable genes
 aRMS_polyA_drug <- filter_druggable(aRMS_polyA_log2tpm1, drug_gene_names)
 aRMS_riboD_drug <- filter_druggable(aRMS_riboD_log2tpm1, drug_gene_names)
@@ -119,7 +139,7 @@ AML_riboD_drug <- filter_druggable(AML_riboD_log2tpm1, drug_gene_names)
 
 Function for calculating median expression across samples
 
-```{r function for median expression}
+``` r
 compute_gene_medians_polyA <- function(polyA_df, disease_name, Compendia ) {
   polyA_medians <- polyA_df %>%
     rowwise() %>%
@@ -141,7 +161,7 @@ compute_gene_medians_riboD <- function(riboD_df, disease_name, Compendia) {
 }
 ```
 
-```{r median expression of druggable genes per disease}
+``` r
 # calculating median expression of druggable genes per disease
 aRMS_polyA_drug_medians <- compute_gene_medians_polyA(aRMS_polyA_drug) %>%
   mutate(Disease = "aRMS", Compendia = "PolyA", name = "polyA_medians")
@@ -180,7 +200,7 @@ AML_riboD_drug_medians <- compute_gene_medians_riboD(AML_riboD_drug) %>%
   mutate(Disease = "AML", Compendia = "RiboD", name = "riboD_medians") 
 ```
 
-```{r combined_drug_medians}
+``` r
 combined_drug_medians <- bind_rows(
   aRMS_polyA_drug_medians,
   aRMS_riboD_drug_medians,
@@ -195,10 +215,10 @@ combined_drug_medians <- bind_rows(
   AML_polyA_drug_medians,
   AML_riboD_drug_medians
 )
-# write_tsv(combined_drug_medians, "../../output_data/Fig1H/combined_drug_medians.tsv.gz")
+# write_tsv(combined_drug_medians, "../../output_data/druggable_genes/combined_drug_medians.tsv.gz")
 ```
 
-```{r define color palette}
+``` r
 # Define consistent color-blind–safe palette
 scale_color_compendia <- function() {
   scale_color_manual(values = c(
@@ -208,7 +228,7 @@ scale_color_compendia <- function() {
 }
 ```
 
-```{r Fig1H_SS}
+``` r
 # Loop through diseases and generate plots
 Fig1H_SS_ensembl <- map(unique(combined_drug_medians$Disease), function(d) {
 
@@ -260,14 +280,21 @@ names(Fig1H_SS_ensembl) <- unique(combined_drug_medians$Disease)
 Fig1H_SS_ensembl$SS
 ```
 
-```{r Fig1H_ENS.png}
+![](druggable_genes_files/figure-commonmark/Fig1H_SS-1.png)
+
+``` r
 ggsave("../../Figures/Fig1H_SS_ensembl.png", Fig1H_SS_ensembl$SS, width = 11)
+```
+
+    Saving 11 x 5 in image
+
+``` r
 # ggsave("../../Figures/Fig1H.tif", Fig1H_SS$SS, width = 11)
 ```
 
 Fig S7
 
-```{r Fig1H_ensembl}
+``` r
 # Loop through diseases and generate plots
 Fig1H_ensembl <- map(unique(combined_drug_medians$Disease), function(d) {
 
@@ -322,7 +349,39 @@ names(Fig1H_ensembl) <- unique(combined_drug_medians$Disease)
 Fig1H_ensembl
 ```
 
-```{r FigS7_ensembl}
+    $aRMS
+
+![](druggable_genes_files/figure-commonmark/Fig1H_ensembl-1.png)
+
+
+    $SS
+
+![](druggable_genes_files/figure-commonmark/Fig1H_ensembl-2.png)
+
+
+    $NB
+
+![](druggable_genes_files/figure-commonmark/Fig1H_ensembl-3.png)
+
+
+    $WT
+
+    Warning: Removed 1 row containing missing values or values outside the scale range
+    (`geom_point()`).
+
+![](druggable_genes_files/figure-commonmark/Fig1H_ensembl-4.png)
+
+
+    $ALL
+
+![](druggable_genes_files/figure-commonmark/Fig1H_ensembl-5.png)
+
+
+    $AML
+
+![](druggable_genes_files/figure-commonmark/Fig1H_ensembl-6.png)
+
+``` r
 FigS7_ensembl <- wrap_plots(Fig1H_ensembl, ncol = 1) +
   plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
   plot_annotation(
@@ -335,12 +394,17 @@ FigS7_ensembl <- wrap_plots(Fig1H_ensembl, ncol = 1) +
 FigS7_ensembl
 ```
 
-```{r ggsave FigS7_ensembl}
+    Warning: Removed 1 row containing missing values or values outside the scale range
+    (`geom_point()`).
+
+![](druggable_genes_files/figure-commonmark/FigS7_ensembl-1.png)
+
+``` r
 # ggsave("../../Figures/FigS7_ensembl.png", FigS7_ensembl, width = 30, height = 40, dpi = 300)
 # ggsave("../../Figures/FigS7_ensembl.png.tif", FigS7_ensembl.png, width = 36, height = 36, dpi = 300, scale = 0.75)
 ```
 
-```{r Fig1H_SS_hugo}
+``` r
 # labeling x-axis based on hugoID
 # Loop through diseases and generate plots
 Fig1H_SS_hugo <- map(unique(combined_drug_medians$Disease), function(d) {
@@ -401,11 +465,13 @@ names(Fig1H_SS_hugo) <- unique(combined_drug_medians$Disease)
 Fig1H_SS_hugo$SS
 ```
 
-```{r ggsave Fig1H_SS_hugo}
+![](druggable_genes_files/figure-commonmark/Fig1H_SS_hugo-1.png)
+
+``` r
 # ggsave("../../Figures/Fig1H_SS_hugo.png", Fig1H_SS_hugo$SS, width = 11)
 ```
 
-```{r Fig1H_hugo}
+``` r
 # labeling x-axis based on hugoID
 # Loop through diseases and generate plots
 Fig1H_hugo <- map(unique(combined_drug_medians$Disease), function(d) {
@@ -470,7 +536,39 @@ names(Fig1H_hugo) <- unique(combined_drug_medians$Disease)
 Fig1H_hugo
 ```
 
-```{r FigS7_hugo}
+    $aRMS
+
+![](druggable_genes_files/figure-commonmark/Fig1H_hugo-1.png)
+
+
+    $SS
+
+![](druggable_genes_files/figure-commonmark/Fig1H_hugo-2.png)
+
+
+    $NB
+
+![](druggable_genes_files/figure-commonmark/Fig1H_hugo-3.png)
+
+
+    $WT
+
+    Warning: Removed 1 row containing missing values or values outside the scale range
+    (`geom_point()`).
+
+![](druggable_genes_files/figure-commonmark/Fig1H_hugo-4.png)
+
+
+    $ALL
+
+![](druggable_genes_files/figure-commonmark/Fig1H_hugo-5.png)
+
+
+    $AML
+
+![](druggable_genes_files/figure-commonmark/Fig1H_hugo-6.png)
+
+``` r
 FigS7_hugo <- wrap_plots(Fig1H_hugo, ncol = 1) +
   plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
   plot_annotation(
@@ -483,10 +581,89 @@ FigS7_hugo <- wrap_plots(Fig1H_hugo, ncol = 1) +
 FigS7_hugo
 ```
 
-```{r ggsave FigS7_hugo}
+    Warning: Removed 1 row containing missing values or values outside the scale range
+    (`geom_point()`).
+
+![](druggable_genes_files/figure-commonmark/FigS7_hugo-1.png)
+
+``` r
 # ggsave("../../Figures/FigS7_hugo.png", FigS7_hugo, width = 30, height = 40, dpi = 300)
 ```
 
-```{r session info}
+``` r
 sessioninfo::session_info()
 ```
+
+    ─ Session info ───────────────────────────────────────────────────────────────
+     setting  value
+     version  R version 4.5.2 (2025-10-31)
+     os       macOS Tahoe 26.5
+     system   aarch64, darwin20
+     ui       X11
+     language (EN)
+     collate  en_US.UTF-8
+     ctype    en_US.UTF-8
+     tz       America/Los_Angeles
+     date     2026-10-27
+     pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
+     quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
+
+    ─ Packages ───────────────────────────────────────────────────────────────────
+     package      * version date (UTC) lib source
+     bit            4.6.0   2025-03-06 [1] CRAN (R 4.5.0)
+     bit64          4.6.0-1 2025-01-16 [1] CRAN (R 4.5.0)
+     cli            3.6.5   2025-04-23 [1] CRAN (R 4.5.0)
+     cowplot      * 1.2.0   2025-07-07 [1] CRAN (R 4.5.0)
+     crayon         1.5.3   2024-06-20 [1] CRAN (R 4.5.0)
+     digest         0.6.37  2024-08-19 [1] CRAN (R 4.5.0)
+     dplyr        * 1.1.4   2023-11-17 [1] CRAN (R 4.5.0)
+     evaluate       1.0.5   2025-08-27 [1] CRAN (R 4.5.0)
+     farver         2.1.2   2024-05-13 [1] CRAN (R 4.5.0)
+     fastmap        1.2.0   2024-05-15 [1] CRAN (R 4.5.0)
+     forcats      * 1.0.1   2025-09-25 [1] CRAN (R 4.5.0)
+     generics       0.1.4   2025-05-09 [1] CRAN (R 4.5.0)
+     ggplot2      * 4.0.0   2025-09-11 [1] CRAN (R 4.5.0)
+     glue           1.8.0   2024-09-30 [1] CRAN (R 4.5.0)
+     gtable         0.3.6   2024-10-25 [1] CRAN (R 4.5.0)
+     hms            1.1.4   2025-10-17 [1] CRAN (R 4.5.0)
+     htmltools      0.5.8.1 2024-04-04 [1] CRAN (R 4.5.0)
+     jsonlite       2.0.0   2025-03-27 [1] CRAN (R 4.5.0)
+     knitr          1.50    2025-03-16 [1] CRAN (R 4.5.0)
+     labeling       0.4.3   2023-08-29 [1] CRAN (R 4.5.0)
+     lifecycle      1.0.4   2023-11-07 [1] CRAN (R 4.5.0)
+     lubridate    * 1.9.4   2024-12-08 [1] CRAN (R 4.5.0)
+     magrittr       2.0.4   2025-09-12 [1] CRAN (R 4.5.0)
+     patchwork    * 1.3.2   2025-08-25 [1] CRAN (R 4.5.0)
+     pillar         1.11.1  2025-09-17 [1] CRAN (R 4.5.0)
+     pkgconfig      2.0.3   2019-09-22 [1] CRAN (R 4.5.0)
+     purrr        * 1.1.0   2025-07-10 [1] CRAN (R 4.5.0)
+     R6             2.6.1   2025-02-15 [1] CRAN (R 4.5.0)
+     ragg           1.5.0   2025-09-02 [1] CRAN (R 4.5.0)
+     RColorBrewer   1.1-3   2022-04-03 [1] CRAN (R 4.5.0)
+     readr        * 2.1.5   2024-01-10 [1] CRAN (R 4.5.0)
+     rlang          1.2.0   2026-04-06 [1] CRAN (R 4.5.2)
+     rmarkdown      2.30    2025-09-28 [1] CRAN (R 4.5.0)
+     rstudioapi     0.17.1  2024-10-22 [1] CRAN (R 4.5.0)
+     S7             0.2.0   2024-11-07 [1] CRAN (R 4.5.0)
+     scales         1.4.0   2025-04-24 [1] CRAN (R 4.5.0)
+     sessioninfo    1.2.3   2025-02-05 [1] CRAN (R 4.5.0)
+     stringi        1.8.7   2025-03-27 [1] CRAN (R 4.5.0)
+     stringr      * 1.5.2   2025-09-08 [1] CRAN (R 4.5.0)
+     systemfonts    1.3.1   2025-10-01 [1] CRAN (R 4.5.0)
+     textshaping    1.0.4   2025-10-10 [1] CRAN (R 4.5.0)
+     tibble       * 3.3.0   2025-06-08 [1] CRAN (R 4.5.0)
+     tidyr        * 1.3.1   2024-01-24 [1] CRAN (R 4.5.0)
+     tidyselect     1.2.1   2024-03-11 [1] CRAN (R 4.5.0)
+     tidyverse    * 2.0.0   2023-02-22 [1] CRAN (R 4.5.0)
+     timechange     0.3.0   2024-01-18 [1] CRAN (R 4.5.0)
+     tzdb           0.5.0   2025-03-15 [1] CRAN (R 4.5.0)
+     vctrs          0.6.5   2023-12-01 [1] CRAN (R 4.5.0)
+     vroom          1.6.6   2025-09-19 [1] CRAN (R 4.5.0)
+     withr          3.0.2   2024-10-28 [1] CRAN (R 4.5.0)
+     xfun           0.55    2025-12-16 [1] CRAN (R 4.5.2)
+     yaml           2.3.10  2024-07-26 [1] CRAN (R 4.5.0)
+
+     [1] /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library
+     * ── Packages attached to the search path.
+
+    ──────────────────────────────────────────────────────────────────────────────

@@ -1,0 +1,623 @@
+---
+title: "THR13_0970_S12-S17_all_plots"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    toc: true
+    df-print: kable
+editor: visual
+---
+
+## Matched PolyA/RiboD - DIPG-IV
+
+```{r library}
+library(tidyverse)
+library(GGally)
+library(patchwork)
+library(ggbeeswarm)
+library(scales)
+library(rstatix)
+library(ggrepel)
+library(cowplot)
+```
+
+### Correlogram (Fig A)
+
+```{r THR13_expr_filter_zero_variance}
+THR13_log2TPM1_matrix <- read_tsv("../output_data/THR13_0970_S12-S17/THR13_log2TPM1_matrix.tsv", show_col_types = FALSE) %>%
+  as.matrix()
+
+THR13_expr_filter_zero_variance <- read_tsv("../output_data/THR13_0970_S12-S17/THR13_expr_filter_zero_variance.tsv.gz", show_col_types = FALSE)
+# this data has variance filter that removed lowly expressed and invariable genes
+```
+
+```{r THR13_expr_filter_zero_variance format}
+# integrate density plot with coefficient value and color by coefficient value
+
+cor_color_fn2 <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+  
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.9,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+
+# function for diagonal density
+diag_filtered_density <- function(data, mapping, ...) {
+  # Pull out just the column being plotted on this diagonal panel
+  x <- eval_data_col(data, mapping$x)
+  
+  # Keep only expressed genes (log2TPM > 0)
+  x_filtered <- x[x > 0]
+  
+  ggplot(data.frame(x = x_filtered), aes(x = x)) +
+    geom_density(fill = "grey70", color = "black") +
+    theme_bw() +
+    theme(panel.grid = element_blank())
+}
+
+plot_df <- THR13_expr_filter_zero_variance %>%
+  as.data.frame() %>%
+  select(PolyA_1, PolyA_2, PolyA_3, RiboD_1, RiboD_2, RiboD_3)
+
+global_min <- min(plot_df, na.rm = TRUE)
+global_max <- max(plot_df, na.rm = TRUE)
+
+# function for scatterplot with fixed axes
+scatter_fixed_axes <- function(data, mapping, ...) {
+  ggplot(data, mapping) +
+    geom_point(alpha = 0.3, size = 0.5) +
+    xlim(global_min, global_max) +
+    ylim(global_min, global_max) +
+    geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", color = "green4") # with y=x slope intercept line
+}
+```
+
+```{r THR13_expr_filter_zero_variance_plot}
+THR13_expr_filter_zero_variance_plot <- ggpairs(
+  plot_df,
+  columns = 1:6,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn2, method = "spearman")),
+  diag  = list(continuous = wrap(diag_filtered_density))
+) +
+  theme(
+    axis.text.x  = element_text(angle = 45, hjust = 1),
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9),
+    panel.grid   = element_blank()
+  )
+THR13_expr_filter_zero_variance_plot
+```
+
+### Proportion of genes (Fig B)
+
+```{r fig b files}
+THR13_all_expr_bins <- read_tsv("../output_data/THR13_0970_S12-S17/THR13_all_expr_bins.tsv.gz", show_col_types = FALSE) %>%
+  mutate(
+    full_sample = case_when(
+    full_sample == "THR13_0970_S12" ~ "PolyA_1",
+    full_sample == "THR13_0970_S13" ~ "PolyA_2",
+    full_sample == "THR13_0970_S14" ~ "PolyA_3",
+    full_sample == "THR13_0970_S15" ~ "RiboD_1",
+    full_sample == "THR13_0970_S16" ~ "RiboD_2",
+    full_sample == "THR13_0970_S17" ~ "RiboD_3"
+  ))
+
+THR13_bin_prop_libprep <- read_tsv("../output_data/THR13_0970_S12-S17/THR13_bin_prop_libprep.tsv.gz", show_col_types = FALSE) %>%
+  mutate(ExprBin = factor(ExprBin, levels = c("0", "0-0.09", "0.1-0.99", "1-2.99", "3-4.99", ">5"))) %>%
+  mutate(
+    full_sample = case_when(
+    full_sample == "THR13_0970_S12" ~ "PolyA_1",
+    full_sample == "THR13_0970_S13" ~ "PolyA_2",
+    full_sample == "THR13_0970_S14" ~ "PolyA_3",
+    full_sample == "THR13_0970_S15" ~ "RiboD_1",
+    full_sample == "THR13_0970_S16" ~ "RiboD_2",
+    full_sample == "THR13_0970_S17" ~ "RiboD_3"
+  ))
+```
+
+```{r}
+theme_b <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "right",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16), 
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17), 
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
+      plot.margin = margin(8, 10, 10, 10)
+    )
+}
+
+scale_fill_compendia <- function() {
+  scale_fill_manual(values = c(
+    "riboD" = "#E69F00",  # yellow
+    "polyA" = "#0072B2"   # blue
+  ))
+}
+scale_color_compendia <- function() {
+  scale_color_manual(values = c( 
+    "riboD" = "#E69F00", 
+    "polyA" = "#0072B2" ))
+}
+
+```
+
+```{r b_prop_plot}
+# Get unique THIDs
+samplesB <- unique(THR13_bin_prop_libprep$full_sample)
+
+# Generate one plot per sample
+b_prop_plot <- map(samplesB, function(d) {
+  
+  dfB <- THR13_bin_prop_libprep %>% filter(full_sample == d)
+  
+  ggplot(dfB, aes(x = full_sample, y = Proportion, fill = ExprBin)) +
+    geom_bar(stat = "identity", position = "stack") +
+    scale_fill_viridis_d(
+      option = "D", 
+      name = expression(atop("Expression", "in log"[2]*"(TPM+1)"))
+      ) +
+    labs(
+      # title = paste(d),
+      x = NULL,
+      y = "Proportion of Genes",
+      fill = "Expression Level"
+    ) +
+    theme_b() +
+      theme(
+        strip.text = element_blank(),
+        strip.background = element_blank()
+      )
+})
+
+# Name the plots by THIDs
+names(b_prop_plot) <- samplesB
+b_prop_plot
+```
+
+```{r combined_prop_plot}
+prop_plot_names <- names(b_prop_plot)
+n <- length(prop_plot_names)
+ncols <- 6
+bottom_row <- prop_plot_names[seq(from = ceiling(n / ncols) * ncols - ncols + 1, to = n)]
+
+
+b_plots_subset <- imap(b_prop_plot[prop_plot_names], function(p, name) {
+  if (!name %in% bottom_row) {
+    # hide x-axis on all panels except the last
+    p + theme(
+      axis.text.x = element_blank(),
+      axis.title.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
+  } else {
+    # show x-axis only on the last panel
+    p + theme(
+      axis.text.x = element_text(angle = 90, hjust = 1, size = 16),
+      axis.title.x = element_text(size = 12)
+    )
+  }
+})
+
+b_combined_prop_plot <- wrap_plots(b_plots_subset, ncol = 6) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "right")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 4, r = 4),
+    plot.title = element_text(hjust = 0.35, face = "bold", size = 14),
+    legend.title = element_text(size = 12)
+  )
+
+b_combined_prop_plot
+```
+
+### Number of unique genes (Fig C)
+
+```{r THR13_combined_counts}
+THR13_combined_counts <- read_tsv("../output_data/THR13_0970_S12-S17/THR13_combined_counts.tsv.gz", show_col_types = FALSE)
+```
+
+```{r theme_c}
+theme_c <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16),
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17),
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+```
+
+```{r facet_labels_c}
+facet_labels_c <- c(
+  "0" = "x = 0",
+  "0-0.09" = "0 > x > 0.1",
+  "0.1-0.99" = "0.1 > x > 1",
+  "1-2.99" = "1 > x > 3",
+  "3-4.99" = "3 > x > 5",
+  ">5" = "x > 5"
+)
+
+max_y <- max(THR13_combined_counts$Count, na.rm = TRUE)
+
+#y-position for stars
+y_star <- max(THR13_combined_counts$Count, na.rm = TRUE) * 1.05
+```
+
+```{r bin_order}
+bin_order <- c("0", "0-0.09", "0.1-0.99", "1-2.99", "3-4.99", ">5")
+
+THR13_combined_counts <- THR13_combined_counts %>%
+  mutate(Bin = factor(Bin, levels = bin_order))
+
+stat_df <- THR13_combined_counts %>%
+  group_by(Bin) %>%
+  arrange(full_sample, .by_group = TRUE) %>%   # ensures pairs line up
+  t_test(Count ~ lib_prep, var.equal = FALSE) %>% # welch's t-test
+  adjust_pvalue(method = "holm") %>%
+  add_significance("p.adj")
+stat_df
+
+```
+
+```{r sig_df}
+sig_df_c <- stat_df %>%
+  mutate(
+    y_star = max_y * 1.05,
+    stars_adj = p.adj.signif
+  )
+```
+
+```{r unique_genes_plot}
+unique_genes_plot <- ggplot(THR13_combined_counts, aes(x = lib_prep, y = Count, color = lib_prep)) +
+  geom_quasirandom(
+    dodge.width = 0.85,
+    width = 0.4,
+    alpha = .8,
+    size = 2
+  ) +
+  # adding stars above text
+  geom_text(
+    data = sig_df_c,
+    aes(x = 1.5, y = y_star, label = stars_adj),
+    inherit.aes = FALSE,
+    size = 6
+  ) +
+  
+  facet_grid(. ~ Bin, labeller = labeller(Bin = facet_labels_c)) +
+  scale_fill_compendia() +
+  scale_color_compendia() +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+    ) +
+  coord_cartesian(ylim = c(0, y_star)) +
+  labs(
+    # title = paste("DIPG-IV Matched PolyA/RiboD datasets"),
+    x = "log2(TPM+1) = x",
+    y = "Gene count"
+  ) +
+  theme_minimal() +
+  theme_c() +
+  theme(
+      strip.background = element_blank(),
+      # strip.text.x = element_text(angle = 90, hjust = 0, vjust = 0, face = "bold"),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      panel.spacing.x = unit(1, "lines"),
+      legend.position = "bottom",
+      legend.text = element_text(size = 16),
+      legend.title = element_text(size = 18),
+      legend.key.size = unit(1, "cm"),
+      legend.margin = margin(t = -2)
+    )
+
+unique_genes_plot
+```
+
+### Expression of representative genes (Fig D)
+
+```{r THR13_repgenes_combined_labeled}
+THR13_repgenes_combined_labeled <- read_tsv("../output_data/THR13_0970_S12-S17/THR13_repgenes_combined_labeled.tsv.gz", show_col_types = FALSE)
+```
+
+```{r color_theme_d}
+color_theme_d <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16), 
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17), 
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+```
+
+```{r sig_results_d}
+sig_results_d <- THR13_repgenes_combined_labeled %>%
+  group_by(HugoID, PlotType) %>%
+  t_test(Expression ~ lib_prep, var.equal = FALSE) %>%   # Welch, unpaired
+  adjust_pvalue(method = "holm") %>%
+  add_significance("p.adj") %>%
+  mutate(
+    y_star = 9.5,         
+    stars_adj = p.adj.signif
+  )
+
+```
+
+```{r rep_genes_plot}
+rep_genes_plot <- ggplot(THR13_repgenes_combined_labeled, aes(x = HugoID, y = Expression, color = lib_prep)) +
+  geom_quasirandom(
+    dodge.width = 0.7,
+    width = 0.15,
+    alpha = .8,
+    size = 3
+  ) +
+  geom_text(
+    data = sig_results_d,
+    aes(x = HugoID, y = y_star, label = stars_adj),
+    inherit.aes = FALSE,
+    size = 8
+  ) +
+  scale_color_compendia() +
+  coord_cartesian(ylim = c(0, 10)) +
+  facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
+  # labs(title = "matched DIPGIV", x = NULL) +
+  ylab(bquote(log[2](TPM+1))) +
+  color_theme_d() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 20),
+    axis.text.y = element_text(size = 16),
+    axis.text.x = element_text(size = 20),
+    strip.text = element_blank(),
+    plot.title = element_text(vjust = -2),
+    legend.position = "bottom",
+    legend.text = element_text(size = 16),
+    legend.title = element_text(size = 18),
+    legend.key.size = unit(1, "cm"),
+    legend.margin = margin(t = -2)
+  )
+rep_genes_plot
+```
+
+### Median ratio distribution (Fig E)
+
+```{r THR13_ratios}
+THR13_ratios <- read_tsv("../output_data/THR13_0970_S12-S17/THR13_ratios.tsv.gz", show_col_types = FALSE)
+```
+
+```{r theme_ratio}
+theme_ratio <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+```
+
+```{r}
+# median ratio for HIST1H1B = 0.08042886
+# median ratio for NUDT5 = 1.338632
+
+ratio_hist_plot <- ggplot(THR13_ratios, aes(x = THR13_median_ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  geom_vline(xintercept = 1.338632, color = "#0072B2", linetype = "dashed") +
+  geom_text(aes(x = 2.2, y = 2000, label = "NUDT5"), angle = 0, vjust = -0.5, color = "#0072B2", size = 4) +
+  geom_vline(xintercept = 0.08042886, color = "#E69F00", linetype = "dashed") +
+  geom_text(aes(x = 1.15, y = 4500, label = "HIST1H1B"), angle = 0, vjust = -0.5, color = "#E69F00", size = 4) +
+  coord_cartesian(xlim = c(0, 10)) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
+  labs(
+    x = "Median Expression Ratio (polyA / riboD)",
+    y = "Number of Genes"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+  ) +
+  theme_ratio()
+ratio_hist_plot
+```
+
+### Scatterplot of median expression (Fig F)
+
+```{r THR13_gene_medians_res}
+THR13_gene_medians_res <- read_tsv("../output_data/THR13_0970_S12-S17/THR13_gene_medians_res.tsv.gz", show_col_types = FALSE)
+```
+
+```{r THR13_gene_medians_res format}
+# representative polyadenylated genes were found in THR13_0970_S12-S17/THR13_0970_S12-S17_rep_genes.md, calculated as the median expression level in PolyA samples divided by the median expression level in RiboD samples
+
+THR13_gene_medians_res <- THR13_gene_medians_res %>%
+  mutate(
+    label_color = case_when(
+    ensembl_gene_ID == "ENSG00000165609.12" ~ "#0072B2", #NUDT5
+    ensembl_gene_ID == "ENSG00000184357.4" ~ "#E69F00", #HIST1H1B
+    TRUE ~ "grey70"
+    )
+  ) %>%
+  mutate(
+    label = case_when(
+      ensembl_gene_ID == "ENSG00000165609.12" ~ HugoID.x,
+      ensembl_gene_ID == "ENSG00000184357.4" ~ HugoID.x, # HIST1H1B + median ratio gene
+      TRUE ~ NA_character_
+    )
+  )
+```
+
+```{r plot_theme_f}
+plot_theme_f <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1, hjust = 0.5),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+```
+
+```{r med_scatterplot}
+med_scatterplot <- ggplot(THR13_gene_medians_res, aes(x = THR13_polyA_median, y = THR13_riboD_median)) +
+  geom_point(data = THR13_gene_medians_res %>% filter(is.na(label)),
+             color = "grey70", alpha = 0.5, size = 1.2) +
+  geom_point(data = THR13_gene_medians_res %>% filter(!is.na(label)),
+             aes(color = label_color),
+             size = 2.5, alpha = 0.9) +
+  geom_text_repel(
+    aes(label = label),
+    size = 4.5,
+    max.overlaps = Inf,
+    min.segment.length = 0,
+    box.padding = 0.4,
+    point.padding = 0.2
+  ) +
+  scale_color_identity() +   # use colors exactly as defined
+  geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", color = "gray50") +
+    xlab(bquote(Median~PolyA~log[2](TPM+1))) +
+    ylab(bquote(Median~RiboD~log[2](TPM+1))) +
+    theme_minimal(base_size = 14) +
+    plot_theme_f()
+med_scatterplot
+```
+
+### Expression of TH druggable genes (Fig G)
+
+```{r THR13_drug_form}
+THR13_drug_form <- read_tsv("../output_data/THR13_0970_S12-S17/THR13_drug_form.tsv.gz", show_col_types = FALSE)
+```
+
+```{r THR13_drug_genes_plot}
+THR13_drug_form_df <- THR13_drug_form %>%
+  filter(!is.na(HugoID)) %>%
+  mutate(gene_key = paste(ensembl_gene_ID, HugoID, sep = "|"))
+
+# order keys by median expression (one value per key)
+gene_order <- THR13_drug_form_df %>%
+  group_by(gene_key) %>%
+  summarize(ord = median(median_expr, na.rm = TRUE), .groups = "drop") %>%
+  arrange(ord) %>%
+  pull(gene_key)
+
+THR13_drug_form_df <- THR13_drug_form_df %>% 
+  mutate(gene_key = factor(gene_key, levels = gene_order)) %>%
+  mutate(lib_prep = case_when(
+    grepl("polya", lib_prep, ignore.case = TRUE) ~ "polyA",
+    grepl("ribod", lib_prep, ignore.case = TRUE) ~ "riboD",
+    TRUE ~ NA_character_))
+
+# lookup: key -> HugoID
+label_lookup <- THR13_drug_form_df %>%
+  distinct(gene_key, HugoID) %>%
+  { setNames(as.character(.$HugoID), as.character(.$gene_key)) }
+
+THR13_drug_genes_plot <- ggplot(THR13_drug_form_df, aes(x = gene_key, y = median_expr, color = lib_prep)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
+  geom_vline(aes(xintercept = as.numeric(gene_key)), color = "grey85", linewidth = 0.3) +
+  geom_point(size = 1.4, alpha = 0.75) +
+  scale_x_discrete(
+    labels = label_lookup,
+    expand = expansion(mult = c(0.01, 0.01))
+  ) +
+  scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
+  scale_color_compendia() +
+  labs(x = NULL, color = "Library Prep") +
+  ylab(bquote(Median~log[2](TPM+1))) +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8),
+    panel.grid.major.x = element_blank(),
+    axis.text.y = element_text(angle = 0, hjust = 1, size = 12),
+    axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15),
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+    legend.position = "bottom",
+    legend.text = element_text(size = 16),
+    legend.title = element_text(size = 16),
+    legend.key.size = unit(1, "cm"),
+    legend.margin = margin(t = -2)
+  )
+THR13_drug_genes_plot
+```
+
+### Fig merged
+
+```{r}
+A <- wrap_elements(full = ggmatrix_gtable(THR13_expr_filter_zero_variance_plot))
+B <- wrap_elements(full = b_combined_prop_plot)
+
+
+design <- "
+AB
+CD
+EF
+GG
+"
+
+THR13_fig <- A + 
+  B +
+  unique_genes_plot + #c
+  rep_genes_plot + #d
+  ratio_hist_plot + #e
+  med_scatterplot + #f
+  THR13_drug_genes_plot + #g
+  plot_layout(design = design, 
+              heights = c(6, 4, 4, 4)) +
+  plot_annotation(tag_levels = "A") &
+  theme(plot.tag = element_text(size = 20, face = "bold"))
+```
+
+```{r}
+ggsave("../Figures/THR13_fig.png", THR13_fig, width = 12, height = 18, dpi = 300)
+```
+
+Session Info
+
+```{r SessionInfo}
+sessioninfo::session_info()
+```
