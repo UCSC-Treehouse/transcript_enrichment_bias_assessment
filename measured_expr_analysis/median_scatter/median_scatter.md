@@ -468,7 +468,7 @@ combined_medians_hugo_res <- combined_medians_hugo_res %>%
     )
   )
 # this creates a dataframe that shows the polyA median expression and riboD median expression with the calculated residual for each disease. The representative polyadenylated genes are colored for their respective disease. HIST1H1B is colored for all diseases as the representative nonpolyadenylated gene.
-write_tsv(combined_medians_hugo_res, "../../output_data/Fig1G/combined_medians_hugo_res.tsv.gz")
+# write_tsv(combined_medians_hugo_res, "../../output_data/median_scatter/combined_medians_hugo_res.tsv.gz")
 ```
 
 Fig1G
@@ -529,7 +529,7 @@ Fig1G
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G-1.png)
+![](median_scatter_files/figure-commonmark/Fig1G-1.png)
 
 
     $SS
@@ -537,7 +537,7 @@ Fig1G
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G-2.png)
+![](median_scatter_files/figure-commonmark/Fig1G-2.png)
 
 
     $WT
@@ -545,7 +545,7 @@ Fig1G
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G-3.png)
+![](median_scatter_files/figure-commonmark/Fig1G-3.png)
 
 
     $NB
@@ -553,7 +553,7 @@ Fig1G
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G-4.png)
+![](median_scatter_files/figure-commonmark/Fig1G-4.png)
 
 
     $ALL
@@ -561,7 +561,7 @@ Fig1G
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G-5.png)
+![](median_scatter_files/figure-commonmark/Fig1G-5.png)
 
 
     $AML
@@ -569,7 +569,7 @@ Fig1G
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G-6.png)
+![](median_scatter_files/figure-commonmark/Fig1G-6.png)
 
 ``` r
 ggsave("../../Figures/Fig1G.png", plot = Fig1G$SS)
@@ -656,7 +656,7 @@ Fig1G_all
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G_tocombine-1.png)
+![](median_scatter_files/figure-commonmark/Fig1G_tocombine-1.png)
 
 
     $SS
@@ -664,7 +664,7 @@ Fig1G_all
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G_tocombine-2.png)
+![](median_scatter_files/figure-commonmark/Fig1G_tocombine-2.png)
 
 
     $WT
@@ -672,7 +672,7 @@ Fig1G_all
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G_tocombine-3.png)
+![](median_scatter_files/figure-commonmark/Fig1G_tocombine-3.png)
 
 
     $NB
@@ -680,7 +680,7 @@ Fig1G_all
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G_tocombine-4.png)
+![](median_scatter_files/figure-commonmark/Fig1G_tocombine-4.png)
 
 
     $ALL
@@ -688,7 +688,7 @@ Fig1G_all
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G_tocombine-5.png)
+![](median_scatter_files/figure-commonmark/Fig1G_tocombine-5.png)
 
 
     $AML
@@ -696,7 +696,7 @@ Fig1G_all
     Warning: Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/Fig1G_tocombine-6.png)
+![](median_scatter_files/figure-commonmark/Fig1G_tocombine-6.png)
 
 ``` r
 FigS6 <- wrap_plots(Fig1G_all, ncol = 1) +
@@ -724,7 +724,7 @@ FigS6
     Removed 60496 rows containing missing values or values outside the scale range
     (`geom_text_repel()`).
 
-![](Fig1G_files/figure-commonmark/FigS6-1.png)
+![](median_scatter_files/figure-commonmark/FigS6-1.png)
 
 ``` r
 ggsave("../../Figures/FigS6.png", FigS6, width = 20, height = 36, dpi = 300)
@@ -776,7 +776,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-07-07
+     date     2026-10-27
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
