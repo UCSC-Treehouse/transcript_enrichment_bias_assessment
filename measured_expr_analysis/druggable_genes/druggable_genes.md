@@ -215,7 +215,14 @@ combined_drug_medians <- bind_rows(
   AML_polyA_drug_medians,
   AML_riboD_drug_medians
 )
-# write_tsv(combined_drug_medians, "../../output_data/druggable_genes/combined_drug_medians.tsv.gz")
+#write_tsv(combined_drug_medians, "../../output_data/druggable_genes/combined_drug_medians.tsv.gz")
+```
+
+``` r
+Additional_File_2 <- combined_drug_medians %>%
+  pivot_wider(names_from = Disease, values_from = Expression) %>%
+  arrange(EnsGeneID)
+#write_tsv(Additional_File_2, "../../output_data/Additional_File_2.tsv")
 ```
 
 ``` r
@@ -604,7 +611,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-10-27
+     date     2026-11-16
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 

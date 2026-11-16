@@ -195,7 +195,14 @@ combined_drug_medians <- bind_rows(
   AML_polyA_drug_medians,
   AML_riboD_drug_medians
 )
-# write_tsv(combined_drug_medians, "../../output_data/druggable_genes/combined_drug_medians.tsv.gz")
+#write_tsv(combined_drug_medians, "../../output_data/druggable_genes/combined_drug_medians.tsv.gz")
+```
+
+```{r Additional_file_2}
+Additional_File_2 <- combined_drug_medians %>%
+  pivot_wider(names_from = Disease, values_from = Expression) %>%
+  arrange(EnsGeneID)
+#write_tsv(Additional_File_2, "../../output_data/Additional_File_2.tsv")
 ```
 
 ```{r define color palette}
