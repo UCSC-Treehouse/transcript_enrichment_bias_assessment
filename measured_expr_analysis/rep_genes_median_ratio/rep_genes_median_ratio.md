@@ -1224,11 +1224,14 @@ Fig1F <- ggplot(ss_ratios, aes(x = Ratio)) +
   
   geom_vline(xintercept = SS_most_average_gene_hugo$SS_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.4, hjust = 0.3, color = "#0072B2", size = 8) +
+#  geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.4, hjust = 0.3, color = "#0072B2", size = 8) +
   
   geom_vline(xintercept = SS_HIST1H1B$SS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -5, hjust = 0.2, color = "#E69F00", size = 8) +
+#  geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -5, hjust = 0.2, color = "#E69F00", size = 8) +
+  geom_text(data = tibble(x = 2.75, y = 2000, label = SS_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 8) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = SS_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 8) +
   
   coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
@@ -1253,14 +1256,6 @@ Fig1F <- ggplot(ss_ratios, aes(x = Ratio)) +
 Fig1F
 ```
 
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
     Warning: Removed 29257 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
@@ -1277,11 +1272,15 @@ Fig1F_aRMS <- ggplot(arms_ratios, aes(x = Ratio)) +
   geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
   geom_vline(xintercept = aRMS_most_average_gene_hugo$aRMS_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+#  geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
   
   geom_vline(xintercept = aRMS_HIST1H1B$aRMS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+#  geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+  geom_text(data = tibble(x = 2.75, y = 2000, label = aRMS_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = aRMS_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
+  
   coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
     title = "aRMS",
@@ -1305,14 +1304,6 @@ Fig1F_aRMS <- ggplot(arms_ratios, aes(x = Ratio)) +
 Fig1F_aRMS
 ```
 
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
     Warning: Removed 27707 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
@@ -1324,11 +1315,15 @@ Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
   
   geom_vline(xintercept = SS_most_average_gene_hugo$SS_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+#  geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
   
   geom_vline(xintercept = SS_HIST1H1B$SS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+#  geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+
+  geom_text(data = tibble(x = 2.75, y = 2000, label = SS_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = SS_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
   
   coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
@@ -1353,14 +1348,6 @@ Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
 Fig1F_SS
 ```
 
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
     Warning: Removed 29257 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
@@ -1372,11 +1359,14 @@ Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
   
   geom_vline(xintercept = WT_most_average_gene_hugo$WT_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+#  geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
   
   geom_vline(xintercept = WT_HIST1H1B$WT_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+#  geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+  geom_text(data = tibble(x = 2.75, y = 2000, label = WT_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = WT_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
   
   coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
@@ -1401,14 +1391,6 @@ Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
 Fig1F_WT
 ```
 
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
     Warning: Removed 26797 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
@@ -1420,13 +1402,17 @@ Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
   
   geom_vline(xintercept = NB_most_average_gene_hugo$NB_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+#  geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
   
   geom_vline(xintercept = NB_HIST1H1B$NB_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+#  geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
   
-  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
+  geom_text(data = tibble(x = 2.75, y = 2000, label =NB_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = NB_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
+  
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 7000)) +
   labs(
     title = "NB",
     x = "Median expression ratio",
@@ -1449,14 +1435,6 @@ Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
 Fig1F_NB
 ```
 
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
     Warning: Removed 25112 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
@@ -1468,11 +1446,15 @@ Fig1F_ALL <- ggplot(all_ratios, aes(x = Ratio)) +
   
   geom_vline(xintercept = ALL_most_average_gene_hugo$ALL_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+#  geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
   
   geom_vline(xintercept = ALL_HIST1H1B$AML_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+#  geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+  
+  geom_text(data = tibble(x = 2.75, y = 2000, label = ALL_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = ALL_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
   
   coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
@@ -1501,14 +1483,6 @@ Fig1F_ALL <- ggplot(all_ratios, aes(x = Ratio)) +
 Fig1F_ALL
 ```
 
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
     Warning: Removed 31150 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
@@ -1520,11 +1494,14 @@ Fig1F_AML <- ggplot(aml_ratios, aes(x = Ratio)) +
   
   geom_vline(xintercept = AML_most_average_gene_hugo$AML_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+#  geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
   
   geom_vline(xintercept = AML_HIST1H1B$AML_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
   
-  geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+#  geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+  geom_text(data = tibble(x = 2.75, y = 2000, label = AML_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = AML_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
   
   coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   labs(
@@ -1549,14 +1526,6 @@ Fig1F_AML <- ggplot(aml_ratios, aes(x = Ratio)) +
 Fig1F_AML
 ```
 
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
     Warning: Removed 30953 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
@@ -1578,68 +1547,20 @@ FigS5 <- wrap_plots(Fig1F_SS, Fig1F_aRMS, Fig1F_WT, Fig1F_NB, Fig1F_ALL, Fig1F_A
 FigS5
 ```
 
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
     Warning: Removed 29257 rows containing non-finite outside the scale range
     (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
 
     Warning: Removed 27707 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
     Warning: Removed 26797 rows containing non-finite outside the scale range
     (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
 
     Warning: Removed 25112 rows containing non-finite outside the scale range
     (`stat_bin()`).
 
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
     Warning: Removed 31150 rows containing non-finite outside the scale range
     (`stat_bin()`).
-
-    Warning in geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
-
-    Warning in geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), : All aesthetics have length 1, but the data has 60498 rows.
-    ℹ Please consider using `annotate()` or provide this layer with data containing
-      a single row.
 
     Warning: Removed 30953 rows containing non-finite outside the scale range
     (`stat_bin()`).
@@ -1662,28 +1583,67 @@ ss_ratios_great1 <- ss_ratios %>%
   filter(Ratio > 1) %>%
   filter(Ratio != Inf) %>%
   filter(Ratio != 0)
-nrow(ss_ratios_great1)
+print(paste("the number of genes with a polyA/riboD ratio greater than 1 is ", nrow(ss_ratios_great1)))
 ```
 
-    [1] 21620
+    [1] "the number of genes with a polyA/riboD ratio greater than 1 is  21620"
 
 ``` r
 ss_ratios_less1 <- ss_ratios %>%
   filter(Ratio < 1) %>%
   filter(Ratio != Inf) %>%
   filter(Ratio != 0)
-nrow(ss_ratios_less1)
+print(paste("the number of genes with a polyA/riboD ratio less than 1 is ", nrow(ss_ratios_less1)))
 ```
 
-    [1] 4015
+    [1] "the number of genes with a polyA/riboD ratio less than 1 is  4015"
 
 ``` r
 ss_ratios_equal1 <- ss_ratios %>%
-  filter(Ratio == 1)
-nrow(ss_ratios_equal1)
+  filter(Ratio == 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+print(paste("the number of genes with a polyA/riboD ratio equal to 1 is ", nrow(ss_ratios_equal1)))
 ```
 
-    [1] 275
+    [1] "the number of genes with a polyA/riboD ratio equal to 1 is  275"
+
+``` r
+ss_ratios_zero <- ss_ratios %>%
+  filter(Ratio == 0)
+print(paste("the number of genes with a polyA/riboD ratio equal to 0 is ", nrow(ss_ratios_zero)))
+```
+
+    [1] "the number of genes with a polyA/riboD ratio equal to 0 is  5331"
+
+``` r
+# zero: for example, ENSG00000008438.4 shows ratio = 0 and has median polyA = 0 and median riboD = 0.08406426
+
+ss_ratios_inf <- ss_ratios %>%
+  filter(Ratio == Inf)
+print(paste("the number of genes with a polyA/riboD ratio equal to infinity is ", nrow(ss_ratios_inf)))
+```
+
+    [1] "the number of genes with a polyA/riboD ratio equal to infinity is  1245"
+
+``` r
+# Inf: for example, ENSG00000005001.9 shows Inf in ss_ratios and has median polyA = 0.1763228 and median riboD = 0
+
+ss_ratios_NaN <- ss_ratios %>%
+  filter(Ratio == "NaN")
+print(paste("the number of genes with a polyA/riboD ratio of NaN is ", nrow(ss_ratios_NaN)))
+```
+
+    [1] "the number of genes with a polyA/riboD ratio of NaN is  28012"
+
+``` r
+# NaN: for example, ENSG00000006059.3 shows NaN in ss_ratios and has median polyA = 0 and median riboD = 0
+
+print(paste("all of these genes summed equals ",
+  nrow(ss_ratios_great1)+nrow(ss_ratios_less1)+nrow(ss_ratios_equal1)+nrow(ss_ratios_zero)+nrow(ss_ratios_inf)+nrow(ss_ratios_NaN)))
+```
+
+    [1] "all of these genes summed equals  60498"
 
 ``` r
 # aRMS
@@ -1691,28 +1651,67 @@ arms_ratios_great1 <- arms_ratios %>%
   filter(Ratio > 1) %>%
   filter(Ratio != Inf) %>%
   filter(Ratio != 0)
-nrow(arms_ratios_great1)
+print(paste("the number of genes with a polyA/riboD ratio greater than 1 is ", nrow(arms_ratios_great1)))
 ```
 
-    [1] 22531
+    [1] "the number of genes with a polyA/riboD ratio greater than 1 is  22531"
 
 ``` r
 arms_ratios_less1 <- arms_ratios %>%
   filter(Ratio < 1) %>%
   filter(Ratio != Inf) %>%
   filter(Ratio != 0)
-nrow(arms_ratios_less1)
+print(paste("the number of genes with a polyA/riboD ratio less than 1 is ", nrow(arms_ratios_less1)))
 ```
 
-    [1] 5517
+    [1] "the number of genes with a polyA/riboD ratio less than 1 is  5517"
 
 ``` r
 arms_ratios_equal1 <- arms_ratios %>%
-  filter(Ratio == 1)
-nrow(arms_ratios_equal1)
+  filter(Ratio == 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+print(paste("the number of genes with a polyA/riboD ratio equal to 1 is ", nrow(arms_ratios_equal1)))
 ```
 
-    [1] 669
+    [1] "the number of genes with a polyA/riboD ratio equal to 1 is  669"
+
+``` r
+arms_ratios_zero <- arms_ratios %>%
+  filter(Ratio == 0)
+print(paste("the number of genes with a polyA/riboD ratio equal to 0 is ", nrow(arms_ratios_zero)))
+```
+
+    [1] "the number of genes with a polyA/riboD ratio equal to 0 is  4074"
+
+``` r
+# zero: for example, ENSG00000065371.17 shows ratio = 0 and has median polyA = 0 and median riboD = 0.01435529
+
+arms_ratios_inf <- arms_ratios %>%
+  filter(Ratio == Inf)
+print(paste("the number of genes with a polyA/riboD ratio equal to infinity is ", nrow(arms_ratios_inf)))
+```
+
+    [1] "the number of genes with a polyA/riboD ratio equal to infinity is  2101"
+
+``` r
+# Inf: for example, ENSG00000006059.3 shows Inf and has median polyA = 0.1763228 and median riboD = 0
+
+arms_ratios_NaN <- arms_ratios %>%
+  filter(Ratio == "NaN")
+print(paste("the number of genes with a polyA/riboD ratio of NaN is ", nrow(arms_ratios_NaN)))
+```
+
+    [1] "the number of genes with a polyA/riboD ratio of NaN is  25606"
+
+``` r
+# NaN: for example, ENSG00000006059.3 shows NaN and has median polyA = 0 and median riboD = 0
+
+print(paste("all of these genes summed equals ",
+  nrow(arms_ratios_great1)+nrow(arms_ratios_less1)+nrow(arms_ratios_equal1)+nrow(arms_ratios_zero)+nrow(arms_ratios_inf)+nrow(arms_ratios_NaN)))
+```
+
+    [1] "all of these genes summed equals  60498"
 
 ``` r
 # WT
@@ -1846,7 +1845,7 @@ sessioninfo::session_info()
      collate  en_US.UTF-8
      ctype    en_US.UTF-8
      tz       America/Los_Angeles
-     date     2026-10-27
+     date     2026-11-13
      pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
      quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
 
