@@ -338,16 +338,20 @@ Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
   
   geom_vline(xintercept = SS_most_average_gene_hugo$SS_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 1) +
   
-  geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.4, hjust = 0.3, color = "#0072B2", size = 6) +
+#  geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.4, hjust = 0.3, color = "#0072B2", size = 6) +
   
   geom_vline(xintercept = SS_HIST1H1B$SS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 1) +
   
-  geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -5, hjust = 0.2, color = "#E69F00", size = 6) +
+#  geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -5, hjust = 0.2, color = "#E69F00", size = 6) +
+  geom_text(data = tibble(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 6) +
+  
+  geom_text(data = tibble(x = 1.15, y = 3000, label = SS_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 6) +
   
   coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
   scale_y_continuous(
     labels = label_comma(scale = 1e-3, suffix = "k")
     ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
   labs(
     x = "Median Expression Ratio",
     y = "Number of Unique Genes"
@@ -439,6 +443,7 @@ Fig1G_SS <- ggplot(combined_medians_hugo_res, aes(x = polyA_medians, y = riboD_m
     xlab(bquote(PolyA~Median~log[2](TPM+1))) +
     ylab(bquote(RiboD~Median~log[2](TPM+1))) +
     theme_minimal(base_size = 14) +
+    scale_x_continuous(breaks = c(0, 5, 10, 15)) +
     plot_theme()
 Fig1G_SS
 ```
