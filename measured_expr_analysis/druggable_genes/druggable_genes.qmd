@@ -1,0 +1,499 @@
+---
+title: "druggable_genes"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    toc: true
+    df-print: kable
+editor: visual
+---
+
+## Fig 1H
+
+Median expression of Treehouse Druggable Genes.
+
+```{r load library}
+library(tidyverse)
+library(patchwork)
+library(cowplot)
+```
+
+```{r load in files}
+# sample ID files
+# polyA
+SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv", show_col_types = FALSE)
+aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv", show_col_types = FALSE)
+WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv", show_col_types = FALSE)
+NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv", show_col_types = FALSE)
+ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv", show_col_types = FALSE)
+AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv", show_col_types = FALSE)
+
+# riboD
+SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv", show_col_types = FALSE)
+aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv", show_col_types = FALSE)
+WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv", show_col_types = FALSE)
+NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv", show_col_types = FALSE)
+ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv", show_col_types = FALSE)
+AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv", show_col_types = FALSE)
+
+# log2(TPM+1) expression files
+SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+
+SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+
+aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+
+aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+
+WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+
+NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+
+ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+
+AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv", show_col_types = FALSE) %>%
+  rename(EnsGeneID = Gene)
+
+
+# to convert EnsemblIDs to HugoIDs
+gene_names <- read.table("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt",
+header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# treehouse druggable gene list
+drug_genes <- read_tsv("../../input_data/treehouseDruggableGenes_2019-06-12.txt", show_col_types = FALSE) %>%
+  select(gene)
+```
+
+```{r drug_gene_names}
+# getting the EnsemblIDs for the Treehouse druggable gene list
+drug_gene_names <- drug_genes %>%
+  rename(HugoID = gene) %>%
+  left_join(gene_names, by = "HugoID")
+```
+
+Function for filtering for druggable genes
+
+```{r druggable genes function}
+filter_druggable <- function(df, drug_gene_names) {
+  df %>% filter(EnsGeneID %in% drug_gene_names$EnsGeneID)
+    # left_join(drug_gene_names, by = "EnsGeneID") %>%
+    # relocate(HugoID)
+}
+```
+
+```{r filtering_druggable}
+# filtering for TH druggable genes
+aRMS_polyA_drug <- filter_druggable(aRMS_polyA_log2tpm1, drug_gene_names)
+aRMS_riboD_drug <- filter_druggable(aRMS_riboD_log2tpm1, drug_gene_names)
+
+SS_polyA_drug <- filter_druggable(SS_polyA_log2tpm1, drug_gene_names)
+SS_riboD_drug <- filter_druggable(SS_riboD_log2tpm1, drug_gene_names)
+
+WT_polyA_drug <- filter_druggable(WT_polyA_log2tpm1, drug_gene_names)
+WT_riboD_drug <- filter_druggable(WT_riboD_log2tpm1, drug_gene_names)
+
+NB_polyA_drug <- filter_druggable(NB_polyA_log2tpm1, drug_gene_names)
+NB_riboD_drug <- filter_druggable(NB_riboD_log2tpm1, drug_gene_names)
+
+ALL_polyA_drug <- filter_druggable(ALL_polyA_log2tpm1, drug_gene_names)
+ALL_riboD_drug <- filter_druggable(ALL_riboD_log2tpm1, drug_gene_names)
+
+AML_polyA_drug <- filter_druggable(AML_polyA_log2tpm1, drug_gene_names)
+AML_riboD_drug <- filter_druggable(AML_riboD_log2tpm1, drug_gene_names)
+```
+
+Function for calculating median expression across samples
+
+```{r function for median expression}
+compute_gene_medians_polyA <- function(polyA_df, disease_name, Compendia ) {
+  polyA_medians <- polyA_df %>%
+    rowwise() %>%
+    mutate(Expression = median(c_across(-EnsGeneID), na.rm = TRUE)) %>%
+    ungroup() %>%
+    select(EnsGeneID, Expression) %>%
+    left_join(drug_gene_names, by = "EnsGeneID") %>%
+    relocate(HugoID)
+}
+
+compute_gene_medians_riboD <- function(riboD_df, disease_name, Compendia) {
+   riboD_medians <- riboD_df %>%
+    rowwise() %>%
+    mutate(Expression = median(c_across(-EnsGeneID), na.rm = TRUE)) %>%
+    ungroup() %>%
+    select(EnsGeneID, Expression) %>%
+    left_join(drug_gene_names, by = "EnsGeneID") %>%
+    relocate(HugoID)     
+}
+```
+
+```{r median expression of druggable genes per disease}
+# calculating median expression of druggable genes per disease
+aRMS_polyA_drug_medians <- compute_gene_medians_polyA(aRMS_polyA_drug) %>%
+  mutate(Disease = "aRMS", Compendia = "PolyA", name = "polyA_medians")
+
+aRMS_riboD_drug_medians <- compute_gene_medians_riboD(aRMS_riboD_drug) %>%
+  mutate(Disease = "aRMS", Compendia = "RiboD", name = "riboD_medians")
+
+SS_polyA_drug_medians <- compute_gene_medians_polyA(SS_polyA_drug) %>%
+  mutate(Disease = "SS", Compendia = "PolyA", name = "polyA_medians") 
+
+SS_riboD_drug_medians <- compute_gene_medians_riboD(SS_riboD_drug) %>%
+  mutate(Disease = "SS", Compendia = "RiboD", name = "riboD_medians") 
+
+WT_polyA_drug_medians <- compute_gene_medians_polyA(WT_polyA_drug) %>%
+  mutate(Disease = "WT", Compendia = "PolyA", name = "polyA_medians") 
+
+WT_riboD_drug_medians <- compute_gene_medians_riboD(WT_riboD_drug) %>%
+  mutate(Disease = "WT", Compendia = "RiboD", name = "riboD_medians")
+
+NB_polyA_drug_medians <- compute_gene_medians_polyA(NB_polyA_drug) %>%
+  mutate(Disease = "NB", Compendia = "PolyA", name = "polyA_medians") 
+
+NB_riboD_drug_medians <- compute_gene_medians_riboD(NB_riboD_drug) %>%
+  mutate(Disease = "NB", Compendia = "RiboD", name = "riboD_medians") 
+
+ALL_polyA_drug_medians <- compute_gene_medians_polyA(ALL_polyA_drug) %>%
+  mutate(Disease = "ALL", Compendia = "PolyA", name = "polyA_medians") 
+
+ALL_riboD_drug_medians <- compute_gene_medians_riboD(ALL_riboD_drug) %>%
+  mutate(Disease = "ALL", Compendia = "RiboD", name = "riboD_medians") 
+
+AML_polyA_drug_medians <- compute_gene_medians_polyA(AML_polyA_drug) %>%
+  mutate(Disease = "AML", Compendia = "PolyA", name = "polyA_medians") 
+
+AML_riboD_drug_medians <- compute_gene_medians_riboD(AML_riboD_drug) %>%
+  mutate(Disease = "AML", Compendia = "RiboD", name = "riboD_medians") 
+```
+
+```{r combined_drug_medians}
+combined_drug_medians <- bind_rows(
+  aRMS_polyA_drug_medians,
+  aRMS_riboD_drug_medians,
+  SS_polyA_drug_medians,
+  SS_riboD_drug_medians,
+  NB_polyA_drug_medians,
+  NB_riboD_drug_medians,
+  WT_polyA_drug_medians,
+  WT_riboD_drug_medians,
+  ALL_polyA_drug_medians,
+  ALL_riboD_drug_medians,
+  AML_polyA_drug_medians,
+  AML_riboD_drug_medians
+)
+#write_tsv(combined_drug_medians, "../../output_data/druggable_genes/combined_drug_medians.tsv.gz")
+```
+
+```{r Additional_file_2}
+Additional_File_2 <- combined_drug_medians %>%
+  pivot_wider(names_from = Disease, values_from = Expression) %>%
+  arrange(EnsGeneID)
+#write_tsv(Additional_File_2, "../../output_data/Additional_File_2.tsv")
+```
+
+```{r define color palette}
+# Define consistent color-blind–safe palette
+scale_color_compendia <- function() {
+  scale_color_manual(values = c(
+    "RiboD" = "#E69F00",  # yellow
+    "PolyA" = "#0072B2"   # blue
+  ))
+}
+```
+
+```{r Fig1H_SS}
+# Loop through diseases and generate plots
+Fig1H_SS_ensembl <- map(unique(combined_drug_medians$Disease), function(d) {
+
+ df <- combined_drug_medians %>% 
+  filter(Disease == d)
+
+# order ensemblIDs by median expression
+df <- combined_drug_medians %>% 
+  filter(Disease == d) %>%
+  mutate(EnsGeneID = factor(EnsGeneID, levels = df %>% 
+                         group_by(EnsGeneID) %>% 
+                         summarize(median_expr = median(Expression), .groups = "drop") %>% 
+                         arrange(median_expr) %>% 
+                         pull(EnsGeneID)))
+
+  ggplot(df, aes(x = EnsGeneID, y = Expression, color = Compendia)) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
+    # 1. vertical lines for each gene 
+    geom_vline(aes(xintercept = as.numeric(EnsGeneID)), color = "grey85", linewidth = 0.3) + 
+    # 2. points that stay centered on those lines 
+    geom_point(size = 1.4, alpha = 0.75) +
+    scale_x_discrete(expand = expansion(mult = c(0.01, 0.01))) +
+    scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
+    scale_color_compendia() +
+    labs(
+      title = paste(d),
+      x = "Treehouse Druggable Genes",
+      # y = "Expression log2(TPM+1)",
+      color = "Library Prep"
+    ) +
+    ylab(bquote(Median~log[2](TPM+1))) +
+    theme(
+      # axis.text.x = element_blank(),
+      # axis.title.x = element_blank(), 
+      # axis.ticks.x = element_blank(),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8),
+      panel.grid.major.x = element_blank(),
+      axis.text.y = element_text(angle = 0, hjust = 1, size = 12),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+      legend.position = "bottom"
+    )
+})
+
+# Assign names for easy access
+names(Fig1H_SS_ensembl) <- unique(combined_drug_medians$Disease)
+
+# View plots
+Fig1H_SS_ensembl$SS
+```
+
+```{r Fig1H_ENS.png}
+ggsave("../../Figures/Fig1H_SS_ensembl.png", Fig1H_SS_ensembl$SS, width = 11)
+# ggsave("../../Figures/Fig1H.tif", Fig1H_SS$SS, width = 11)
+```
+
+Fig S7
+
+```{r Fig1H_ensembl}
+# Loop through diseases and generate plots
+Fig1H_ensembl <- map(unique(combined_drug_medians$Disease), function(d) {
+
+ df <- combined_drug_medians %>%
+  filter(Disease == d)
+
+df <- combined_drug_medians %>%
+  filter(Disease == d) %>%
+  mutate(EnsGeneID = factor(EnsGeneID, levels = df %>%
+                         group_by(EnsGeneID) %>%
+                         summarize(median_expr = median(Expression), .groups = "drop") %>%
+                         arrange(median_expr) %>%
+                         pull(EnsGeneID)))
+
+  ggplot(df, aes(x = EnsGeneID, y = Expression, color = Compendia)) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
+    # 1. vertical lines for each gene
+    geom_vline(aes(xintercept = as.numeric(EnsGeneID)), color = "grey85", linewidth = 0.3) +
+    # 2. points that stay centered on those lines
+    geom_point(size = 3, alpha = 0.75) +
+    scale_x_discrete(expand = expansion(mult = c(0.01, 0.01))) +
+    scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
+    scale_color_compendia() +
+    labs(
+      title = paste(d),
+      x = NULL,
+      # y = "Expression log2(TPM+1)",
+      color = "Library Prep"
+    ) +
+    ylab(bquote(Median~log[2](TPM+1))) +
+    theme(
+      # axis.text.x = element_blank(),
+      # axis.title.x = element_blank(),
+      # axis.ticks.x = element_blank(),
+      panel.grid.major.x = element_blank(),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 20),
+      axis.text.y = element_text(angle = 0, hjust = 1, size = 28),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 30, face = "bold"),
+      axis.title.x = element_text(angle = 0, hjust = 1, size = 30),
+      strip.text = element_blank(),
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 32),
+      legend.position = "bottom",
+      legend.text = element_text(face = "bold", size = 26),
+      legend.title = element_text(face = "bold", size = 26)
+    )
+})
+
+# Assign names for easy access
+names(Fig1H_ensembl) <- unique(combined_drug_medians$Disease)
+
+# View plots
+Fig1H_ensembl
+```
+
+```{r FigS7_ensembl}
+FigS7_ensembl <- wrap_plots(Fig1H_ensembl, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 5, r = 5)
+    )
+
+FigS7_ensembl
+```
+
+```{r ggsave FigS7_ensembl}
+# ggsave("../../Figures/FigS7_ensembl.png", FigS7_ensembl, width = 30, height = 40, dpi = 300)
+# ggsave("../../Figures/FigS7_ensembl.png.tif", FigS7_ensembl.png, width = 36, height = 36, dpi = 300, scale = 0.75)
+```
+
+```{r Fig1H_SS_hugo}
+# labeling x-axis based on hugoID
+# Loop through diseases and generate plots
+Fig1H_SS_hugo <- map(unique(combined_drug_medians$Disease), function(d) {
+
+ df <- combined_drug_medians %>% 
+  filter(Disease == d)
+
+# order ensemblIDs by median expression
+  gene_order <- df %>% 
+    group_by(EnsGeneID) %>%
+    summarize(median_expr = median(Expression), .groups = "drop") %>%
+    arrange(median_expr) %>%
+    pull(EnsGeneID)
+
+  df <- df %>% mutate(EnsGeneID = factor(EnsGeneID, levels = gene_order))
+  
+  # named lookup: names = EnsGeneID, values = HugoID
+  label_lookup <- df %>%
+    distinct(EnsGeneID, HugoID) %>%
+    { setNames(.$HugoID, as.character(.$EnsGeneID)) }
+
+  ggplot(df, aes(x = EnsGeneID, y = Expression, color = Compendia)) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
+    # 1. vertical lines for each gene 
+    geom_vline(aes(xintercept = as.numeric(EnsGeneID)), color = "grey85", linewidth = 0.3) + 
+    # 2. points that stay centered on those lines 
+    geom_point(size = 1.4, alpha = 0.75) +
+    scale_x_discrete(
+      labels = label_lookup,
+      expand = expansion(mult = c(0.01, 0.01))
+      ) +
+    scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
+    scale_color_compendia() +
+    labs(
+      title = paste(d),
+      x = "Treehouse Druggable Genes",
+      # y = "Expression log2(TPM+1)",
+      color = "Library Prep"
+    ) +
+    ylab(bquote(Median~log[2](TPM+1))) +
+    theme(
+      # axis.text.x = element_blank(),
+      # axis.title.x = element_blank(), 
+      # axis.ticks.x = element_blank(),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8),
+      panel.grid.major.x = element_blank(),
+      axis.text.y = element_text(angle = 0, hjust = 1, size = 12),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+      legend.position = "bottom"
+    )
+})
+
+# Assign names for easy access
+names(Fig1H_SS_hugo) <- unique(combined_drug_medians$Disease)
+
+# View plots
+Fig1H_SS_hugo$SS
+```
+
+```{r ggsave Fig1H_SS_hugo}
+# ggsave("../../Figures/Fig1H_SS_hugo.png", Fig1H_SS_hugo$SS, width = 11)
+```
+
+```{r Fig1H_hugo}
+# labeling x-axis based on hugoID
+# Loop through diseases and generate plots
+Fig1H_hugo <- map(unique(combined_drug_medians$Disease), function(d) {
+
+ df <- combined_drug_medians %>% 
+  filter(Disease == d)
+
+# order ensemblIDs by median expression
+  gene_order <- df %>% 
+    group_by(EnsGeneID) %>%
+    summarize(median_expr = median(Expression), .groups = "drop") %>%
+    arrange(median_expr) %>%
+    pull(EnsGeneID)
+
+  df <- df %>% mutate(EnsGeneID = factor(EnsGeneID, levels = gene_order))
+  
+  # named lookup: names = EnsGeneID, values = HugoID
+  label_lookup <- df %>%
+    distinct(EnsGeneID, HugoID) %>%
+    { setNames(.$HugoID, as.character(.$EnsGeneID)) }
+
+  ggplot(df, aes(x = EnsGeneID, y = Expression, color = Compendia)) +
+    geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.4) +
+    # 1. vertical lines for each gene 
+    geom_vline(aes(xintercept = as.numeric(EnsGeneID)), color = "grey85", linewidth = 0.3) + 
+    # 2. points that stay centered on those lines 
+    geom_point(size = 3, alpha = 0.75) +
+    scale_x_discrete(
+      labels = label_lookup,
+      expand = expansion(mult = c(0.01, 0.01))
+      ) +
+    scale_y_continuous(limits = c(0, 11), expand = expansion(mult = c(0, 0.05))) +
+    scale_color_compendia() +
+    labs(
+      title = paste(d),
+      x = NULL,
+      # y = "Expression log2(TPM+1)",
+      color = "Library Prep"
+    ) +
+    ylab(bquote(Median~log[2](TPM+1))) +
+    theme(
+      # axis.text.x = element_blank(),
+      # axis.title.x = element_blank(), 
+      # axis.ticks.x = element_blank(),
+      panel.grid.major.x = element_blank(),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 28),
+      axis.text.y = element_text(angle = 0, hjust = 1, size = 28),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 30, face = "bold"),
+      axis.title.x = element_text(angle = 0, hjust = 1, size = 30),
+      strip.text = element_blank(),
+      plot.title = element_text(hjust = 0.5, face = "bold", size = 32),
+      legend.position = "bottom",
+      legend.text = element_text(face = "bold", size = 26),
+      legend.title = element_text(face = "bold", size = 26)
+    )
+})
+
+# Assign names for easy access
+names(Fig1H_hugo) <- unique(combined_drug_medians$Disease)
+
+# View plots
+Fig1H_hugo
+```
+
+```{r FigS7_hugo}
+FigS7_hugo <- wrap_plots(Fig1H_hugo, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 5, r = 5)
+    )
+
+FigS7_hugo
+```
+
+```{r ggsave FigS7_hugo}
+# ggsave("../../Figures/FigS7_hugo.png", FigS7_hugo, width = 30, height = 40, dpi = 300)
+```
+
+```{r session info}
+sessioninfo::session_info()
+```

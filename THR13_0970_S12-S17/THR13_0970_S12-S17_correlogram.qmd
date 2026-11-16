@@ -1,0 +1,356 @@
+---
+title: "THR13_0970_S12-S17_correlogram"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    toc: true
+    df-print: kable
+editor: visual
+---
+
+## THR13_0970 matched PolyA / RiboD
+
+Correlogram showing similarity between datasets
+
+```{r load library}
+library(tidyverse)
+library(corrr)
+library(GGally)
+library(corrplot)
+```
+
+```{r load in expr file}
+DIPGIV_log2TPM1 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
+```
+
+```{r wide}
+DIPGIV_log2TPM1_prepname <- DIPGIV_log2TPM1 %>%
+  mutate(
+    prepname = case_when(
+    full_sample == "THR13_0970_S12" ~ "PolyA_1",
+    full_sample == "THR13_0970_S13" ~ "PolyA_2",
+    full_sample == "THR13_0970_S14" ~ "PolyA_3",
+    full_sample == "THR13_0970_S15" ~ "RiboD_1",
+    full_sample == "THR13_0970_S16" ~ "RiboD_2",
+    full_sample == "THR13_0970_S17" ~ "RiboD_3"
+  ))
+
+# pivot to wide format
+DIPGIV_log2TPM1_wide <- DIPGIV_log2TPM1_prepname %>%
+  select(prepname, ensembl_gene_ID, log2TPM1) %>%
+  pivot_wider(names_from = prepname, values_from = log2TPM1)
+```
+
+```{r corrr}
+# convert to matrix
+DIPGIV_log2TPM1_matrix <- DIPGIV_log2TPM1_wide %>%
+  column_to_rownames("ensembl_gene_ID") %>%
+  as.matrix()
+# write_tsv(DIPGIV_log2TPM1_matrix, "../output_data/THR13_0970_S12-S17/THR13_log2TPM1_matrix.tsv")
+write.table(DIPGIV_log2TPM1_matrix, file = "../output_data/THR13_0970_S12-S17/THR13_log2TPM1_matrix.tsv", sep = "\t", row.names = TRUE, col.names = TRUE)
+
+
+set.seed(123) # for reproducibility
+# Compute Spearman correlation 
+DIPGIV_log2TPM1_correlation <- cor(DIPGIV_log2TPM1_matrix, method = "spearman", use = "pairwise.complete.obs") #pairwise.complete.obs = the correlation between each pair of variables is computed using all complete pairs of those particular variables
+# ^ this means NAs will not be counted in calculation
+```
+
+```{r cor_color_fn}
+# integrate density plot with coefficient value and color by coefficient value
+
+cor_color_fn <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+  
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.8,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+```
+
+I want the diagonal density plot to only visualize genes that are expressed in that sample.
+
+```{r diag_filtered_density}
+# function for diagonal density
+diag_filtered_density <- function(data, mapping, ...) {
+  # Pull out just the column being plotted on this diagonal panel
+  x <- eval_data_col(data, mapping$x)
+  
+  # Keep only expressed genes (log2TPM > 0)
+  x_filtered <- x[x > 0]
+  
+  ggplot(data.frame(x = x_filtered), aes(x = x)) +
+    geom_density(fill = "grey70", color = "black") +
+    theme_bw() +
+    theme(panel.grid = element_blank())
+}
+```
+
+Making all scatterplot axes the same
+
+```{r scatter_fixed_axes}
+# calculating the max and min expression values
+global_min <- min(DIPGIV_log2TPM1_matrix, na.rm = TRUE)
+global_max <- max(DIPGIV_log2TPM1_matrix, na.rm = TRUE)
+
+# function for scatterplot with fixed axes
+scatter_fixed_axes <- function(data, mapping, ...) {
+  ggplot(data, mapping) +
+    geom_point(alpha = 0.3, size = 0.5) +
+    xlim(global_min, global_max) +
+    ylim(global_min, global_max) +
+    geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", color = "green4") # with y=x slope intercept line
+}
+```
+
+```{r rsem_ggpairs_plot_fixedaxes}
+# with scatterplot
+DIPGIV_log2TPM1_correlogram_fixedaxes <- ggpairs(
+  DIPGIV_log2TPM1_matrix,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
+  diag = list(continuous = wrap(diag_filtered_density))
+  # diag = list(continuous = "blank")
+) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9)
+  ) +
+  theme(panel.grid = element_blank())
+DIPGIV_log2TPM1_correlogram_fixedaxes
+```
+
+#### Applying a variance filter to correlogram
+
+First, remove all genes where, for that gene, more than 80% of samples have an expression of 0 (in this case, remove genes where 5 out of 6 datasets have expression of 0).
+
+From the remaining genes, sort them by variance (or standard deviation, either way) of expression within the matrix -- then remove the 20% of genes that are the least variant. (So if we had 30,000 genes after removing those that failed the expression filter, we would remove the bottom 6,000.)
+
+```{r DIPGIV_expr_filter_zero_variance}
+DIPGIV_expr_filter_zero <- DIPGIV_log2TPM1_wide %>%
+  filter(rowSums(across(c(everything())) == 0) < 5)
+
+nrow(DIPGIV_log2TPM1_wide)
+nrow(DIPGIV_expr_filter_zero)
+
+DIPGIV_expr_filter_zero_variance <- DIPGIV_expr_filter_zero %>%
+  rowwise() %>%
+  mutate(row_sd = sd(c_across(-ensembl_gene_ID), na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(row_sd) %>%
+  slice_tail(prop = 0.8)
+
+nrow(DIPGIV_expr_filter_zero_variance)
+
+write_tsv(DIPGIV_expr_filter_zero_variance, "../output_data/THR13_0970_S12-S17/THR13_expr_filter_zero_variance.tsv.gz")
+```
+
+```{r DIPGIV_expr_filter_zero_variance_plot}
+
+# integrate density plot with coefficient value and color by coefficient value
+
+cor_color_fn2 <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+  
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.9,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+
+# with scatterplot
+DIPGIV_expr_filter_zero_variance_plot <- DIPGIV_expr_filter_zero_variance %>%
+  column_to_rownames("ensembl_gene_ID") %>%
+  select(-row_sd) %>%
+  ggpairs(
+  DIPGIV_expr_filter_zero_variance,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn2, method = "spearman")),
+  diag = list(continuous = wrap(diag_filtered_density))
+  # diag = list(continuous = "blank")
+) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9)
+  ) +
+  theme(panel.grid = element_blank())
+DIPGIV_expr_filter_zero_variance_plot
+```
+
+```{r}
+# ggsave(
+#   "DIPGIV_expr_filter_zero_variance_plot.png",
+#   DIPGIV_expr_filter_zero_variance_plot,
+#   width = 10, height = 10, units = "in", dpi = 300
+# )
+```
+
+Some genes have very low but not quite zero expression (i.e. ENSG00000000005.5 has values of 0.02856915, 0.01435529, 0.05658353, 0.16349873, 0.04264434, and 0.16349873). 
+
+Going to remove genes where 5 or more out of 6 samples have expression \< 1
+
+```{r DIPGIV_expr_filter_one_variance}
+DIPGIV_expr_filter_one <- DIPGIV_log2TPM1_wide %>%
+  filter(rowSums(across(c(everything())) < 1) < 5)
+
+nrow(DIPGIV_log2TPM1_wide)
+nrow(DIPGIV_expr_filter_one)
+
+DIPGIV_expr_filter_one_variance <- DIPGIV_expr_filter_one %>%
+  rowwise() %>%
+  mutate(row_sd = sd(c_across(-ensembl_gene_ID), na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(row_sd) %>%
+  slice_tail(prop = 0.8)
+
+nrow(DIPGIV_expr_filter_one_variance)
+```
+
+```{r DIPGIV_expr_filter_one_variance_plot}
+# integrate density plot with coefficient value and color by coefficient value
+
+cor_color_fn3 <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.88,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+
+# with scatterplot
+DIPGIV_expr_filter_one_variance_plot <- DIPGIV_expr_filter_one_variance %>%
+  column_to_rownames("ensembl_gene_ID") %>%
+  select(-row_sd) %>%
+  ggpairs(
+  DIPGIV_expr_filter_one_variance,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn3, method = "spearman")),
+  diag = list(continuous = wrap(diag_filtered_density))
+  # diag = list(continuous = "blank")
+) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9)
+  ) +
+  theme(panel.grid = element_blank())
+DIPGIV_expr_filter_one_variance_plot
+```
+
+```{r}
+# ggsave(
+#   "DIPGIV_expr_filter_one_variance_plot.png",
+#   DIPGIV_expr_filter_one_variance_plot,
+#   width = 10, height = 10, units = "in", dpi = 300
+# )
+```
+
+Removing genes where 5 or more out of 6 samples have expression \< 1
+
+```{r DIPGIV_expr_filter_3_variance}
+DIPGIV_expr_filter_3 <- DIPGIV_log2TPM1_wide %>%
+  filter(rowSums(across(c(everything())) < 3) < 5)
+
+nrow(DIPGIV_log2TPM1_wide)
+nrow(DIPGIV_expr_filter_3)
+
+DIPGIV_expr_filter_3_variance <- DIPGIV_expr_filter_3 %>%
+  rowwise() %>%
+  mutate(row_sd = sd(c_across(-ensembl_gene_ID), na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(row_sd) %>%
+  slice_tail(prop = 0.8)
+
+nrow(DIPGIV_expr_filter_3_variance)
+```
+
+```{r DIPGIV_expr_filter_3_variance_plot}
+# integrate density plot with coefficient value and color by coefficient value
+cor_color_fn3 <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.8,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+
+# with scatterplot
+DIPGIV_expr_filter_3_variance_plot <- DIPGIV_expr_filter_3_variance %>%
+  column_to_rownames("ensembl_gene_ID") %>%
+  select(-row_sd) %>%
+  ggpairs(
+  DIPGIV_expr_filter_3_variance,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn3, method = "spearman")),
+  diag = list(continuous = wrap(diag_filtered_density))
+  # diag = list(continuous = "blank")
+) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9)
+  ) +
+  theme(panel.grid = element_blank())
+DIPGIV_expr_filter_3_variance_plot
+```
+
+```{r hex_fixed_axes}
+plot_df <- DIPGIV_expr_filter_zero_variance %>%
+  as.data.frame() %>%
+  select(PolyA_1, PolyA_2, PolyA_3, RiboD_1, RiboD_2, RiboD_3)
+
+global_min <- min(plot_df, na.rm = TRUE)
+global_max <- max(plot_df, na.rm = TRUE)
+
+# function for hex plot with fixed axes
+hex_fixed_axes <- function(data, mapping, ...) {
+  ggplot(data, mapping) +
+    geom_hex(bins = 30) +
+    scale_fill_gradient(low = "darkgrey", high = "black") +
+    xlim(global_min, global_max) +
+    ylim(global_min, global_max) +
+    geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", color = "green4") # with y=x slope intercept line
+}
+```
+
+```{r DIPGIV_expr_filter_zero_variance_hexplot}
+DIPGIV_expr_filter_zero_variance_hexplot <- ggpairs(
+  plot_df,
+  columns = 1:6,
+  lower = list(continuous = wrap(hex_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn2, method = "spearman")),
+  diag  = list(continuous = wrap(diag_filtered_density))
+) +
+  theme(
+    axis.text.x  = element_text(angle = 45, hjust = 1),
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9),
+    panel.grid   = element_blank()
+  )
+DIPGIV_expr_filter_zero_variance_hexplot
+```
+
+Session Info
+
+```{r sessioninfo}
+sessioninfo::session_info()
+```

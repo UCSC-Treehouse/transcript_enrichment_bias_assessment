@@ -13,18 +13,20 @@ Our study indicates that samples prepared with different transcript enrichment m
 ```
 transcript_enrichment_bias_assessment/
 ├── .gitignore
-├── Fig_1/                  # contains scripts used for analysis in Fig1
-├── Fig_2/                  # contains scripts used for DESeq2 analysis in Fig2
+├── measured_expr_analysis/         # contains scripts used for tumor compendia analysis in Fig1
+├── differential_expr_analysis/     # contains scripts used for DESeq2 analysis in Fig3
+├── THR13_0970_S12-S17/             # contains scripts used for SU-DIPG-IV analysis analysis in Fig2
 ├── LICENSE
 ├── README.md
-├── correlation_analysis/   # contains initial correlation analysis script for sample selection
+├── correlation_analysis/           # contains initial correlation analysis script for sample selection
 └── output_data/
-    ├── ALL_AML/            # contains DESeq2 output data for ALL vs AML
-    ├── Fig1C/
-    ├── Fig1D/
-    ├── Fig1E_F/
-    ├── Fig1G/
-    ├── Fig1H/
+    ├── THR13_0970_S12-S17/
+    ├── ALL_AML/                     # contains DESeq2 output data for ALL vs AML
+    ├── measured_proportion/
+    ├── unique_genes/
+    ├── rep_genes_median_ratio/
+    ├── median_scatter/
+    ├── druggable_genes/
     ├── NB_WT/              # contains DESeq2 output data for NB vs WT
     ├── aRMS_SS/            # contains DESeq2 output data for aRMS vs SS
     └── all_disease_comparisons/  # contains uniquely up/downregulated gene lists from DESeq2 analysis across disease comparisons

@@ -1,0 +1,1537 @@
+---
+title: "Fig1E_F"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## Fig 1E
+
+Boxplot showing expression level of HIST1H1B, a nonpolyadenylated histone subunit gene.
+
+Boxplot showing expression of average median ratio gene, calculated as the median expression level in PolyA samples divided by the median expression level in RiboD samples
+
+```{r load libraries}
+library(tidyverse)
+library(patchwork)
+library(cowplot)
+library(scales)
+```
+
+```{r load in files}
+# expression files
+SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv", show_col_types = FALSE)
+SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv", show_col_types = FALSE)
+
+aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv", show_col_types = FALSE)
+aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv", show_col_types = FALSE)
+
+WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv", show_col_types = FALSE)
+WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv", show_col_types = FALSE)
+
+NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv", show_col_types = FALSE)
+NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv", show_col_types = FALSE)
+
+ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv", show_col_types = FALSE)
+ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv", show_col_types = FALSE)
+
+AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv", show_col_types = FALSE)
+AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv", show_col_types = FALSE)
+
+# sample ID files, from correlation_analysis
+SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv", show_col_types = FALSE)
+SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv", show_col_types = FALSE)
+
+aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv", show_col_types = FALSE)
+aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv", show_col_types = FALSE)
+
+WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv", show_col_types = FALSE)
+WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv", show_col_types = FALSE)
+
+NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv", show_col_types = FALSE)
+NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv", show_col_types = FALSE)
+
+ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv", show_col_types = FALSE)
+ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv", show_col_types = FALSE)
+
+AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv", show_col_types = FALSE)
+AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv", show_col_types = FALSE)
+
+# to convert EnsemblIDs to HugoIDs
+gene_names <- read.table("../../input_data/EnsGeneID_Hugo_Observed_Conversions.txt",
+header = TRUE, sep = "\t", stringsAsFactors = FALSE )
+```
+
+Convert EnsemblIDs to HugoIDs
+
+```{r convert to Hugo function}
+convert_to_hugo <- function(df) {
+  df %>%
+    left_join(gene_names, by = c("Gene" = "EnsGeneID")) %>%
+    mutate(Gene = ifelse(!is.na(HugoID), HugoID, Gene)) %>%
+    select(-HugoID)
+}
+```
+
+Finding median expression genes
+
+```{r median expression gene - SS}
+# Find gene medians in polyA SS
+SS_polyA_medians <- SS_polyA_log2tpm1 %>%
+  rowwise() %>%
+  mutate(SS_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, SS_polyA_median)
+
+# Find gene medians in riboD SS
+SS_riboD_medians <- SS_riboD_log2tpm1 %>%
+  rowwise() %>%
+  mutate(SS_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, SS_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+SS_gene_medians <- SS_polyA_medians %>%
+  inner_join(SS_riboD_medians, by = "Gene") %>%
+  mutate(SS_median_ratio = SS_polyA_median / SS_riboD_median)
+
+# Filter out genes with no expression
+SS_gene_medians_filtered <- SS_gene_medians %>%
+  filter(SS_polyA_median > 0 & SS_riboD_median > 0)
+
+# Recompute median ratio value
+SS_median_ratio_val <- median(SS_gene_medians_filtered$SS_median_ratio, na.rm = TRUE)
+SS_median_ratio_val
+# Find gene closest to that median ratio
+SS_most_average_gene <- SS_gene_medians_filtered %>%
+  mutate(dist = abs(SS_median_ratio - SS_median_ratio_val)) %>%
+  arrange(dist) %>%
+  slice(1)  
+
+SS_most_average_gene_hugo <- SS_most_average_gene %>%
+  convert_to_hugo()
+SS_most_average_gene_hugo
+# write_tsv(SS_most_average_gene_hugo, "../../output_data/rep_genes_median_ratio/SS_most_average_gene_hugo.tsv.gz")
+```
+
+```{r median expression gene - aRMS}
+# Find gene medians in polyA aRMS
+aRMS_polyA_medians <- aRMS_polyA_log2tpm1 %>%
+  rowwise() %>%
+  mutate(aRMS_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, aRMS_polyA_median)
+
+# Find gene medians in riboD aRMS
+aRMS_riboD_medians <- aRMS_riboD_log2tpm1 %>%
+  rowwise() %>%
+  mutate(aRMS_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, aRMS_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+aRMS_gene_medians <- aRMS_polyA_medians %>%
+  inner_join(aRMS_riboD_medians, by = "Gene") %>%
+  mutate(aRMS_median_ratio = aRMS_polyA_median / aRMS_riboD_median)
+
+# Filter out genes with no or near-zero expression
+aRMS_gene_medians_filtered <- aRMS_gene_medians %>%
+  filter(aRMS_polyA_median > 0 & aRMS_riboD_median > 0)
+
+# Recompute median ratio value
+aRMS_median_ratio_val <- median(aRMS_gene_medians_filtered$aRMS_median_ratio, na.rm = TRUE)
+aRMS_median_ratio_val
+# Find gene closest to that median ratio
+aRMS_most_average_gene <- aRMS_gene_medians_filtered %>%
+  mutate(dist = abs(aRMS_median_ratio - aRMS_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
+  arrange(dist) %>%
+  slice(1)   # Isolates gene closest to ave median ration
+
+aRMS_most_average_gene_hugo <- aRMS_most_average_gene %>%
+  convert_to_hugo()
+aRMS_most_average_gene_hugo
+```
+
+```{r median expression gene - WT}
+# Find gene medians in polyA WT
+WT_polyA_medians <- WT_polyA_log2tpm1 %>%
+  rowwise() %>%
+  mutate(WT_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, WT_polyA_median)
+
+# Find gene medians in riboD WT
+WT_riboD_medians <- WT_riboD_log2tpm1 %>%
+  rowwise() %>%
+  mutate(WT_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, WT_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+WT_gene_medians <- WT_polyA_medians %>%
+  inner_join(WT_riboD_medians, by = "Gene") %>%
+  mutate(WT_median_ratio = WT_polyA_median / WT_riboD_median)
+
+# Filter out genes with no or near-zero expression
+WT_gene_medians_filtered <- WT_gene_medians %>%
+  filter(WT_polyA_median > 0 & WT_riboD_median > 0)
+
+# Recompute median ratio value
+WT_median_ratio_val <- median(WT_gene_medians_filtered$WT_median_ratio, na.rm = TRUE)
+WT_median_ratio_val
+# Find gene closest to that median ratio
+WT_most_average_gene <- WT_gene_medians_filtered %>%
+  mutate(dist = abs(WT_median_ratio - WT_median_ratio_val)) %>%
+  arrange(dist) %>%
+  slice(1)         # Isolates gene closest to ave median ration
+
+WT_most_average_gene_hugo <- WT_most_average_gene %>%
+  convert_to_hugo()
+WT_most_average_gene_hugo
+```
+
+```{r median expression gene - NB}
+# Find gene medians in polyA NB
+NB_polyA_medians <- NB_polyA_log2tpm1 %>%
+  rowwise() %>%
+  mutate(NB_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, NB_polyA_median)
+
+# Find gene medians in riboD NB
+NB_riboD_medians <- NB_riboD_log2tpm1 %>%
+  rowwise() %>%
+  mutate(NB_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, NB_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+NB_gene_medians <- NB_polyA_medians %>%
+  inner_join(NB_riboD_medians, by = "Gene") %>%
+  mutate(NB_median_ratio = NB_polyA_median / NB_riboD_median)
+
+# Filter out genes with no or near-zero expression
+NB_gene_medians_filtered <- NB_gene_medians %>%
+  filter(NB_polyA_median > 0 & NB_riboD_median > 0)
+
+# Recompute median ratio value
+NB_median_ratio_val <- median(NB_gene_medians_filtered$NB_median_ratio, na.rm = TRUE)
+NB_median_ratio_val
+# Find gene closest to that median ratio
+NB_most_average_gene <- NB_gene_medians_filtered %>%
+  mutate(dist = abs(NB_median_ratio - NB_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
+  arrange(dist) %>%
+  slice(1)         # Isolates gene closest to ave median ration
+
+NB_most_average_gene_hugo <- NB_most_average_gene %>%
+  convert_to_hugo()
+NB_most_average_gene_hugo
+```
+
+```{r median expression gene - ALL}
+# Find gene medians in polyA ALL
+ALL_polyA_medians <- ALL_polyA_log2tpm1 %>%
+  rowwise() %>%
+  mutate(ALL_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, ALL_polyA_median)
+
+# Find gene medians in riboD ALL
+ALL_riboD_medians <- ALL_riboD_log2tpm1 %>%
+  rowwise() %>%
+  mutate(ALL_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, ALL_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+ALL_gene_medians <- ALL_polyA_medians %>%
+  inner_join(ALL_riboD_medians, by = "Gene") %>%
+  mutate(ALL_median_ratio = ALL_polyA_median / ALL_riboD_median)
+
+# Filter out genes with no or near-zero expression
+ALL_gene_medians_filtered <- ALL_gene_medians %>%
+  filter(ALL_polyA_median > 0 & ALL_riboD_median > 0)
+
+# Recompute median ratio value
+ALL_median_ratio_val <- median(ALL_gene_medians_filtered$ALL_median_ratio, na.rm = TRUE)
+ALL_median_ratio_val
+# Find gene closest to that median ratio
+ALL_most_average_gene <- ALL_gene_medians_filtered %>%
+  mutate(dist = abs(ALL_median_ratio - ALL_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
+  arrange(dist) %>%
+  slice(1)         # Isolates gene closest to ave median ration
+
+ALL_most_average_gene_hugo <- ALL_most_average_gene %>%
+  convert_to_hugo()
+ALL_most_average_gene_hugo
+```
+
+```{r median expression gene - AML}
+# Find gene medians in polyA AML
+AML_polyA_medians <- AML_polyA_log2tpm1 %>%
+  rowwise() %>%
+  mutate(AML_polyA_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, AML_polyA_median)
+
+# Find gene medians in riboD AML
+AML_riboD_medians <- AML_riboD_log2tpm1 %>%
+  rowwise() %>%
+  mutate(AML_riboD_median = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(Gene, AML_riboD_median)
+
+# Join and compute ratio (polyA median/riboD median)
+AML_gene_medians <- AML_polyA_medians %>%
+  inner_join(AML_riboD_medians, by = "Gene") %>%
+  mutate(AML_median_ratio = AML_polyA_median / AML_riboD_median)
+
+# Filter out genes with no or near-zero expression
+AML_gene_medians_filtered <- AML_gene_medians %>%
+  filter(AML_polyA_median > 1 & AML_riboD_median > 0.9)
+
+# Recompute median ratio value
+AML_median_ratio_val <- median(AML_gene_medians_filtered$AML_median_ratio, na.rm = TRUE)
+AML_median_ratio_val
+# Find gene closest to that median ratio
+AML_most_average_gene <- AML_gene_medians_filtered %>%
+  mutate(dist = abs(AML_median_ratio - AML_median_ratio_val)) %>%  # computes how far each gene’s ratio is from overall median
+  arrange(dist) %>%
+  slice(1)         # Isolates gene closest to ave median ration
+
+AML_most_average_gene_hugo <- AML_most_average_gene %>%
+  convert_to_hugo()
+AML_most_average_gene_hugo
+```
+
+Converting expression to hugoIDs
+
+```{r convert to HugoIDs}
+# SS
+SS_polyA_expression_hugo <- SS_polyA_log2tpm1 %>%
+  convert_to_hugo()
+
+SS_riboD_expression_hugo <- SS_riboD_log2tpm1 %>%
+  convert_to_hugo()
+
+SS_gene_medians_hugo <- SS_gene_medians %>%
+  convert_to_hugo()
+
+# aRMS
+aRMS_polyA_expression_hugo <- aRMS_polyA_log2tpm1 %>%
+  convert_to_hugo() 
+
+aRMS_riboD_expression_hugo <- aRMS_riboD_log2tpm1 %>%
+  convert_to_hugo()
+
+aRMS_gene_median_hugo <- aRMS_gene_medians %>%
+  convert_to_hugo()
+
+# WT
+WT_polyA_expression_hugo <- WT_polyA_log2tpm1 %>%
+  convert_to_hugo()
+
+WT_riboD_expression_hugo <- WT_riboD_log2tpm1 %>%
+  convert_to_hugo()
+
+WT_gene_medians_hugo <- WT_gene_medians %>%
+  convert_to_hugo()
+
+# NB
+NB_polyA_expression_hugo <- NB_polyA_log2tpm1 %>%
+  convert_to_hugo()
+
+NB_riboD_expression_hugo <- NB_riboD_log2tpm1 %>%
+  convert_to_hugo()
+
+NB_gene_medians_hugo <- NB_gene_medians %>%
+  convert_to_hugo()
+
+# ALL
+ALL_polyA_expression_hugo <- ALL_polyA_log2tpm1 %>%
+  convert_to_hugo()
+
+ALL_riboD_expression_hugo <- ALL_riboD_log2tpm1 %>%
+  convert_to_hugo()
+
+ALL_gene_medians_hugo <- ALL_gene_medians %>%
+  convert_to_hugo()
+
+# AML
+AML_polyA_expression_hugo <- AML_polyA_log2tpm1 %>%
+  convert_to_hugo()
+
+AML_riboD_expression_hugo <- AML_riboD_log2tpm1 %>%
+  convert_to_hugo()
+
+AML_gene_medians_hugo <- AML_gene_medians %>%
+  convert_to_hugo()
+```
+
+Filtering for HIST1H1B, a non-polyadenylated gene
+
+```{r HIST1H1B filter}
+H1B_SS_polyA_expression <- SS_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_SS_riboD_expression <- SS_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_aRMS_polyA_expression <- aRMS_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B")
+
+H1B_aRMS_riboD_expression <- aRMS_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_WT_polyA_expression <- WT_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B")
+
+H1B_WT_riboD_expression <- WT_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_NB_polyA_expression <- NB_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B")
+
+H1B_NB_riboD_expression <- NB_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_ALL_polyA_expression <- ALL_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B")
+
+H1B_ALL_riboD_expression <- ALL_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+
+H1B_AML_polyA_expression <- AML_polyA_expression_hugo %>%
+   filter(Gene == "HIST1H1B")
+
+H1B_AML_riboD_expression <- AML_riboD_expression_hugo %>%
+   filter(Gene == "HIST1H1B") 
+```
+
+Filtering for most averagely expressed gene
+
+```{r avg expression gene filter}
+#SS Most Average Expressed gene
+avg_SS_polyA_expression <- SS_polyA_expression_hugo %>%
+   filter(Gene == SS_most_average_gene_hugo$Gene) 
+
+avg_SS_riboD_expression <- SS_riboD_expression_hugo %>%
+   filter(Gene == SS_most_average_gene_hugo$Gene)
+
+#aRMS Most Average Expressed gene
+avg_aRMS_riboD_expression <- aRMS_riboD_expression_hugo %>%
+   filter(Gene == aRMS_most_average_gene_hugo$Gene)
+
+avg_aRMS_polyA_expression <- aRMS_polyA_expression_hugo %>%
+   filter(Gene == aRMS_most_average_gene_hugo$Gene)
+
+#WT Most Average Expressed gene 
+avg_WT_riboD_expression <- WT_riboD_expression_hugo %>%
+   filter(Gene == WT_most_average_gene_hugo$Gene)
+
+avg_WT_polyA_expression <- WT_polyA_expression_hugo %>%
+   filter(Gene == WT_most_average_gene_hugo$Gene)
+
+#NB Most Average Expressed gene
+avg_NB_riboD_expression <- NB_riboD_expression_hugo %>%
+   filter(Gene == NB_most_average_gene_hugo$Gene)
+
+avg_NB_polyA_expression <- NB_polyA_expression_hugo %>%
+   filter(Gene == NB_most_average_gene_hugo$Gene)
+
+#ALL Most Average Expressed gene
+avg_ALL_riboD_expression <- ALL_riboD_expression_hugo %>%
+   filter(Gene == ALL_most_average_gene_hugo$Gene)
+
+avg_ALL_polyA_expression <- ALL_polyA_expression_hugo %>%
+   filter(Gene == ALL_most_average_gene_hugo$Gene)
+
+#AML Most Average Expressed gene
+avg_AML_riboD_expression <- AML_riboD_expression_hugo %>%
+   filter(Gene == AML_most_average_gene_hugo$Gene)
+
+avg_AML_polyA_expression <- AML_polyA_expression_hugo %>%
+   filter(Gene == AML_most_average_gene_hugo$Gene)
+```
+
+Reformatting HIST1H1B data
+
+```{r reformat HIST1H1B}
+H1B_SS_polyA_long <- H1B_SS_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "SS", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_SS_riboD_long <- H1B_SS_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "SS", Compendia = "riboD", Gene = "HIST1H1B")
+
+H1B_aRMS_polyA_long <- H1B_aRMS_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "aRMS", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_aRMS_riboD_long <- H1B_aRMS_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "aRMS", Compendia = "riboD", Gene = "HIST1H1B")
+
+H1B_WT_polyA_long <- H1B_WT_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "WT", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_WT_riboD_long <- H1B_WT_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "WT", Compendia = "riboD", Gene = "HIST1H1B")
+
+H1B_NB_polyA_long <- H1B_NB_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "NB", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_NB_riboD_long <- H1B_NB_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "NB", Compendia = "riboD", Gene = "HIST1H1B")
+
+H1B_ALL_polyA_long <- H1B_ALL_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "ALL", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_ALL_riboD_long <- H1B_ALL_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "ALL", Compendia = "riboD", Gene = "HIST1H1B")
+
+H1B_AML_polyA_long <- H1B_AML_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "AML", Compendia = "polyA", Gene = "HIST1H1B")
+
+H1B_AML_riboD_long <- H1B_AML_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "AML", Compendia = "riboD", Gene = "HIST1H1B")
+```
+
+Reformatting avg gene
+
+```{r reformat avg gene}
+# SS polyA 
+avg_SS_polyA_long <- avg_SS_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "SS", Compendia = "polyA", Gene = Gene)
+
+# SS riboD
+avg_SS_riboD_long <- avg_SS_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "SS", Compendia = "riboD", Gene = Gene)
+
+# aRMS polyA
+avg_aRMS_polyA_long <- avg_aRMS_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "aRMS", Compendia = "polyA", Gene = Gene)
+
+# aRMS riboD
+avg_aRMS_riboD_long <- avg_aRMS_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "aRMS", Compendia = "riboD", Gene = Gene)
+
+#NB polyA
+avg_NB_polyA_long <- avg_NB_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "NB", Compendia = "polyA", Gene = Gene)
+
+#NB riboD
+avg_NB_riboD_long <- avg_NB_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "NB", Compendia = "riboD", Gene = Gene)
+
+#WT polyA
+avg_WT_polyA_long <- avg_WT_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "WT", Compendia = "polyA", Gene = Gene)
+
+#WT riboD
+avg_WT_riboD_long <- avg_WT_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "WT", Compendia = "riboD", Gene = Gene)
+
+#AML polyA
+avg_AML_polyA_long <- avg_AML_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "AML", Compendia = "polyA", Gene = Gene)
+
+#AML riboD
+avg_AML_riboD_long <- avg_AML_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "AML", Compendia = "riboD", Gene = Gene)
+
+#ALL polyA
+avg_ALL_polyA_long <- avg_ALL_polyA_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "ALL", Compendia = "polyA", Gene = Gene)
+
+#ALL riboD
+avg_ALL_riboD_long <- avg_ALL_riboD_expression %>%
+  pivot_longer(-Gene, names_to = "TH_ID", values_to = "Expression") %>%
+  mutate(Disease = "ALL", Compendia = "riboD", Gene = Gene)
+```
+
+Combining dataframes
+
+```{r combining}
+combined_long <- bind_rows(
+
+  # -------------------------
+  # HIST1H1B — SS, aRMS, WT, NB, ALL, AML
+  # -------------------------
+  H1B_SS_polyA_long %>%
+    mutate(Disease = "SS"),
+  H1B_SS_riboD_long %>%
+    mutate(Disease = "SS"),
+  
+  H1B_aRMS_polyA_long %>%
+    mutate(Disease = "aRMS"),
+  H1B_aRMS_riboD_long %>%
+    mutate(Disease = "aRMS"),
+  
+  H1B_WT_polyA_long %>%
+    mutate(Disease = "WT"),
+  H1B_WT_riboD_long %>%
+    mutate(Disease = "WT"),
+  
+  H1B_NB_polyA_long %>%
+    mutate(Disease = "NB"),
+  H1B_NB_riboD_long %>%
+    mutate(Disease = "NB"),
+  
+  H1B_ALL_polyA_long %>%
+    mutate(Disease = "ALL"),
+  H1B_ALL_riboD_long %>%
+    mutate(Disease = "ALL"),
+  
+  H1B_AML_polyA_long %>%
+    mutate(Disease = "AML"),
+  H1B_AML_riboD_long %>%
+    mutate(Disease = "AML"),
+   # -------------------------
+  # Median-ratio genes (SS, aRMS, WT, NB, ALL, AML)
+  # -------------------------
+  avg_SS_polyA_long %>%
+    mutate(Disease = "SS"),
+  avg_SS_riboD_long %>%
+    mutate(Disease = "SS"),
+
+  avg_aRMS_polyA_long %>%
+    mutate(Disease = "aRMS"),
+  avg_aRMS_riboD_long %>%
+    mutate(Disease = "aRMS"),
+
+  avg_WT_polyA_long %>%
+    mutate(Disease = "WT"),
+  avg_WT_riboD_long %>%
+    mutate(Disease = "WT"),
+
+  avg_NB_polyA_long %>%
+    mutate(Disease = "NB"),
+  avg_NB_riboD_long %>%
+    mutate(Disease = "NB"),
+  
+  avg_ALL_polyA_long %>%
+    mutate(Disease = "ALL"),
+  avg_ALL_riboD_long %>%
+    mutate(Disease = "ALL"),
+  
+  avg_AML_polyA_long %>%
+    mutate(Disease = "AML"),
+  avg_AML_riboD_long %>%
+    mutate(Disease = "AML"),
+)
+# write_tsv(combined_long, "../../output_data/rep_genes_median_ratio/combined_long.tsv.gz")
+```
+
+Custom color theme
+
+```{r color theme}
+color_theme <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16), 
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17), 
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+
+scale_fill_compendia <- function() {
+  scale_fill_manual(values = c(
+    "riboD" = "#E69F00",  # yellow
+    "polyA" = "#0072B2"   # blue
+  ))
+}
+scale_color_compendia <- function() {
+  scale_color_manual(values = c( 
+    "riboD" = "#E69F00", 
+    "polyA" = "#0072B2" ))
+  }
+```
+
+```{r median_gene_map}
+# Map of median-ratio genes
+median_gene_map <- list(
+  SS      = SS_most_average_gene_hugo$Gene,
+  aRMS    = aRMS_most_average_gene_hugo$Gene,
+  WT      = WT_most_average_gene_hugo$Gene,
+  NB      = NB_most_average_gene_hugo$Gene,
+  ALL     = ALL_most_average_gene_hugo$Gene,
+  AML     = AML_most_average_gene_hugo$Gene
+)
+median_gene_map_df <- as.data.frame(median_gene_map)
+
+#write_tsv(median_gene_map_df, "../../output_data/rep_genes_median_ratio/median_gene_map_df.tsv.gz")
+
+diseases <- unique(combined_long$Disease)
+
+```
+
+Statistical test for significance
+
+```{r selecting correct test}
+choose_test <- function(poly, ribo) {
+  
+  # Shapiro tests
+  p_norm_poly  <- shapiro.test(poly)$p.value
+  p_norm_ribo  <- shapiro.test(ribo)$p.value
+  
+  poly_normal <- p_norm_poly  > 0.05
+  ribo_normal <- p_norm_ribo  > 0.05
+  
+  # Both normal → variance test
+  if (poly_normal & ribo_normal) {
+    
+    p_var <- var.test(poly, ribo)$p.value
+    equal_var <- p_var > 0.05
+    
+    # Normal + equal variance → Student t-test
+    if (equal_var) {
+      return(list(
+        p_value = t.test(poly, ribo, var.equal = TRUE)$p.value,
+        test_used = "student_t"
+      ))
+    }
+    
+    # Normal + unequal variance → Welch t-test
+    else {
+      return(list(
+        p_value = t.test(poly, ribo, var.equal = FALSE)$p.value,
+        test_used = "welch_t"
+      ))
+    }
+  }
+  
+  # Non-normal → Mann–Whitney U test
+  return(list(
+    p_value = wilcox.test(poly, ribo, exact = FALSE)$p.value,
+    test_used = "mann_whitney"
+  ))
+}
+```
+
+Assigning P-value to significance star
+
+```{r sig stars}
+p_to_stars <- function(p) 
+{ vapply(p, function(x) 
+{ if (is.na(x)) return("NA") 
+  if (x < 0.0001) return("****") 
+  if (x < 0.001) return("***") 
+  if (x < 0.01) return("**") 
+  if (x < 0.05) return("*") 
+  "ns" 
+  }, FUN.VALUE = character(1)) }
+```
+
+Applying to data
+
+```{r compute significance}
+compute_significance_table <- function(df) {
+  
+  # 1. Clean and deduplicate input
+  df_clean <- df %>%
+    select(Disease, Gene, Compendia, Expression) %>%
+    distinct()
+  
+  # 2. Collapse to one row per Disease × Gene × Compendia
+  df_collapsed <- df_clean %>%
+    group_by(Disease, Gene, Compendia) %>%
+    summarise(Expression = list(Expression), .groups = "drop")
+  
+  # 3. Pivot to wide: polyA and riboD in separate columns
+  df_wide <- df_collapsed %>%
+    tidyr::pivot_wider(
+      names_from = Compendia,
+      values_from = Expression
+    )
+  
+  # 4. Apply statistical test to each row
+  df_results <- df_wide %>%
+    rowwise() %>%
+    mutate(
+      # wrap the returned list so mutate() treats it as a single object
+      test = list(choose_test(unlist(polyA), unlist(riboD))),
+      p_value = test$p_value,
+      test_used = test$test_used,
+      stars = p_to_stars(p_value)
+    ) %>%
+    ungroup() %>%
+    select(-test)
+  
+    # Benjamini–Hochberg FDR correction
+  df_results2 <- df_results %>%
+    group_by(Disease) %>%
+    mutate(padj = p.adjust(p_value, method = "BH")) %>%
+    ungroup() %>%
+    mutate(stars_adj = p_to_stars(padj))
+  
+  df_results2
+}
+
+
+sig_results <- compute_significance_table(combined_long)
+# write_tsv(sig_results, "../../output_data/rep_genes_median_ratio/sig_results.tsv.gz")
+
+sig_results
+```
+
+Apply stars to figures
+
+```{r Fig1E_SS}
+Fig1E_SS <- map(diseases, function(d) {
+
+  median_gene <- median_gene_map[[d]]
+
+  # HIST1H1B expression
+  df_h1b <- combined_long %>%
+    filter(Disease == d, Gene == "HIST1H1B") %>%
+    mutate(PlotType = "HIST1H1B (PolyA-)")
+
+  # Median-ratio gene expression
+  df_median <- combined_long %>%
+    filter(Disease == d, Gene == median_gene) %>%
+    mutate(PlotType = "Median Ratio Gene (PolyA+)")
+
+  # Combine
+  df_combined <- bind_rows(df_h1b, df_median)
+
+  # SIGNIFICANCE STARS
+  star_df <- tibble(
+    Disease = d,
+    Gene = c("HIST1H1B", median_gene),
+    PlotType = c("HIST1H1B (PolyA-)", "Median Ratio Gene (PolyA+)"),
+    stars_adj = sig_results %>%
+      filter(Disease == d, Gene %in% c("HIST1H1B", median_gene)) %>%
+      arrange(match(Gene, c("HIST1H1B", median_gene))) %>%
+      pull(stars_adj)
+  )
+
+  # y-position for stars (slightly above max)
+  y_star <- max(df_combined$Expression, na.rm = TRUE) * 1.05
+
+  ggplot(df_combined, aes(x = Gene, y = Expression, fill = Compendia)) +
+    geom_boxplot(
+      alpha = 0.7,
+      position = position_dodge(width = 0.8),
+      outlier.shape = NA,
+      linewidth = 0.4
+    ) +
+    geom_jitter(
+      aes(color = Compendia),
+      position = position_jitterdodge(jitter.width = 0.2,
+                                      dodge.width = 0.8),
+      size = 1.2,
+      alpha = 0.6
+    ) +
+    # ADD STARS
+    geom_text(
+      data = star_df,
+      aes(x = Gene, y = y_star, label = stars_adj),
+      inherit.aes = FALSE,
+      size = 12
+    ) +
+    scale_fill_compendia() +
+    scale_color_compendia() +
+    coord_cartesian(ylim = c(0, 10)) +
+    facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
+    labs(
+      title = paste(d),
+      x = NULL
+    ) +
+    ylab(bquote(log[2](TPM+1))) +
+    color_theme() +
+    theme(
+      axis.title.y = element_text(size = 20),
+      axis.text.y = element_text(size = 14),
+      axis.text.x = element_text(size = 20),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2),
+      legend.position = "bottom",
+      legend.text = element_text(size = 16),       # <-- label text size
+      legend.title = element_text(size = 18),      # <-- title text size
+      legend.key.size = unit(1, "cm"), # <-- box/key size
+      legend.margin = margin(t = -2) 
+    ) 
+})
+Fig1E_SS[[1]]
+```
+
+```{r save Fig1E}
+# ggsave("../../Figures/Fig1E.png", plot = Fig1E_SS[[1]])
+# ggsave("../../Figures/Fig1E.tif", plot = Fig1E_SS[[1]])
+# saveRDS(Fig1E_SS[[1]],"../../Figures/Fig1E.rds")
+```
+
+```{r Fig1E}
+Fig1E <- map(diseases, function(d) {
+
+  median_gene <- median_gene_map[[d]]
+
+  # HIST1H1B expression
+  df_h1b <- combined_long %>%
+    filter(Disease == d, Gene == "HIST1H1B") %>%
+    mutate(PlotType = "HIST1H1B (PolyA-)")
+
+  # Median-ratio gene expression
+  df_median <- combined_long %>%
+    filter(Disease == d, Gene == median_gene) %>%
+    mutate(PlotType = "Median Ratio Gene (PolyA+)")
+
+  # Combine
+  df_combined <- bind_rows(df_h1b, df_median)
+
+  # SIGNIFICANCE STARS
+  star_df <- tibble(
+    Disease = d,
+    Gene = c("HIST1H1B", median_gene),
+    PlotType = c("HIST1H1B (PolyA-)", "Median Ratio Gene (PolyA+)"),
+    stars_adj = sig_results %>%
+      filter(Disease == d, Gene %in% c("HIST1H1B", median_gene)) %>%
+      arrange(match(Gene, c("HIST1H1B", median_gene))) %>%
+      pull(stars_adj)
+  )
+
+  # y-position for stars (slightly above max)
+  y_star <- max(df_combined$Expression, na.rm = TRUE) * 1.05
+
+  ggplot(df_combined, aes(x = Gene, y = Expression, fill = Compendia)) +
+    geom_boxplot(
+      alpha = 0.7,
+      position = position_dodge(width = 0.8),
+      outlier.shape = NA,
+      linewidth = 0.4
+    ) +
+    geom_jitter(
+      aes(color = Compendia),
+      position = position_jitterdodge(jitter.width = 0.2,
+                                      dodge.width = 0.8),
+      size = 1.2,
+      alpha = 0.6
+    ) +
+    # ADD STARS
+    geom_text(
+      data = star_df,
+      aes(x = Gene, y = y_star, label = stars_adj),
+      inherit.aes = FALSE,
+      size = 12
+    ) +
+    scale_fill_compendia() +
+    scale_color_compendia() +
+    coord_cartesian(ylim = c(0, 10)) +
+    facet_wrap(~ PlotType, ncol = 2, scales = "free_x") +
+    labs(
+      title = paste(d),
+      x = NULL
+    ) +
+    ylab(bquote(log[2](TPM+1))) +
+    color_theme() +
+    theme(
+      axis.title.y = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2),
+      legend.text = element_text(size = 26),       # <-- label text size
+      legend.title = element_text(size = 26),      # <-- title text size
+      legend.key.size = unit(2, "cm") # <-- box/key size
+    )
+})
+Fig1E
+```
+
+## Fig S4
+
+```{r FigS4}
+SS <- Fig1E[[1]]
+aRMS <- Fig1E[[2]]
+WT <- Fig1E[[3]]
+NB <- Fig1E[[4]]
+ALL <- Fig1E[[5]]
+AML <- Fig1E[[6]]
+
+FigS4 <- wrap_plots(SS, aRMS, WT, NB, ALL, AML, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 4, r = 4),
+    plot.title = element_text(face = "bold", size = 30)
+  )
+FigS4
+
+```
+
+```{r save figs4}
+# ggsave("../../Figures/FigS4.png", FigS4, width = 20, height = 30, dpi = 300)
+# ggsave("../../Figures/FigS4.tif", FigS4, width = 20, height = 30, dpi = 300)
+```
+
+## Fig 1F
+
+Histogram of median ratio distributions, calculated as the median expression level in PolyA samples divided by the median expression level in RiboD samples
+
+```{r selecting gene ratios}
+ss_ratios <- SS_gene_medians %>%
+  select(Gene, Ratio = SS_median_ratio) %>%
+  mutate(Disease = "SS")
+# write_tsv(ss_ratios, "../../output_data/rep_genes_median_ratio/ss_ratios.tsv.gz")
+
+
+arms_ratios <- aRMS_gene_medians %>%
+  select(Gene = Gene, Ratio = aRMS_median_ratio) %>%
+  mutate(Disease = "aRMS")
+
+wt_ratios <- WT_gene_medians %>%
+  select(Gene, Ratio = WT_median_ratio) %>%
+  mutate(Disease = "WT")
+
+nb_ratios <- NB_gene_medians %>%
+  select(Gene = Gene, Ratio = NB_median_ratio) %>%
+  mutate(Disease = "NB")
+
+all_ratios <- ALL_gene_medians %>%
+  select(Gene = Gene, Ratio = ALL_median_ratio) %>%
+  mutate(Disease = "ALL")
+
+aml_ratios <- AML_gene_medians %>%
+  select(Gene = Gene, Ratio = AML_median_ratio) %>%
+  mutate(Disease = "AML")
+
+#Combining median ratios
+ratio_df <- bind_rows(ss_ratios, arms_ratios, wt_ratios, nb_ratios, aml_ratios, all_ratios)
+```
+
+```{r theme for fig1F}
+theme_Fig1F <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 15), 
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+```
+
+```{r finding HIST1H1B expression}
+SS_HIST1H1B <- SS_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+# write_tsv(SS_HIST1H1B, "../../output_data/rep_genes_median_ratio/SS_HIST1H1B.tsv.gz")
+
+aRMS_HIST1H1B <- aRMS_gene_median_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+WT_HIST1H1B <- WT_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+NB_HIST1H1B <- NB_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+AML_HIST1H1B <- AML_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+
+ALL_HIST1H1B <- ALL_gene_medians_hugo %>%
+  filter(Gene %in% c("HIST1H1B"))
+```
+
+x = "Median expression ratio",
+
+y = "Number of genes expressed"
+
+```{r Fig1F}
+# Fig1F - SS standalone
+Fig1F <- ggplot(ss_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = SS_most_average_gene_hugo$SS_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.4, hjust = 0.3, color = "#0072B2", size = 8) +
+  
+  geom_vline(xintercept = SS_HIST1H1B$SS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -5, hjust = 0.2, color = "#E69F00", size = 8) +
+  geom_text(data = tibble(x = 2.75, y = 2000, label = SS_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 8) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = SS_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 8) +
+  
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
+  labs(
+    title = "SS",
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+  ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 22),
+      axis.title.x = element_text(size = 22),
+      axis.text.y = element_text(size = 18),
+      axis.text.x = element_text(size = 18),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
+
+Fig1F
+```
+
+```{r save Fig1F}
+# ggsave("../../Figures/Fig1F.png", plot = Fig1F)
+# ggsave("../../Figures/Fig1F.tif", plot = Fig1F)
+# saveRDS(Fig1F, "../../Figures/Fig1F.rds")
+```
+
+```{r fig1F_aRMS}
+Fig1F_aRMS <- ggplot(arms_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  geom_vline(xintercept = aRMS_most_average_gene_hugo$aRMS_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 2.5, y = 2000, label = aRMS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+  
+  geom_vline(xintercept = aRMS_HIST1H1B$aRMS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 0.9, y = 2000, label = aRMS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+  geom_text(data = tibble(x = 2.75, y = 2000, label = aRMS_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = aRMS_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
+  
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
+  labs(
+    title = "aRMS",
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+  ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
+
+Fig1F_aRMS
+```
+
+```{r fig1F_SS}
+Fig1F_SS <- ggplot(ss_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = SS_most_average_gene_hugo$SS_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 2.5, y = 2000, label = SS_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+  
+  geom_vline(xintercept = SS_HIST1H1B$SS_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 0.9, y = 2000, label = SS_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+
+  geom_text(data = tibble(x = 2.75, y = 2000, label = SS_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = SS_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
+  
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
+  labs(
+    title = "SS",
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+  ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
+
+Fig1F_SS
+```
+
+```{r fig1f_WT}
+Fig1F_WT <- ggplot(wt_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = WT_most_average_gene_hugo$WT_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 2.5, y = 2000, label = WT_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+  
+  geom_vline(xintercept = WT_HIST1H1B$WT_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 0.9, y = 2000, label = WT_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+  geom_text(data = tibble(x = 2.75, y = 2000, label = WT_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = WT_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
+  
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
+  labs(
+    title = "WT",
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+  ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
+
+Fig1F_WT
+```
+
+```{r fig1F_NB}
+Fig1F_NB <- ggplot(nb_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = NB_most_average_gene_hugo$NB_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 2.5, y = 2000, label = NB_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+  
+  geom_vline(xintercept = NB_HIST1H1B$NB_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 0.9, y = 2000, label = NB_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+  
+  geom_text(data = tibble(x = 2.75, y = 2000, label =NB_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = NB_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
+  
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 7000)) +
+  labs(
+    title = "NB",
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+  ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
+
+Fig1F_NB
+```
+
+```{r fig1F_ALL}
+Fig1F_ALL <- ggplot(all_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = ALL_most_average_gene_hugo$ALL_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 2.5, y = 2000, label = ALL_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+  
+  geom_vline(xintercept = ALL_HIST1H1B$AML_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 0.9, y = 2000, label = ALL_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+  
+  geom_text(data = tibble(x = 2.75, y = 2000, label = ALL_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = ALL_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
+  
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
+  labs(
+    title = "ALL",
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+  ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
+
+Fig1F_ALL
+```
+
+```{r fig1F_AML}
+Fig1F_AML <- ggplot(aml_ratios, aes(x = Ratio)) +
+  geom_histogram(binwidth = 0.1, alpha = 0.6, position = "identity") +
+  
+  geom_vline(xintercept = AML_most_average_gene_hugo$AML_median_ratio, color = "#0072B2", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 2.5, y = 2000, label = AML_most_average_gene_hugo$Gene), angle = 0, vjust = -0.5, color = "#0072B2", size = 10) +
+  
+  geom_vline(xintercept = AML_HIST1H1B$AML_median_ratio, color = "#E69F00", linetype = "dashed", linewidth = 2) +
+  
+#  geom_text(aes(x = 0.9, y = 2000, label = AML_HIST1H1B$Gene), angle = 0, vjust = -0.5, color = "#E69F00", size = 10) +
+  geom_text(data = tibble(x = 2.75, y = 2000, label = AML_most_average_gene_hugo$Gene), aes(x=x, y=y, label = label), color = "#0072B2", size = 10) +
+  
+  geom_text(data = tibble(x = 0.9, y = 3000, label = AML_HIST1H1B$Gene), aes(x=x, y=y, label = label), color = "#E69F00", size = 10) +
+  
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 6000)) +
+  labs(
+   title = "AML",
+    x = "Median expression ratio",
+    y = "Number of genes measured"
+  ) +
+  scale_y_continuous(
+    labels = label_comma(scale = 1e-3, suffix = "k")
+  ) +
+  scale_x_continuous(breaks = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) +
+  theme_Fig1F() +
+      theme(
+      axis.title.y = element_text(size = 32),
+      axis.title.x = element_text(size = 32),
+      axis.text.y = element_text(size = 28),
+      axis.text.x = element_text(size = 28),
+      strip.text = element_blank(),
+      plot.title = element_text(vjust = -2)
+    )
+
+Fig1F_AML
+```
+
+## Fig S5
+
+```{r FigS5}
+FigS5 <- wrap_plots(Fig1F_SS, Fig1F_aRMS, Fig1F_WT, Fig1F_NB, Fig1F_ALL, Fig1F_AML, ncol = 1) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "bottom")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 4, r = 4),
+    plot.title = element_text(face = "bold", size = 30),
+    legend.title = NULL
+  )
+FigS5
+```
+
+```{r save figs5}
+# ggsave("../../Figures/FigS5.png", FigS5, width = 20, height = 30, dpi = 300)
+# ggsave("../../Figures/FigS5.tif", FigS5, width = 20, height = 30, dpi = 300)
+```
+
+## Misc
+
+How many genes have a median ratio above, below, or equal to 1 for each disease?
+
+```{r ratio count SS}
+# SS
+ss_ratios_great1 <- ss_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+print(paste("the number of genes with a polyA/riboD ratio greater than 1 is ", nrow(ss_ratios_great1)))
+
+ss_ratios_less1 <- ss_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+print(paste("the number of genes with a polyA/riboD ratio less than 1 is ", nrow(ss_ratios_less1)))
+
+ss_ratios_equal1 <- ss_ratios %>%
+  filter(Ratio == 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+print(paste("the number of genes with a polyA/riboD ratio equal to 1 is ", nrow(ss_ratios_equal1)))
+
+ss_ratios_zero <- ss_ratios %>%
+  filter(Ratio == 0)
+print(paste("the number of genes with a polyA/riboD ratio equal to 0 is ", nrow(ss_ratios_zero)))
+# zero: for example, ENSG00000008438.4 shows ratio = 0 and has median polyA = 0 and median riboD = 0.08406426
+
+ss_ratios_inf <- ss_ratios %>%
+  filter(Ratio == Inf)
+print(paste("the number of genes with a polyA/riboD ratio equal to infinity is ", nrow(ss_ratios_inf)))
+# Inf: for example, ENSG00000005001.9 shows Inf in ss_ratios and has median polyA = 0.1763228 and median riboD = 0
+
+ss_ratios_NaN <- ss_ratios %>%
+  filter(Ratio == "NaN")
+print(paste("the number of genes with a polyA/riboD ratio of NaN is ", nrow(ss_ratios_NaN)))
+# NaN: for example, ENSG00000006059.3 shows NaN in ss_ratios and has median polyA = 0 and median riboD = 0
+
+print(paste("all of these genes summed equals ",
+  nrow(ss_ratios_great1)+nrow(ss_ratios_less1)+nrow(ss_ratios_equal1)+nrow(ss_ratios_zero)+nrow(ss_ratios_inf)+nrow(ss_ratios_NaN)))
+```
+
+```{r ratio count aRMS}
+# aRMS
+arms_ratios_great1 <- arms_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+print(paste("the number of genes with a polyA/riboD ratio greater than 1 is ", nrow(arms_ratios_great1)))
+
+arms_ratios_less1 <- arms_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+print(paste("the number of genes with a polyA/riboD ratio less than 1 is ", nrow(arms_ratios_less1)))
+
+arms_ratios_equal1 <- arms_ratios %>%
+  filter(Ratio == 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+print(paste("the number of genes with a polyA/riboD ratio equal to 1 is ", nrow(arms_ratios_equal1)))
+
+arms_ratios_zero <- arms_ratios %>%
+  filter(Ratio == 0)
+print(paste("the number of genes with a polyA/riboD ratio equal to 0 is ", nrow(arms_ratios_zero)))
+# zero: for example, ENSG00000065371.17 shows ratio = 0 and has median polyA = 0 and median riboD = 0.01435529
+
+arms_ratios_inf <- arms_ratios %>%
+  filter(Ratio == Inf)
+print(paste("the number of genes with a polyA/riboD ratio equal to infinity is ", nrow(arms_ratios_inf)))
+# Inf: for example, ENSG00000006059.3 shows Inf and has median polyA = 0.1763228 and median riboD = 0
+
+arms_ratios_NaN <- arms_ratios %>%
+  filter(Ratio == "NaN")
+print(paste("the number of genes with a polyA/riboD ratio of NaN is ", nrow(arms_ratios_NaN)))
+# NaN: for example, ENSG00000006059.3 shows NaN and has median polyA = 0 and median riboD = 0
+
+print(paste("all of these genes summed equals ",
+  nrow(arms_ratios_great1)+nrow(arms_ratios_less1)+nrow(arms_ratios_equal1)+nrow(arms_ratios_zero)+nrow(arms_ratios_inf)+nrow(arms_ratios_NaN)))
+```
+
+```{r ratio count WT}
+# WT
+wt_ratios_great1 <- wt_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(wt_ratios_great1)
+
+wt_ratios_less1 <- wt_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(wt_ratios_less1)
+
+wt_ratios_equal1 <- wt_ratios %>%
+  filter(Ratio == 1)
+nrow(wt_ratios_equal1)
+```
+
+```{r ratio count nb}
+# NB
+nb_ratios_great1 <- nb_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(nb_ratios_great1)
+
+nb_ratios_less1 <- nb_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(nb_ratios_less1)
+
+nb_ratios_equal1 <- nb_ratios %>%
+  filter(Ratio == 1)
+nrow(nb_ratios_equal1)
+```
+
+```{r ratio count all}
+# ALL
+all_ratios_great1 <- all_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(all_ratios_great1)
+
+all_ratios_less1 <- all_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(all_ratios_less1)
+
+all_ratios_equal1 <- all_ratios %>%
+  filter(Ratio == 1)
+nrow(all_ratios_equal1)
+```
+
+```{r ratio count aml}
+# ALL
+aml_ratios_great1 <- aml_ratios %>%
+  filter(Ratio > 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(aml_ratios_great1)
+
+aml_ratios_less1 <- aml_ratios %>%
+  filter(Ratio < 1) %>%
+  filter(Ratio != Inf) %>%
+  filter(Ratio != 0)
+nrow(aml_ratios_less1)
+
+aml_ratios_equal1 <- aml_ratios %>%
+  filter(Ratio == 1)
+nrow(aml_ratios_equal1)
+```
+
+Session Info
+
+```{r}
+sessioninfo::session_info()
+```

@@ -1,0 +1,365 @@
+---
+title: "Measured_prop"
+Date: "`r Sys.Date()`"
+format: 
+  gfm:
+    df-print: kable
+editor: visual
+---
+
+## Fig 1C
+
+Stacked bar chart showing the proportion of unique genes expressed at different log2(TPM+1) levels.
+
+```{r install package}
+library(tidyverse)
+library(patchwork)
+library(cowplot)
+```
+
+```{r load in files}
+# expression files
+SS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_polyA_log2tpm1.tsv")
+SS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/SS_riboD_log2tpm1.tsv")
+
+aRMS_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_polyA_log2tpm1.tsv")
+aRMS_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/aRMS_riboD_log2tpm1.tsv")
+
+WT_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_polyA_log2tpm1.tsv")
+WT_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/WT_riboD_log2tpm1.tsv")
+
+NB_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_polyA_log2tpm1.tsv")
+NB_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/NB_riboD_log2tpm1.tsv")
+
+ALL_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_polyA_log2tpm1.tsv")
+ALL_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/ALL_riboD_log2tpm1.tsv")
+
+AML_polyA_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_polyA_log2tpm1.tsv")
+AML_riboD_log2tpm1 <- read_tsv("../../input_data/sample_selection/AML_riboD_log2tpm1.tsv")
+
+# sample ID files, from correlation_analysis
+SS_polyA_list <- read_tsv("../../input_data/sample_selection/SS_polyA_list.tsv")
+SS_riboD_list <- read_tsv("../../input_data/sample_selection/SS_riboD_list.tsv")
+
+aRMS_polyA_list <- read_tsv("../../input_data/sample_selection/aRMS_polyA_list.tsv")
+aRMS_riboD_list <- read_tsv("../../input_data/sample_selection/aRMS_riboD_list.tsv")
+
+WT_polyA_list <- read_tsv("../../input_data/sample_selection/WT_polyA_list.tsv")
+WT_riboD_list <- read_tsv("../../input_data/sample_selection/WT_riboD_list.tsv")
+
+NB_polyA_list <- read_tsv("../../input_data/sample_selection/NB_polyA_list.tsv")
+NB_riboD_list <- read_tsv("../../input_data/sample_selection/NB_riboD_list.tsv")
+
+ALL_polyA_list <- read_tsv("../../input_data/sample_selection/ALL_polyA_list.tsv")
+ALL_riboD_list <- read_tsv("../../input_data/sample_selection/ALL_riboD_list.tsv")
+
+AML_polyA_list <- read_tsv("../../input_data/sample_selection/AML_polyA_list.tsv")
+AML_riboD_list <- read_tsv("../../input_data/sample_selection/AML_riboD_list.tsv")
+```
+
+```{r reformat files}
+# Since "Gene" is a column name, it won't match the row names
+# use values from the first column ("Gene") as row names
+fix_SS_polyA_log2tpm1 <- SS_polyA_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_SS_riboD_log2tpm1 <- SS_riboD_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_aRMS_polyA_log2tpm1 <- aRMS_polyA_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_aRMS_riboD_log2tpm1 <- aRMS_riboD_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_WT_polyA_log2tpm1 <- WT_polyA_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_WT_riboD_log2tpm1 <- WT_riboD_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_NB_polyA_log2tpm1 <- NB_polyA_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_NB_riboD_log2tpm1 <- NB_riboD_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_ALL_polyA_log2tpm1 <- ALL_polyA_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_ALL_riboD_log2tpm1 <- ALL_riboD_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_AML_polyA_log2tpm1 <- AML_polyA_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+fix_AML_riboD_log2tpm1 <- AML_riboD_log2tpm1 %>%
+  remove_rownames %>%
+  column_to_rownames(var = "Gene")
+
+# use values from first column ("th_dataset_id") as row names
+fix_SS_polyA_list <- SS_polyA_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_SS_riboD_list <- SS_riboD_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_aRMS_polyA_list <- aRMS_polyA_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_aRMS_riboD_list <- aRMS_riboD_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_WT_polyA_list <- WT_polyA_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_WT_riboD_list <- WT_riboD_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_NB_polyA_list <- NB_polyA_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_NB_riboD_list <- NB_riboD_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_ALL_polyA_list <- ALL_polyA_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_ALL_riboD_list <- ALL_riboD_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_AML_polyA_list <- AML_polyA_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+
+fix_AML_riboD_list <- AML_riboD_list %>%
+  remove_rownames %>%
+  column_to_rownames(var = "term")
+```
+
+Defining log2(TPM+1) bins
+
+```{r define expr bins}
+expr_bins <- c(0, 1e-10, 0.09, 0.99, 2.99, 4.99, Inf)
+
+expr_labels <- c("0","0-0.09", "0.1-0.99", "1-2.99", "3-4.99", ">5")
+```
+
+define gene medians function
+
+```{r gene medians function}
+compute_gene_medians <- function(df, disease, compendia) {
+  df %>% 
+    rowwise() %>% 
+    mutate(median_expr = median(c_across(starts_with("T")), na.rm = TRUE)) %>%
+    ungroup() %>%
+    mutate(
+      Disease = disease,
+      Compendia = compendia
+    ) %>%
+    select(Gene, median_expr, Disease, Compendia)
+}
+
+```
+
+Compute gene medians
+
+```{r compute gene medians}
+SS_polyA_med   <- compute_gene_medians(SS_polyA_log2tpm1,   "SS",   "polyA")
+SS_riboD_med   <- compute_gene_medians(SS_riboD_log2tpm1,   "SS",   "riboD")
+aRMS_polyA_med <- compute_gene_medians(aRMS_polyA_log2tpm1, "aRMS", "polyA")
+aRMS_riboD_med <- compute_gene_medians(aRMS_riboD_log2tpm1, "aRMS", "riboD")
+WT_polyA_med   <- compute_gene_medians(WT_polyA_log2tpm1,   "WT",   "polyA")
+WT_riboD_med   <- compute_gene_medians(WT_riboD_log2tpm1,   "WT",   "riboD")
+NB_polyA_med   <- compute_gene_medians(NB_polyA_log2tpm1,   "NB",   "polyA")
+NB_riboD_med   <- compute_gene_medians(NB_riboD_log2tpm1,   "NB",   "riboD")
+AML_polyA_med   <- compute_gene_medians(AML_polyA_log2tpm1,   "AML",   "polyA")
+AML_riboD_med   <- compute_gene_medians(AML_riboD_log2tpm1,   "AML",   "riboD")
+ALL_polyA_med   <- compute_gene_medians(ALL_polyA_log2tpm1,   "ALL",   "polyA")
+ALL_riboD_med  <- compute_gene_medians(ALL_riboD_log2tpm1,   "ALL",   "riboD")
+
+all_medians <- bind_rows(
+  SS_polyA_med, SS_riboD_med,
+  aRMS_polyA_med, aRMS_riboD_med,
+  WT_polyA_med, WT_riboD_med,
+  NB_polyA_med, NB_riboD_med,  
+  ALL_polyA_med, ALL_riboD_med,
+  AML_riboD_med, AML_polyA_med
+  )
+```
+
+Bin genes into expression thresholds
+
+```{r bin gene medians}
+all_medians_bins <- all_medians %>%
+  mutate(
+    ExprBin = cut(
+      median_expr,
+      breaks = expr_bins,
+      labels = expr_labels,
+      include.lowest = TRUE
+    )
+  )
+
+write_tsv(all_medians_bins, "../../output_data/measured_proportion/all_medians_bins.tsv.gz")
+```
+
+Compute proportion of genes in each bin per lib prep
+
+```{r compute proportions}
+bin_prop <- all_medians_bins %>% 
+  group_by(Compendia, ExprBin, Disease) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(Disease, Compendia) %>%
+  mutate(Proportion = n / sum(n))
+write_tsv(bin_prop, "../../output_data/measured_proportion/bin_prop.tsv.gz")
+```
+
+Custom color theme
+
+```{r custom theme}
+theme_1C <- function(base_size = 14) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      legend.position = "right",
+      legend.title = element_blank(),
+      panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+      panel.grid.minor = element_blank(),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.ticks = element_line(color = "black", linewidth = 0.4),
+      strip.text = element_text(face = "bold", size = base_size * 0.9),
+      plot.title = element_text(face = "bold", size = base_size * 1.1, hjust = 0.5),
+      axis.title.y = element_text(angle = 90, hjust = 0.5, size = 16), 
+      axis.title.x = element_text(angle = 0, hjust = 0.5, size = 17), 
+      axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),
+      plot.margin = margin(10, 10, 10, 10)
+    )
+}
+
+scale_fill_compendia <- function() {
+  scale_fill_manual(values = c(
+    "polyA" = "#E69F00",  # yellow
+    "riboD" = "#0072B2"   # blue
+  ))
+}
+scale_color_compendia <- function() {
+  scale_color_manual(values = c( 
+    "polyA" = "#E69F00", 
+    "riboD" = "#0072B2" ))
+  }
+
+```
+
+Generate stacked bar plot
+
+```{r Fig1C}
+# Get unique diseases
+diseasesC <- unique(bin_prop$Disease)
+
+# Generate one plot per disease
+Fig1C <- map(diseasesC, function(d) {
+  
+  dfC <- bin_prop %>% filter(Disease == d)
+  
+  ggplot(dfC, aes(x = Compendia, y = Proportion, fill = ExprBin)) +
+    geom_bar(stat = "identity", position = "stack") +
+    scale_fill_viridis_d(
+      option = "D", 
+      name = expression(atop("Expression", "in log"[2]*"(TPM+1)"))
+      ) +
+    labs(
+      title = paste(d),
+      # x = "Library Prep",
+      y = "Proportion of Genes",
+      fill = "Expression Level"
+    ) +
+    theme_1C()
+})
+
+# Name the plots by disease
+names(Fig1C) <- diseasesC
+Fig1C
+```
+
+Save plot
+
+```{r save fig1c}
+# ggsave("/figures/fig1C.png", plot = plots_by_diseaseC, width = 6, height = 4, units = "in", dpi = 300)
+
+
+ggsave("../../Figures/Fig1C.png", plot = Fig1C$SS)
+ggsave("../../Figures/Fig1C.tif", plot = Fig1C$SS)
+
+```
+
+## Fig S2
+
+```{r FigS2}
+diseases_to_plot <- names(Fig1C)
+n <- length(diseases_to_plot)
+ncols <- 6
+bottom_row <- diseases_to_plot[seq(from = ceiling(n / ncols) * ncols - ncols + 1, to = n)]
+
+
+plots_subset <- imap(Fig1C[diseases_to_plot], function(p, name) {
+  if (!name %in% bottom_row) {
+    # hide x-axis on all panels except the last
+    p + theme(
+      axis.text.x = element_blank(),
+      axis.title.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
+  } else {
+    # show x-axis only on the last panel
+    p + theme(
+      axis.text.x = element_text(angle = 90, hjust = 1, size = 8),
+      axis.title.x = element_text(size = 12)
+    )
+  }
+})
+
+combined_figS2 <- wrap_plots(plots_subset, ncol = 6) +
+  plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") +
+  plot_annotation(
+    theme = theme(legend.position = "right")
+  ) &
+  theme(
+    plot.margin = margin(t = 2, b = 2, l = 4, r = 4),
+    plot.title = element_text(hjust = 0.35, face = "bold", size = 14),
+    legend.title = element_text(size = 12)
+  )
+
+combined_figS2
+```
+
+```{r save FigS2}
+ggsave("../../Figures/FigS2.png", plot = combined_figS2)
+ggsave("../../Figures/FigS2.tif", plot = combined_figS2)
+```
+
+Session Info
+
+```{r session info}
+sessioninfo::session_info()
+```

@@ -1,0 +1,709 @@
+# THR13_0970_S12-S17_correlogram
+
+
+- [THR13_0970 matched PolyA / RiboD](#thr13_0970-matched-polya--ribod)
+
+## THR13_0970 matched PolyA / RiboD
+
+Correlogram showing similarity between datasets
+
+``` r
+library(tidyverse)
+```
+
+    ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+    ✔ dplyr     1.1.4     ✔ readr     2.1.5
+    ✔ forcats   1.0.1     ✔ stringr   1.5.2
+    ✔ ggplot2   4.0.0     ✔ tibble    3.3.0
+    ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+    ✔ purrr     1.1.0     
+    ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ✖ dplyr::filter() masks stats::filter()
+    ✖ dplyr::lag()    masks stats::lag()
+    ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+``` r
+library(corrr)
+library(GGally)
+library(corrplot)
+```
+
+    corrplot 0.95 loaded
+
+``` r
+DIPGIV_log2TPM1 <- read_tsv("../input_data/matched_THR13_0970/rsem_ensembl_log2TPM1_THR13_0970_S12-S17.tsv.gz")
+```
+
+    Rows: 362988 Columns: 8
+    ── Column specification ────────────────────────────────────────────────────────
+    Delimiter: "\t"
+    chr (5): full_sample, ensembl_gene_ID, HugoID, lib_prep, sample
+    dbl (2): TPM, log2TPM1
+    lgl (1): is_treehouse_druggable_gene
+
+    ℹ Use `spec()` to retrieve the full column specification for this data.
+    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+DIPGIV_log2TPM1_prepname <- DIPGIV_log2TPM1 %>%
+  mutate(
+    prepname = case_when(
+    full_sample == "THR13_0970_S12" ~ "PolyA_1",
+    full_sample == "THR13_0970_S13" ~ "PolyA_2",
+    full_sample == "THR13_0970_S14" ~ "PolyA_3",
+    full_sample == "THR13_0970_S15" ~ "RiboD_1",
+    full_sample == "THR13_0970_S16" ~ "RiboD_2",
+    full_sample == "THR13_0970_S17" ~ "RiboD_3"
+  ))
+
+# pivot to wide format
+DIPGIV_log2TPM1_wide <- DIPGIV_log2TPM1_prepname %>%
+  select(prepname, ensembl_gene_ID, log2TPM1) %>%
+  pivot_wider(names_from = prepname, values_from = log2TPM1)
+```
+
+``` r
+# convert to matrix
+DIPGIV_log2TPM1_matrix <- DIPGIV_log2TPM1_wide %>%
+  column_to_rownames("ensembl_gene_ID") %>%
+  as.matrix()
+# write_tsv(DIPGIV_log2TPM1_matrix, "../output_data/THR13_0970_S12-S17/THR13_log2TPM1_matrix.tsv")
+write.table(DIPGIV_log2TPM1_matrix, file = "../output_data/THR13_0970_S12-S17/THR13_log2TPM1_matrix.tsv", sep = "\t", row.names = TRUE, col.names = TRUE)
+
+
+set.seed(123) # for reproducibility
+# Compute Spearman correlation 
+DIPGIV_log2TPM1_correlation <- cor(DIPGIV_log2TPM1_matrix, method = "spearman", use = "pairwise.complete.obs") #pairwise.complete.obs = the correlation between each pair of variables is computed using all complete pairs of those particular variables
+# ^ this means NAs will not be counted in calculation
+```
+
+``` r
+# integrate density plot with coefficient value and color by coefficient value
+
+cor_color_fn <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+  
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.8,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+```
+
+I want the diagonal density plot to only visualize genes that are
+expressed in that sample.
+
+``` r
+# function for diagonal density
+diag_filtered_density <- function(data, mapping, ...) {
+  # Pull out just the column being plotted on this diagonal panel
+  x <- eval_data_col(data, mapping$x)
+  
+  # Keep only expressed genes (log2TPM > 0)
+  x_filtered <- x[x > 0]
+  
+  ggplot(data.frame(x = x_filtered), aes(x = x)) +
+    geom_density(fill = "grey70", color = "black") +
+    theme_bw() +
+    theme(panel.grid = element_blank())
+}
+```
+
+Making all scatterplot axes the same
+
+``` r
+# calculating the max and min expression values
+global_min <- min(DIPGIV_log2TPM1_matrix, na.rm = TRUE)
+global_max <- max(DIPGIV_log2TPM1_matrix, na.rm = TRUE)
+
+# function for scatterplot with fixed axes
+scatter_fixed_axes <- function(data, mapping, ...) {
+  ggplot(data, mapping) +
+    geom_point(alpha = 0.3, size = 0.5) +
+    xlim(global_min, global_max) +
+    ylim(global_min, global_max) +
+    geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", color = "green4") # with y=x slope intercept line
+}
+```
+
+``` r
+# with scatterplot
+DIPGIV_log2TPM1_correlogram_fixedaxes <- ggpairs(
+  DIPGIV_log2TPM1_matrix,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn, method = "spearman")),
+  diag = list(continuous = wrap(diag_filtered_density))
+  # diag = list(continuous = "blank")
+) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9)
+  ) +
+  theme(panel.grid = element_blank())
+DIPGIV_log2TPM1_correlogram_fixedaxes
+```
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/rsem_ggpairs_plot_fixedaxes-1.png)
+
+#### Applying a variance filter to correlogram
+
+First, remove all genes where, for that gene, more than 80% of samples
+have an expression of 0 (in this case, remove genes where 5 out of 6
+datasets have expression of 0).
+
+From the remaining genes, sort them by variance (or standard deviation,
+either way) of expression within the matrix – then remove the 20% of
+genes that are the least variant. (So if we had 30,000 genes after
+removing those that failed the expression filter, we would remove the
+bottom 6,000.)
+
+``` r
+DIPGIV_expr_filter_zero <- DIPGIV_log2TPM1_wide %>%
+  filter(rowSums(across(c(everything())) == 0) < 5)
+
+nrow(DIPGIV_log2TPM1_wide)
+```
+
+    [1] 60498
+
+``` r
+nrow(DIPGIV_expr_filter_zero)
+```
+
+    [1] 31588
+
+``` r
+DIPGIV_expr_filter_zero_variance <- DIPGIV_expr_filter_zero %>%
+  rowwise() %>%
+  mutate(row_sd = sd(c_across(-ensembl_gene_ID), na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(row_sd) %>%
+  slice_tail(prop = 0.8)
+
+nrow(DIPGIV_expr_filter_zero_variance)
+```
+
+    [1] 25270
+
+``` r
+write_tsv(DIPGIV_expr_filter_zero_variance, "../output_data/THR13_0970_S12-S17/THR13_expr_filter_zero_variance.tsv.gz")
+```
+
+``` r
+# integrate density plot with coefficient value and color by coefficient value
+
+cor_color_fn2 <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+  
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.9,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+
+# with scatterplot
+DIPGIV_expr_filter_zero_variance_plot <- DIPGIV_expr_filter_zero_variance %>%
+  column_to_rownames("ensembl_gene_ID") %>%
+  select(-row_sd) %>%
+  ggpairs(
+  DIPGIV_expr_filter_zero_variance,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn2, method = "spearman")),
+  diag = list(continuous = wrap(diag_filtered_density))
+  # diag = list(continuous = "blank")
+) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9)
+  ) +
+  theme(panel.grid = element_blank())
+DIPGIV_expr_filter_zero_variance_plot
+```
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/DIPGIV_expr_filter_zero_variance_plot-1.png)
+
+``` r
+# ggsave(
+#   "DIPGIV_expr_filter_zero_variance_plot.png",
+#   DIPGIV_expr_filter_zero_variance_plot,
+#   width = 10, height = 10, units = "in", dpi = 300
+# )
+```
+
+Some genes have very low but not quite zero expression
+(i.e. ENSG00000000005.5 has values of
+0.02856915, 0.01435529, 0.05658353, 0.16349873, 0.04264434, and
+0.16349873). 
+
+Going to remove genes where 5 or more out of 6 samples have expression
+\< 1
+
+``` r
+DIPGIV_expr_filter_one <- DIPGIV_log2TPM1_wide %>%
+  filter(rowSums(across(c(everything())) < 1) < 5)
+
+nrow(DIPGIV_log2TPM1_wide)
+```
+
+    [1] 60498
+
+``` r
+nrow(DIPGIV_expr_filter_one)
+```
+
+    [1] 14946
+
+``` r
+DIPGIV_expr_filter_one_variance <- DIPGIV_expr_filter_one %>%
+  rowwise() %>%
+  mutate(row_sd = sd(c_across(-ensembl_gene_ID), na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(row_sd) %>%
+  slice_tail(prop = 0.8)
+
+nrow(DIPGIV_expr_filter_one_variance)
+```
+
+    [1] 11956
+
+``` r
+# integrate density plot with coefficient value and color by coefficient value
+
+cor_color_fn3 <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.88,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+
+# with scatterplot
+DIPGIV_expr_filter_one_variance_plot <- DIPGIV_expr_filter_one_variance %>%
+  column_to_rownames("ensembl_gene_ID") %>%
+  select(-row_sd) %>%
+  ggpairs(
+  DIPGIV_expr_filter_one_variance,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn3, method = "spearman")),
+  diag = list(continuous = wrap(diag_filtered_density))
+  # diag = list(continuous = "blank")
+) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9)
+  ) +
+  theme(panel.grid = element_blank())
+DIPGIV_expr_filter_one_variance_plot
+```
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/DIPGIV_expr_filter_one_variance_plot-1.png)
+
+``` r
+# ggsave(
+#   "DIPGIV_expr_filter_one_variance_plot.png",
+#   DIPGIV_expr_filter_one_variance_plot,
+#   width = 10, height = 10, units = "in", dpi = 300
+# )
+```
+
+Removing genes where 5 or more out of 6 samples have expression \< 1
+
+``` r
+DIPGIV_expr_filter_3 <- DIPGIV_log2TPM1_wide %>%
+  filter(rowSums(across(c(everything())) < 3) < 5)
+
+nrow(DIPGIV_log2TPM1_wide)
+```
+
+    [1] 60498
+
+``` r
+nrow(DIPGIV_expr_filter_3)
+```
+
+    [1] 10446
+
+``` r
+DIPGIV_expr_filter_3_variance <- DIPGIV_expr_filter_3 %>%
+  rowwise() %>%
+  mutate(row_sd = sd(c_across(-ensembl_gene_ID), na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(row_sd) %>%
+  slice_tail(prop = 0.8)
+
+nrow(DIPGIV_expr_filter_3_variance)
+```
+
+    [1] 8356
+
+``` r
+# integrate density plot with coefficient value and color by coefficient value
+cor_color_fn3 <- function(data, mapping, ...) {
+  corr <- eval_data_col(data, mapping$x) %>%
+    cor(eval_data_col(data, mapping$y), method = "spearman", use = "pairwise.complete.obs")
+
+  ggally_cor(data, mapping, method = "spearman", colour = I("black")) +
+    theme_bw() +
+    theme(panel.background = element_rect(
+      fill = scales::col_numeric(c("#ec944d", "white", "#084c8b"), c(0.8,1))(corr)
+    ),
+    panel.grid = element_blank())
+}
+
+# with scatterplot
+DIPGIV_expr_filter_3_variance_plot <- DIPGIV_expr_filter_3_variance %>%
+  column_to_rownames("ensembl_gene_ID") %>%
+  select(-row_sd) %>%
+  ggpairs(
+  DIPGIV_expr_filter_3_variance,
+  lower = list(continuous = wrap(scatter_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn3, method = "spearman")),
+  diag = list(continuous = wrap(diag_filtered_density))
+  # diag = list(continuous = "blank")
+) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9)
+  ) +
+  theme(panel.grid = element_blank())
+DIPGIV_expr_filter_3_variance_plot
+```
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/DIPGIV_expr_filter_3_variance_plot-1.png)
+
+``` r
+plot_df <- DIPGIV_expr_filter_zero_variance %>%
+  as.data.frame() %>%
+  select(PolyA_1, PolyA_2, PolyA_3, RiboD_1, RiboD_2, RiboD_3)
+
+global_min <- min(plot_df, na.rm = TRUE)
+global_max <- max(plot_df, na.rm = TRUE)
+
+# function for hex plot with fixed axes
+hex_fixed_axes <- function(data, mapping, ...) {
+  ggplot(data, mapping) +
+    geom_hex(bins = 30) +
+    scale_fill_gradient(low = "darkgrey", high = "black") +
+    xlim(global_min, global_max) +
+    ylim(global_min, global_max) +
+    geom_abline(slope = 1, intercept = 0,
+                linetype = "dashed", color = "green4") # with y=x slope intercept line
+}
+```
+
+``` r
+DIPGIV_expr_filter_zero_variance_hexplot <- ggpairs(
+  plot_df,
+  columns = 1:6,
+  lower = list(continuous = wrap(hex_fixed_axes)),
+  upper = list(continuous = wrap(cor_color_fn2, method = "spearman")),
+  diag  = list(continuous = wrap(diag_filtered_density))
+) +
+  theme(
+    axis.text.x  = element_text(angle = 45, hjust = 1),
+    strip.text.y = element_text(angle = 0, size = 9),
+    strip.text.x = element_text(angle = 45, size = 9),
+    panel.grid   = element_blank()
+  )
+DIPGIV_expr_filter_zero_variance_hexplot
+```
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+    Warning: Removed 13 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+    Warning: Removed 13 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 14 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+    Warning: Removed 25 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+    Removed 25 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 24 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+    Warning: Removed 27 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 26 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 25 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 14 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning in cor.test.default(x, y, method = method): Cannot compute exact
+    p-value with ties
+
+    Warning: Removed 26 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+    Removed 26 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 24 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 12 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+    Warning: Removed 14 rows containing missing values or values outside the scale range
+    (`geom_hex()`).
+
+![](THR13_0970_S12-S17_correlogram_files/figure-commonmark/DIPGIV_expr_filter_zero_variance_hexplot-1.png)
+
+Session Info
+
+``` r
+sessioninfo::session_info()
+```
+
+    ─ Session info ───────────────────────────────────────────────────────────────
+     setting  value
+     version  R version 4.5.2 (2025-10-31)
+     os       macOS Tahoe 26.5
+     system   aarch64, darwin20
+     ui       X11
+     language (EN)
+     collate  en_US.UTF-8
+     ctype    en_US.UTF-8
+     tz       America/Los_Angeles
+     date     2026-10-15
+     pandoc   3.8.3 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64/ (via rmarkdown)
+     quarto   1.9.36 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto
+
+    ─ Packages ───────────────────────────────────────────────────────────────────
+     package      * version date (UTC) lib source
+     bit            4.6.0   2025-03-06 [1] CRAN (R 4.5.0)
+     bit64          4.6.0-1 2025-01-16 [1] CRAN (R 4.5.0)
+     cli            3.6.5   2025-04-23 [1] CRAN (R 4.5.0)
+     corrplot     * 0.95    2024-10-14 [1] CRAN (R 4.5.0)
+     corrr        * 0.4.5   2025-08-18 [1] CRAN (R 4.5.0)
+     crayon         1.5.3   2024-06-20 [1] CRAN (R 4.5.0)
+     digest         0.6.37  2024-08-19 [1] CRAN (R 4.5.0)
+     dplyr        * 1.1.4   2023-11-17 [1] CRAN (R 4.5.0)
+     evaluate       1.0.5   2025-08-27 [1] CRAN (R 4.5.0)
+     farver         2.1.2   2024-05-13 [1] CRAN (R 4.5.0)
+     fastmap        1.2.0   2024-05-15 [1] CRAN (R 4.5.0)
+     forcats      * 1.0.1   2025-09-25 [1] CRAN (R 4.5.0)
+     generics       0.1.4   2025-05-09 [1] CRAN (R 4.5.0)
+     GGally       * 2.4.0   2025-08-23 [1] CRAN (R 4.5.0)
+     ggplot2      * 4.0.0   2025-09-11 [1] CRAN (R 4.5.0)
+     ggstats        0.14.0  2026-09-02 [1] CRAN (R 4.5.2)
+     glue           1.8.0   2024-09-30 [1] CRAN (R 4.5.0)
+     gtable         0.3.6   2024-10-25 [1] CRAN (R 4.5.0)
+     hexbin         1.28.6  2026-07-28 [1] CRAN (R 4.5.2)
+     hms            1.1.4   2025-10-17 [1] CRAN (R 4.5.0)
+     htmltools      0.5.8.1 2024-04-04 [1] CRAN (R 4.5.0)
+     jsonlite       2.0.0   2025-03-27 [1] CRAN (R 4.5.0)
+     knitr          1.50    2025-03-16 [1] CRAN (R 4.5.0)
+     labeling       0.4.3   2023-08-29 [1] CRAN (R 4.5.0)
+     lattice        0.22-7  2025-04-02 [1] CRAN (R 4.5.2)
+     lifecycle      1.0.4   2023-11-07 [1] CRAN (R 4.5.0)
+     lubridate    * 1.9.4   2024-12-08 [1] CRAN (R 4.5.0)
+     magrittr       2.0.4   2025-09-12 [1] CRAN (R 4.5.0)
+     pillar         1.11.1  2025-09-17 [1] CRAN (R 4.5.0)
+     pkgconfig      2.0.3   2019-09-22 [1] CRAN (R 4.5.0)
+     purrr        * 1.1.0   2025-07-10 [1] CRAN (R 4.5.0)
+     R6             2.6.1   2025-02-15 [1] CRAN (R 4.5.0)
+     RColorBrewer   1.1-3   2022-04-03 [1] CRAN (R 4.5.0)
+     readr        * 2.1.5   2024-01-10 [1] CRAN (R 4.5.0)
+     rlang          1.2.0   2026-04-06 [1] CRAN (R 4.5.2)
+     rmarkdown      2.30    2025-09-28 [1] CRAN (R 4.5.0)
+     rstudioapi     0.17.1  2024-10-22 [1] CRAN (R 4.5.0)
+     S7             0.2.0   2024-11-07 [1] CRAN (R 4.5.0)
+     scales         1.4.0   2025-04-24 [1] CRAN (R 4.5.0)
+     sessioninfo    1.2.3   2025-02-05 [1] CRAN (R 4.5.0)
+     stringi        1.8.7   2025-03-27 [1] CRAN (R 4.5.0)
+     stringr      * 1.5.2   2025-09-08 [1] CRAN (R 4.5.0)
+     tibble       * 3.3.0   2025-06-08 [1] CRAN (R 4.5.0)
+     tidyr        * 1.3.1   2024-01-24 [1] CRAN (R 4.5.0)
+     tidyselect     1.2.1   2024-03-11 [1] CRAN (R 4.5.0)
+     tidyverse    * 2.0.0   2023-02-22 [1] CRAN (R 4.5.0)
+     timechange     0.3.0   2024-01-18 [1] CRAN (R 4.5.0)
+     tzdb           0.5.0   2025-03-15 [1] CRAN (R 4.5.0)
+     vctrs          0.6.5   2023-12-01 [1] CRAN (R 4.5.0)
+     vroom          1.6.6   2025-09-19 [1] CRAN (R 4.5.0)
+     withr          3.0.2   2024-10-28 [1] CRAN (R 4.5.0)
+     xfun           0.55    2025-12-16 [1] CRAN (R 4.5.2)
+     yaml           2.3.10  2024-07-26 [1] CRAN (R 4.5.0)
+
+     [1] /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library
+     * ── Packages attached to the search path.
+
+    ──────────────────────────────────────────────────────────────────────────────
